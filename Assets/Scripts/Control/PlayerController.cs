@@ -22,7 +22,7 @@ namespace RPG.Control
         }
         void Update()
         {
-            if (health.IsDead()) return;
+            if (health.IsDead) return;
             if (EvaluateCombat()) return;
             //EvaluateHarvest
             if (EvaluateMovement()) return;

@@ -2,12 +2,14 @@ using System;
 using UnityEngine;
 namespace RPG.Core
 {
+    [RequireComponent(typeof(Animator))]
+    [RequireComponent(typeof(ActionScheduler))]
     public class Health : MonoBehaviour
     {
         bool isDead;
-        public bool IsDead()
+        public bool IsDead
         {
-            return isDead;
+            get => isDead;
         }
 
         [SerializeField] float maxHealth = 100f, health;

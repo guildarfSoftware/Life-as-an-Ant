@@ -578,7 +578,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   weaponRange: 2
-  timeBetweenAtacks: 12
+  timeBetweenAtacks: 1
 --- !u!114 &1828793116
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -604,7 +604,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxHealth: 100
-  health: 0
+  health: 100
 --- !u!195 &1828793118
 NavMeshAgent:
   m_ObjectHideFlags: 0

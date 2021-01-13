@@ -1,6 +1,7 @@
 using UnityEngine;
 using RPG.Movement;
 using RPG.Core;
+using System;
 
 namespace RPG.Combat
 {
@@ -31,10 +32,12 @@ namespace RPG.Combat
 
         private void AttackBehaviour()
         {
-            transform.LookAt(target.transform);
+            LookAt(target.transform);
+            
+
             if (timeSinceLastAttack > timeBetweenAtacks)
             {
-                if (target.GetComponent<Health>().IsDead())
+                if (target.GetComponent<Health>().IsDead)
                 {
                     Cancel();
                     return;
@@ -42,8 +45,18 @@ namespace RPG.Combat
 
                 GetComponent<Animator>().ResetTrigger("stopAttack");
                 GetComponent<Animator>().SetTrigger("attack");
+                Hit();// @ToDo: integrate Hit event in animation
                 timeSinceLastAttack = 0;
             }
+        }
+
+        private void LookAt(Transform target)//Looks at transform only rotating in Y axys
+        {
+            Quaternion rotation = transform.rotation;
+            transform.LookAt(target);
+
+            rotation.y = transform.rotation.y;
+            transform.rotation = rotation;
         }
 
         private bool GetIsInRange()
@@ -56,7 +69,7 @@ namespace RPG.Combat
         {
             if (combatTarget == null) return false;
             Health target = combatTarget.GetComponent<Health>();
-            return target != null && !target.IsDead();
+            return target != null && !target.IsDead;
         }
 
         public void Attack(GameObject target)

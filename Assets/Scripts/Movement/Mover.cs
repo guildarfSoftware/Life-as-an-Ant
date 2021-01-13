@@ -35,7 +35,7 @@ namespace RPG.Movement
 
         private bool IsDead()
         {
-            return GetComponent<Health>().IsDead();
+            return GetComponent<Health>().IsDead;
         }
 
         void UpdateAnimator()
