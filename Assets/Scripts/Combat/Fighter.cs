@@ -9,6 +9,7 @@ namespace RPG.Combat
     {
         [SerializeField] float weaponRange = 2.0f;
         [SerializeField] float timeBetweenAtacks = 12.0f;
+        [SerializeField] float weaponDamage=5;
         Health target;
         float timeSinceLastAttack = Mathf.Infinity;
 
@@ -76,6 +77,7 @@ namespace RPG.Combat
         {
             GetComponent<ActionScheduler>().StartAction(this);
             this.target = target.GetComponent<Health>();
+            print("Attack!");
         }
 
         public void Cancel()
@@ -94,7 +96,8 @@ namespace RPG.Combat
         void Hit()
         {
             if (target == null) return;
-            target.TakeDamage(5);
+            target.TakeDamage(weaponDamage);
+            print("Hit for "+weaponDamage +"damage");
         }
 
     }

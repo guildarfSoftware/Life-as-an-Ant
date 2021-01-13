@@ -3,6 +3,7 @@ using RPG.Movement;
 using RPG.Combat;
 using System;
 using RPG.Core;
+using RPG.Harvest;
 
 namespace RPG.Control
 {
@@ -12,11 +13,13 @@ namespace RPG.Control
     {
         Mover mover;
         Fighter fighter;
+        Harvester harvester;
         Health health;
 
         private void Start()
         {
             fighter = GetComponent<Fighter>();
+            harvester = GetComponent<Harvester>();
             mover = GetComponent<Mover>();
             health = GetComponent<Health>();
         }
@@ -24,9 +27,11 @@ namespace RPG.Control
         {
             if (health.IsDead) return;
             if (EvaluateCombat()) return;
-            //EvaluateHarvest
+            if (EvaluateStorage()) return;
+            if (EvaluateHarvest()) return;
             if (EvaluateMovement()) return;
         }
+
 
         private bool EvaluateCombat()
         {
@@ -40,6 +45,42 @@ namespace RPG.Control
                 if (Input.GetMouseButtonDown(0))
                 {
                     fighter.Attack(target.gameObject);
+                }
+                return true;    //outside the click check to allow hover detection;
+            }
+            return false;
+        }
+
+        private bool EvaluateStorage()
+        {
+            RaycastHit[] hits = Physics.RaycastAll(GetMouseRay());
+
+            foreach (RaycastHit hit in hits)
+            {
+                Storage target = hit.transform.GetComponent<Storage>();
+                if (target == null || !harvester.CanStore(target.gameObject)) continue;
+
+                if (Input.GetMouseButtonDown(0))
+                {
+                    harvester.Store(target.gameObject);
+                }
+                return true;    //outside the click check to allow hover detection;
+            }
+            return false;
+        }
+
+        private bool EvaluateHarvest()
+        {
+            RaycastHit[] hits = Physics.RaycastAll(GetMouseRay());
+
+            foreach (RaycastHit hit in hits)
+            {
+                HarvestTarget target = hit.transform.GetComponent<HarvestTarget>(); 
+                if (target == null || !harvester.CanHarvest(target.gameObject)) continue;
+
+                if (Input.GetMouseButtonDown(0))
+                {
+                    harvester.Harvest(target.gameObject);
                 }
                 return true;    //outside the click check to allow hover detection;
             }
