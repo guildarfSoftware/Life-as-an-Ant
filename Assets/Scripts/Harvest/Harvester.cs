@@ -13,6 +13,10 @@ namespace RPG.Harvest
         public bool IsFull { get => carryAmount >= maxCapacity; }
         public bool IsEmpty { get => carryAmount == 0; }
         GameObject target;
+        [SerializeField] GameObject food;
+
+        public Action fooodGrabbed;
+        public Action foodDeposit; 
 
         private void Update()
         {
@@ -144,8 +148,16 @@ namespace RPG.Harvest
         //Animator Event
         void Hit()
         {
-            if (HarvestHit()) return;
-            if (StorageHit()) return;
+            if (HarvestHit())
+            {
+                Cancel(); 
+                return;
+            }
+            if (StorageHit())
+            {
+                Cancel();
+                return;
+            }
         }
 
         private bool StorageHit()
@@ -155,7 +167,9 @@ namespace RPG.Harvest
             if (storage == null) return false;
             storage.StoreResource(carryAmount);
             carryAmount = 0; //if trying to store more than capacity excess is wasted;
+            food.SetActive(false);
             print("carrying: " + carryAmount + "/" + maxCapacity);
+            foodDeposit?.Invoke();
             return true;
         }
 
@@ -165,7 +179,9 @@ namespace RPG.Harvest
             HarvestTarget harvestTarget = target.GetComponent<HarvestTarget>();
             if (harvestTarget == null) return false;
             carryAmount = harvestTarget.GrabResource(maxCapacity);
+            food.SetActive(true);
             print("carrying: " + carryAmount + "/" + maxCapacity);
+            fooodGrabbed?.Invoke();
             return true;
         }
 

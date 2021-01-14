@@ -11,6 +11,7 @@ namespace RPG.Combat
         [SerializeField] float timeBetweenAtacks = 12.0f;
         [SerializeField] float weaponDamage=5;
         Health target;
+        public Action EnterCombat;
         float timeSinceLastAttack = Mathf.Infinity;
 
         private void Update()
@@ -98,6 +99,7 @@ namespace RPG.Combat
             if (target == null) return;
             target.TakeDamage(weaponDamage);
             print("Hit for "+weaponDamage +"damage");
+            EnterCombat?.Invoke();
         }
 
     }
