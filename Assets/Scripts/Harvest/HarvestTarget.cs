@@ -20,6 +20,11 @@ namespace RPG.Harvest
             }
             remainingResource -= grabedAmount;
 
+            if(IsEmpty)
+            {
+                Destroy(gameObject);
+            }
+
             return grabedAmount;
         }
         
