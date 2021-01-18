@@ -54,6 +54,7 @@ namespace RPG.Pheromones
 
                     if (lastGenerated != null)
                     {
+                        waypointScript.distanceFromSource = lastGenerated.distanceFromSource+1;
                         lastGenerated.nextWaypoint = waypointScript;
                     }
                     waypointScript.previousWaypoint = lastGenerated;

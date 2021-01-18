@@ -12,15 +12,11 @@ namespace RPG.Pheromones
     public class PheromoneWaypoint : MonoBehaviour
     {
 
-        float strenght;
+        public int distanceFromSource=0;
         public PheromoneWaypoint previousWaypoint;
         public PheromoneWaypoint nextWaypoint;      //points toward source: food or enemy
         public PheromoneType pheromoneType;
 
-        private void Start()
-        {
-            strenght = 1;
-        }
 
         private void Update()
         {
