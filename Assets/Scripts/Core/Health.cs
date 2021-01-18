@@ -6,7 +6,9 @@ namespace RPG.Core
     [RequireComponent(typeof(ActionScheduler))]
     public class Health : MonoBehaviour
     {
-        bool isDead;
+        [SerializeField] bool isDead;
+
+        public Action OnDeath;
         public bool IsDead
         {
             get => isDead;
@@ -33,6 +35,9 @@ namespace RPG.Core
             if (isDead) return;
 
             isDead = true;
+            
+            OnDeath?.Invoke();
+
             GetComponent<Animator>().SetTrigger("die");
             GetComponent<ActionScheduler>().CancelCurrentAction();
 

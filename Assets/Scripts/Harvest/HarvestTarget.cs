@@ -1,3 +1,4 @@
+using RPG.Core;
 using UnityEngine;
 
 namespace RPG.Harvest
@@ -6,6 +7,12 @@ namespace RPG.Harvest
     {
         [SerializeField] float remainingResource = 100;
         public bool IsEmpty { get => remainingResource == 0; }
+
+        private void Start()
+        {
+            if(GetComponent<Health>()!=null) GetComponent<Health>().OnDeath += ()=>gameObject.tag = "Food"; //if it was alive, on death change tag to food 
+        }
+
 
         public float GrabResource(float triedAmount)
         {

@@ -10,7 +10,7 @@ namespace RPG.Pheromones
     {
         //[SerializeField] GameObject pheromonePrefab;
         bool safeExit;
-        float timeBetweenWaypoints = 1;
+        float timeBetweenWaypoints = 0.5f;
         [SerializeField] bool generating;
         PheromoneType generatingType;
 
@@ -56,9 +56,10 @@ namespace RPG.Pheromones
                     }
                     newWaypoint.previousWaypoint = lastGenerated;
                     lastGenerated = newWaypoint;
+                    
+                    yield return new WaitForSeconds(timeBetweenWaypoints);
                 }
-
-                yield return new WaitForSeconds(timeBetweenWaypoints);
+                yield return null;
             }
         }
 
@@ -68,7 +69,7 @@ namespace RPG.Pheromones
             waypointObject.transform.position = transform.position;
 
             (waypointObject.AddComponent<SphereCollider>()).isTrigger = true;
-            waypointObject.tag = "PheromoneWaypoint";
+            waypointObject.tag = generatingType == PheromoneType.Combat? "PheromoneCombat": "PheromoneHarvest";
 
             PheromoneWaypoint waypointScript = waypointObject.AddComponent<PheromoneWaypoint>();
             waypointScript.SetPheromoneType(generatingType);
@@ -88,6 +89,7 @@ namespace RPG.Pheromones
             if (type == generatingType) return;
             lastGenerated = null;
             generatingType = type;
+
         }
 
     }
