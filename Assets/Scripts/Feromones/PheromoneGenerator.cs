@@ -2,6 +2,7 @@ using UnityEngine;
 using RPG.Harvest;
 using RPG.Combat;
 using System.Collections;
+using System;
 
 namespace RPG.Pheromones
 {
@@ -24,7 +25,7 @@ namespace RPG.Pheromones
             StartCoroutine(GenerationProcess());
 
             harvester = GetComponent<Harvester>();
-            harvester.fooodGrabbed += () => {StartGeneration(PheromoneType.Harvest); };
+            harvester.fooodGrabbed += () => { StartGeneration(PheromoneType.Harvest); };
             harvester.foodDeposit += () => { generating = false; };
 
             fighter = GetComponent<Fighter>();
@@ -34,7 +35,7 @@ namespace RPG.Pheromones
         private void Update()
         {
             timeOutOfCOmbat += Time.deltaTime;
-            if(generatingType == PheromoneType.Combat && timeOutOfCOmbat > combatCooldown)
+            if (generatingType == PheromoneType.Combat && timeOutOfCOmbat > combatCooldown)
             {
                 generating = false;
             }
@@ -46,23 +47,33 @@ namespace RPG.Pheromones
             {
                 if (generating)
                 {
-                    GameObject waypointObject = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-                    waypointObject.transform.position = transform.position;
-
-                    PheromoneWaypoint waypointScript = waypointObject.AddComponent<PheromoneWaypoint>();
-                    waypointScript.pheromoneType = generatingType;
+                    PheromoneWaypoint newWaypoint = CreatePheromoneWaypoint();
 
                     if (lastGenerated != null)
                     {
-                        waypointScript.distanceFromSource = lastGenerated.distanceFromSource+1;
-                        lastGenerated.nextWaypoint = waypointScript;
+                        newWaypoint.distanceFromSource = lastGenerated.distanceFromSource + 1;
+                        lastGenerated.nextWaypoint = newWaypoint;
                     }
-                    waypointScript.previousWaypoint = lastGenerated;
-                    lastGenerated = waypointScript;
+                    newWaypoint.previousWaypoint = lastGenerated;
+                    lastGenerated = newWaypoint;
                 }
 
                 yield return new WaitForSeconds(timeBetweenWaypoints);
             }
+        }
+
+        private PheromoneWaypoint CreatePheromoneWaypoint()
+        {
+            GameObject waypointObject = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+            waypointObject.transform.position = transform.position;
+
+            (waypointObject.AddComponent<SphereCollider>()).isTrigger = true;
+            waypointObject.tag = "PheromoneWaypoint";
+
+            PheromoneWaypoint waypointScript = waypointObject.AddComponent<PheromoneWaypoint>();
+            waypointScript.SetPheromoneType(generatingType);
+            
+            return waypointScript;
         }
 
         void StartGeneration(PheromoneType type)

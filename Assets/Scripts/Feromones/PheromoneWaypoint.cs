@@ -11,15 +11,26 @@ namespace RPG.Pheromones
 
     public class PheromoneWaypoint : MonoBehaviour
     {
-
+        private float killTime; 
+        private const float timeToDestroy = 25;
         public int distanceFromSource=0;
         public PheromoneWaypoint previousWaypoint;
         public PheromoneWaypoint nextWaypoint;      //points toward source: food or enemy
         public PheromoneType pheromoneType;
 
-
+        private void Start()
+        {
+            killTime = timeToDestroy;   
+        }
         private void Update()
         {
+            killTime -= Time.deltaTime;
+            if(killTime <= 0) Destroy(gameObject);
+        }
+
+        public void SetPheromoneType(PheromoneType type)
+        {
+            pheromoneType = type;
             if (pheromoneType == PheromoneType.Harvest)
             {
                 gameObject.GetComponent<MeshRenderer>().material.color = Color.yellow;
@@ -30,7 +41,11 @@ namespace RPG.Pheromones
             }
         }
 
-
+        public void UpdateKillTime()
+        {
+            killTime = timeToDestroy;
+        }
+        
         private void OnDrawGizmos()
         {
             Gizmos.color = Color.white;
