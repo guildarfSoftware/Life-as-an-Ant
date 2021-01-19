@@ -15,6 +15,8 @@ namespace RPG.Control
         PheromoneFollower follower;
         Harvester harvester;
         Fighter fighter;
+
+        Explorer explorer;
         GameObject nest;
         List<GameObject> entitiesInRange;
 
@@ -24,6 +26,7 @@ namespace RPG.Control
             follower = GetComponent<PheromoneFollower>();
             harvester = GetComponent<Harvester>();
             fighter = GetComponent<Fighter>();
+            explorer = GetComponent<Explorer>();
             nest = GameObject.FindGameObjectWithTag("Nest");
         }
         private void Update()
@@ -57,7 +60,7 @@ namespace RPG.Control
             {
                 return; //route not finished kepp following pheromones
             }
-
+            
             if (follower.lastWaypoint != null) follower.lastWaypoint.MarkAsInvalid();  //route has ended and cannot find food or enemy
 
             target = GetClosestEntityWithTag("PheromoneCombat");
@@ -74,15 +77,14 @@ namespace RPG.Control
                 return;
             }
 
+            if(!explorer.onCooldown) explorer.Wander(10); //explore around position for 10 seconds
+
+            if(!explorer.TimeOut)
+            {
+                return;
+            }
+            
             GetComponent<Mover>().MoveTo(nest.transform.position);
-
-            /*
-                arriving here with an active pheromone indicates food or enemy is gone, destroy trail
-            */
-
-            /*
-                Explore
-            */
 
         }
 
