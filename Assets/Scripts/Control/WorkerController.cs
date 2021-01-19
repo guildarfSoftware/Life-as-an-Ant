@@ -61,7 +61,11 @@ namespace RPG.Control
                 return; //route not finished kepp following pheromones
             }
             
-            if (follower.lastWaypoint != null) follower.lastWaypoint.MarkAsInvalid();  //route has ended and cannot find food or enemy
+            if (follower.lastWaypoint != null)
+            {
+                follower.lastWaypoint.DisableRoute();  //route has ended and cannot find food or enemy
+                follower.Cancel();
+            } 
 
             target = GetClosestEntityWithTag("PheromoneCombat");
             if (target != null && follower.CanFollow(target))
@@ -77,7 +81,7 @@ namespace RPG.Control
                 return;
             }
 
-            if(!explorer.onCooldown) explorer.Wander(10); //explore around position for 10 seconds
+            if(!explorer.onCooldown) explorer.Wander(); //explore around position for 10 seconds
 
             if(!explorer.TimeOut)
             {

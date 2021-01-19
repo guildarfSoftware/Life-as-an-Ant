@@ -113,7 +113,6 @@ namespace RPG.Harvest
         {
             GetComponent<ActionScheduler>().StartAction(this);
             this.target = target;
-            print("Storing");
         }
 
         internal bool CanStore(GameObject target)
