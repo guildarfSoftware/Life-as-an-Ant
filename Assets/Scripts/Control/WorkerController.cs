@@ -18,7 +18,6 @@ namespace RPG.Control
 
         Explorer explorer;
         GameObject nest;
-        List<GameObject> entitiesInRange;
 
         private void Start()
         {
@@ -31,7 +30,8 @@ namespace RPG.Control
         }
         private void Update()
         {
-            entitiesInRange = GetEntitiesInRangeSorted();
+
+            detector.Sort((a, b) => GetDistance(a).CompareTo(GetDistance(b)));  //sort close entities by distance
 
             GameObject target = null;
             if (!harvester.IsEmpty && harvester.CanStore(nest))
@@ -91,26 +91,11 @@ namespace RPG.Control
 
         private GameObject GetClosestEntityWithTag(string tag)
         {
-            for (int i = 0; i < entitiesInRange.Count; i++)
-            {
-                GameObject entity = entitiesInRange[i];
-                if (entity != null && entity.tag == tag) return entity;
-            }
-
-            return null;
-        }
-
-
-        private List<GameObject> GetEntitiesInRangeSorted()
-        {
-            var entityList = detector.CloseEntities;
-
-            if (entityList == null) return null;
-
-            entityList.Sort((a, b) => GetDistance(a).CompareTo(GetDistance(b)));
-
-            return entityList;
-
+            List<GameObject> list = detector.GetEntitiesWithTag(tag);
+            
+            if(list==null || list.Count==0) return null;
+            
+            return list[0];
         }
 
         private float GetDistance(GameObject gObject)

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -6,7 +7,7 @@ namespace RPG.Core
     [RequireComponent(typeof(SphereCollider))]
     public class EntityDetector : MonoBehaviour
     {
-        float scanRange = 10f;
+        [SerializeField] float scanRange = 10f;
 
         List<GameObject> closeEntities = new List<GameObject>();
 
@@ -50,5 +51,23 @@ namespace RPG.Core
                 closeEntities.Remove(other.gameObject);
             }
         }
+
+        public List<GameObject> GetEntitiesWithTag(string tag)
+        {
+            List<GameObject> rList =  new List<GameObject>();
+            for (int i = 0; i < closeEntities.Count; i++)
+            {
+                GameObject entity = closeEntities[i];
+                if (entity != null && entity.tag == tag) rList.Add(entity);
+            }
+
+            return rList;
+        } 
+
+        public void Sort(Comparison<GameObject> comparison)
+        {
+            closeEntities.Sort(comparison);
+        }
+
     }
 }
