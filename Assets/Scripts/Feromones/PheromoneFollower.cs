@@ -72,10 +72,5 @@ namespace RPG.Pheromones
             lastWaypoint = null;
             targetWaypoint = null;
         }
-
-        public void StartAction()
-        {
-            throw new NotImplementedException();
-        }
     }
 }

@@ -4,7 +4,6 @@ namespace RPG.Core
 {
     public interface IAction 
     {
-        void Cancel();
-        void StartAction();    
+        void Cancel(); 
     }
 }

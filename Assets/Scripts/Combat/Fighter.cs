@@ -88,11 +88,6 @@ namespace RPG.Combat
             GetComponent<Animator>().ResetTrigger("attack");
         }
 
-        public void StartAction()
-        {
-            throw new System.NotImplementedException();
-        }
-
         //Animator Event
         void Hit()
         {

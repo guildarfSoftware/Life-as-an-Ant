@@ -62,10 +62,5 @@ namespace RPG.Movement
         {
             navMeshAgent.isStopped = true;
         }
-
-        void IAction.StartAction()
-        {
-            throw new System.NotImplementedException();
-        }
     }
 }
