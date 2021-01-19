@@ -9,7 +9,7 @@ namespace RPG.Pheromones
         Harvest,
         Combat,
     }
-//@TODO Change first node to reference the source, leads somewhere will be false id the reference disapears
+    //@TODO Change first node to reference the source, leads somewhere will be false id the reference disapears
     public class PheromoneWaypoint : MonoBehaviour
     {
         private float killTime;
@@ -28,16 +28,6 @@ namespace RPG.Pheromones
         {
             killTime -= Time.deltaTime;
             if (killTime <= 0) Destroy(gameObject);
-
-            if(previousWaypoint==null&&!leadsSomewhere)
-            {
-                if(nextWaypoint!=null)
-                {
-                    nextWaypoint.MarkAsInvalid();
-                } 
-                Destroy(gameObject);
-            }
-
         }
 
         public void SetPheromoneType(PheromoneType type)
@@ -72,16 +62,31 @@ namespace RPG.Pheromones
             }
         }
 
-        internal void MarkAsInvalid()
+        public void DisableRoute()
         {
-            leadsSomewhere=false;
-            if(previousWaypoint!= null) previousWaypoint.MarkAsInvalid();
+            GetSourceWaypoint().MarkAsInvalid();    // search the source node and marks it and all the following invalid
+        }
+
+        /*
+        makes false leadSomewhere this node and all the following
+        */
+        private void MarkAsInvalid()
+        {
+            leadsSomewhere = false;
+            killTime = 5 + distanceFromSource;
+            if (nextWaypoint != null) nextWaypoint.MarkAsInvalid();
+        }
+
+        PheromoneWaypoint GetSourceWaypoint()
+        {
+            if (previousWaypoint == null) return this;
+            return previousWaypoint.GetSourceWaypoint();
         }
 
         public bool LeadsSomewhere()
         {
-            if(!leadsSomewhere) return false;   //node marked as invalid
-            if(previousWaypoint != null) return previousWaypoint.LeadsSomewhere(); // check if node closer to source is valid 
+            if (!leadsSomewhere) return false;   //node marked as invalid
+            if (previousWaypoint != null) return previousWaypoint.LeadsSomewhere(); // check if node closer to source is valid 
             return true;
         }
     }
