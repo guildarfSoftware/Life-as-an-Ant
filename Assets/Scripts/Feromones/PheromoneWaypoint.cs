@@ -13,7 +13,7 @@ namespace RPG.Pheromones
     public class PheromoneWaypoint : MonoBehaviour
     {
         private float killTime;
-        private const float timeToDestroy = 45;
+        private const float timeToDestroy = 240;
         public int distanceFromSource = 0;
         bool leadsSomewhere = true; //indicates if the route ends somewhere with food or enemies true by default
         public PheromoneWaypoint previousWaypoint;
@@ -28,6 +28,16 @@ namespace RPG.Pheromones
         {
             killTime -= Time.deltaTime;
             if (killTime <= 0) Destroy(gameObject);
+
+            if(previousWaypoint==null&&!leadsSomewhere)
+            {
+                if(nextWaypoint!=null)
+                {
+                    nextWaypoint.MarkAsInvalid();
+                } 
+                Destroy(gameObject);
+            }
+
         }
 
         public void SetPheromoneType(PheromoneType type)
