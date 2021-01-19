@@ -36,7 +36,6 @@ namespace RPG.Core
                 case "PheromoneHarvest":
                     {
                         closeEntities.Add(other.gameObject);
-                        print("Added " + other.gameObject.name);
                         break;
                     }
                 default: return;
@@ -49,7 +48,6 @@ namespace RPG.Core
             if (closeEntities.Contains(other.gameObject))
             {
                 closeEntities.Remove(other.gameObject);
-                print("Removed " + other.gameObject.name);
             }
         }
     }

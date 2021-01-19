@@ -130,7 +130,6 @@ namespace RPG.Harvest
         {
             GetComponent<ActionScheduler>().StartAction(this);
             this.target = target;
-            print("Harvesting");
         }
 
         public void Cancel()
@@ -163,7 +162,6 @@ namespace RPG.Harvest
             storage.StoreResource(carryAmount);
             carryAmount = 0; //if trying to store more than capacity excess is wasted;
             food.SetActive(false);
-            print("carrying: " + carryAmount + "/" + maxCapacity);
             foodDeposit?.Invoke();
             return true;
         }
@@ -175,7 +173,6 @@ namespace RPG.Harvest
             if (harvestTarget == null) return false;
             carryAmount = harvestTarget.GrabResource(maxCapacity);
             food.SetActive(true);
-            print("carrying: " + carryAmount + "/" + maxCapacity);
             fooodGrabbed?.Invoke();
             return true;
         }

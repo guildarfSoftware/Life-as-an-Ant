@@ -13,7 +13,6 @@ namespace RPG.Harvest
         {
             storedAmount += amount;
             storedAmount = Mathf.Min(storedAmount, maxCapacity);
-            print("storedAmount: "+storedAmount);
         }
 
     }
