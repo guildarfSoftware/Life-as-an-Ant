@@ -9,7 +9,7 @@ namespace RPG.Pheromones
         Harvest,
         Combat,
     }
-
+//@TODO Change first node to reference the source, leads somewhere will be false id the reference disapears
     public class PheromoneWaypoint : MonoBehaviour
     {
         private float killTime;
