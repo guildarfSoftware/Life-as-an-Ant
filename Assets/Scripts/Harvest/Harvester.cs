@@ -54,7 +54,7 @@ namespace RPG.Harvest
             Storage storage = target.GetComponent<Storage>();
             LookAt(storage.transform);
 
-            if (storage.IsFull || IsEmpty)
+            if (IsEmpty)
             {
                 Cancel();
                 return;
@@ -121,7 +121,6 @@ namespace RPG.Harvest
 
             Storage storage = target.GetComponent<Storage>();
             if (storage == null) return false;
-            if (storage.IsFull) return false;
             return carryAmount != 0;
         }
 
