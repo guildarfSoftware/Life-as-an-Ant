@@ -30,75 +30,127 @@ namespace RPG.Control
         }
         private void Update()
         {
+            if (EvaluateStore()) return;
+            if (EvaluateAttack()) return;
+            if (EvaluateHarvest()) return;
+            if (!follower.routeEnded) return; //following a pheromone trail
 
-            detector.Sort((a, b) => GetDistance(a).CompareTo(GetDistance(b)));  //sort close entities by distance
+            DisableCurrentRoute(); //if got here means that trail leads to somewhere without a valid target. Disable it.
 
-            GameObject target = null;
-            if (!harvester.IsEmpty && harvester.CanStore(nest))
-            {
-                harvester.Store(nest);
-                return;
-            }
+            if(EvaluateFindRoute()) return;
 
-            target = GetClosestEntityWithTag("Enemy");
-            if (target != null && fighter.CanAttack(target))
-            {
-                GetComponent<Fighter>().Attack(target);
-                follower.Cancel();   // to avoid mark as invalid last waypoint
-                return;
-            }
+            if(EvaluateExplore()) return;
 
-            target = GetClosestEntityWithTag("Food");
-            if (target != null && harvester.CanHarvest(target))
-            {
-                GetComponent<Harvester>().Harvest(target);
-                follower.Cancel();   // to avoid mark as invalid last waypoint
-                return;
-            }
+            GetComponent<Mover>().MoveTo(nest.transform.position);  // if nothing else can be done wait in the nest
+        }
 
-            if (!follower.routeEnded)
-            {
-                return; //route not finished kepp following pheromones
-            }
-            
+        private void DisableCurrentRoute()
+        {
             if (follower.lastWaypoint != null)
             {
                 follower.lastWaypoint.DisableRoute();  //route has ended and cannot find food or enemy
                 follower.Cancel();
-            } 
-
-            target = GetClosestEntityWithTag("PheromoneCombat");
-            if (target != null && follower.CanFollow(target))
-            {
-                follower.StartRoute(target.GetComponent<PheromoneWaypoint>());
-                return;
             }
+        }
 
-            target = GetClosestEntityWithTag("PheromoneHarvest");
-            if (target != null && follower.CanFollow(target))
+        bool EvaluateStore()
+        {
+            if (!harvester.IsEmpty && harvester.CanStore(nest))
             {
-                follower.StartRoute(target.GetComponent<PheromoneWaypoint>());
-                return;
+                harvester.Store(nest);
+                return true;
             }
+            return false;
+        }
 
-            if(!explorer.onCooldown) explorer.Wander(); //explore around position for 10 seconds
-
-            if(!explorer.TimeOut)
+        bool EvaluateAttack()
+        {
+            GameObject target = GetClosestEntityWithTag("Enemy");
+            if (target != null && fighter.CanAttack(target))
             {
-                return;
+                GetComponent<Fighter>().Attack(target);
+                follower.Cancel();   // to avoid mark as invalid last waypoint
+                return true;
             }
-            
-            GetComponent<Mover>().MoveTo(nest.transform.position);
+            return false;
+        }
+        bool EvaluateHarvest()
+        {
+            GameObject target = GetClosestEntityWithTag("Food");
+            if (target != null && harvester.CanHarvest(target))
+            {
+                GetComponent<Harvester>().Harvest(target);
+                follower.Cancel();   // to avoid mark as invalid last waypoint
+                return true;
+            }
+            return false;
 
         }
 
+        bool EvaluateFindRoute()
+        {
+            List<GameObject> waypoints = detector.GetEntitiesWithTag("PheromoneCombat");
+
+            PheromoneWaypoint target = GetWaypointClosestToSource(waypoints);
+
+            if (target != null && target.LeadsSomewhere())
+            {
+                follower.StartRoute(target.GetComponent<PheromoneWaypoint>());
+                return true;
+            }
+
+            waypoints = detector.GetEntitiesWithTag("PheromoneHarvest");
+
+            target = GetWaypointClosestToSource(waypoints);
+
+            if (target != null && target.LeadsSomewhere())
+            {
+                follower.StartRoute(target.GetComponent<PheromoneWaypoint>());
+                return true;
+            }
+
+            return false;
+        }
+
+        bool EvaluateExplore()
+        {
+            if (!explorer.onCooldown) explorer.Wander(); //explore for a while around position if not on cooldown
+
+            if (!explorer.TimeOut)  //is exploring
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        PheromoneWaypoint GetWaypointClosestToSource(List<GameObject> waypoints)
+        {
+            PheromoneWaypoint returnedWaypoint = null;
+            if (waypoints != null && waypoints.Count != 0)
+            {
+                returnedWaypoint = waypoints[0].GetComponent<PheromoneWaypoint>();
+
+                foreach (GameObject waypointObject in waypoints)
+                {
+                    PheromoneWaypoint waypoint = waypointObject.GetComponent<PheromoneWaypoint>();
+                    if (waypoint != null && waypoint.distanceFromSource < returnedWaypoint.distanceFromSource)
+                    {
+                        returnedWaypoint = waypoint;
+                    }
+                }
+            }
+            return returnedWaypoint;
+        }
 
         private GameObject GetClosestEntityWithTag(string tag)
         {
             List<GameObject> list = detector.GetEntitiesWithTag(tag);
-            
-            if(list==null || list.Count==0) return null;
-            
+
+            list.Sort((a, b) => GetDistance(a).CompareTo(GetDistance(b)));  //sort by distance
+
+            if (list == null || list.Count == 0) return null;
+
             return list[0];
         }
 
