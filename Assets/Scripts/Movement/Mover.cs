@@ -27,8 +27,8 @@ namespace RPG.Movement
         {
             if (IsDead())
             {
-                navMeshAgent.enabled = false;
                 Cancel();
+                navMeshAgent.enabled = false;
             }
             UpdateAnimator();
         }
@@ -60,6 +60,7 @@ namespace RPG.Movement
 
         public void Cancel()
         {
+            if(!navMeshAgent.enabled) return;
             navMeshAgent.isStopped = true;
         }
     }
