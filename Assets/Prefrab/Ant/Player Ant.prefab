@@ -12,6 +12,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6bb6c7a11b8228a4095eacee49ec6d6e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &2129246940
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1311607418217786915}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6310a4d5a4ae025489527bb6ba3b1588, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxFollowers: 2
 --- !u!1001 &179415274433315480
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -23,6 +36,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Player Ant
+      objectReference: {fileID: 0}
+    - target: {fileID: 1175064306015005883, guid: 6d0eebdde1daece4e8079c4e61617975,
+        type: 3}
+      propertyPath: m_TagString
+      value: Player
       objectReference: {fileID: 0}
     - target: {fileID: 1947097027560322561, guid: 6d0eebdde1daece4e8079c4e61617975,
         type: 3}

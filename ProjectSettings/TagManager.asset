@@ -9,6 +9,7 @@ TagManager:
   - PheromoneCombat
   - PheromoneHarvest
   - Nest
+  - Worker
   layers:
   - Default
   - TransparentFX

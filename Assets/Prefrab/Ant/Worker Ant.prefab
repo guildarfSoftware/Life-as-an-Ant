@@ -52,7 +52,12 @@ PrefabInstance:
     - target: {fileID: 1175064306015005883, guid: 6d0eebdde1daece4e8079c4e61617975,
         type: 3}
       propertyPath: m_Name
-      value: worker Variant
+      value: Worker Ant
+      objectReference: {fileID: 0}
+    - target: {fileID: 1175064306015005883, guid: 6d0eebdde1daece4e8079c4e61617975,
+        type: 3}
+      propertyPath: m_TagString
+      value: Worker
       objectReference: {fileID: 0}
     - target: {fileID: 1947097027560322561, guid: 6d0eebdde1daece4e8079c4e61617975,
         type: 3}
