@@ -9,6 +9,7 @@ namespace RPG.Core
         [SerializeField] bool isDead;
 
         public Action OnDeath;
+        public Action OnDamaged;
         public bool IsDead
         {
             get => isDead;
@@ -24,6 +25,7 @@ namespace RPG.Core
         public void TakeDamage(float amount)
         {
             health = Mathf.Clamp(health - amount, 0, maxHealth);
+            OnDamaged?.Invoke();
             if (health == 0)
             {
                 Die();

@@ -29,9 +29,9 @@ namespace RPG.Pheromones
                 {
                     lastWaypoint = targetWaypoint;
                     targetWaypoint = lastWaypoint.previousWaypoint;
-                    
+
                     lastWaypoint.UpdateKillTime();
-                    if(targetWaypoint!=null)targetWaypoint.UpdateKillTime();
+                    if (targetWaypoint != null) targetWaypoint.UpdateKillTime();
                 }
                 else
                 {

@@ -10,7 +10,6 @@ namespace RPG.Pheromones
 {
     public class PheromoneGenerator : MonoBehaviour
     {
-        //[SerializeField] GameObject pheromonePrefab;
         bool safeExit;
         float timeBetweenWaypoints = 0.5f;
         [SerializeField] bool generating;
@@ -19,8 +18,8 @@ namespace RPG.Pheromones
         Harvester harvester;
         Fighter fighter;
         PheromoneWaypoint lastGenerated = null;
-        float timeOutOfCOmbat;
-        const float combatCooldown = 15;
+        float pheromoneDuration;
+        const float combatCooldown = 15f;
 
         private void Start()
         {
@@ -28,16 +27,19 @@ namespace RPG.Pheromones
 
             harvester = GetComponent<Harvester>();
             harvester.fooodGrabbed += () => { StartGeneration(PheromoneType.Harvest); };
-            harvester.foodDeposit += () => { generating = false; };
+            harvester.foodDeposit += StopGeneration;
 
             fighter = GetComponent<Fighter>();
-            fighter.EnterCombat += () => { StartGeneration(PheromoneType.Combat); };
+            fighter.EnterCombat += () => { StartGeneration(PheromoneType.Combat, combatCooldown); };
+
+            Health health = GetComponent<Health>();
+            health.OnDamaged += () => { StartGeneration(PheromoneType.Combat, combatCooldown); };
         }
 
         private void Update()
         {
-            timeOutOfCOmbat += Time.deltaTime;
-            if (generatingType == PheromoneType.Combat && timeOutOfCOmbat > combatCooldown)
+            pheromoneDuration -= Time.deltaTime;
+            if ( pheromoneDuration < 0)
             {
                 generating = false;
             }
@@ -79,16 +81,20 @@ namespace RPG.Pheromones
             return waypointScript;
         }
 
-        void StartGeneration(PheromoneType type)
+        public void StartGeneration(PheromoneType type, float duration = -1)
         {
 
             if (PheromoneSourceInRange(type)) return;
 
             generating = true;
 
-            if (type == PheromoneType.Combat)
+            if (duration != -1)
             {
-                timeOutOfCOmbat = 0;
+                pheromoneDuration = duration;
+            }
+            else
+            {
+                pheromoneDuration = float.MaxValue;
             }
 
             if (type == generatingType) return;
@@ -96,6 +102,12 @@ namespace RPG.Pheromones
             generatingType = type;
 
         }
+
+        public void StopGeneration()
+        {
+            generating = false;
+        }
+
 
         bool PheromoneSourceInRange(PheromoneType type)
         {
