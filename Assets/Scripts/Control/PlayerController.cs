@@ -16,12 +16,15 @@ namespace RPG.Control
         Harvester harvester;
         Health health;
 
+        Leader leader;
+
         private void Start()
         {
             fighter = GetComponent<Fighter>();
             harvester = GetComponent<Harvester>();
             mover = GetComponent<Mover>();
             health = GetComponent<Health>();
+            leader = GetComponent<Leader>();
         }
         void Update()
         {
@@ -46,6 +49,10 @@ namespace RPG.Control
                 {
                     fighter.Attack(target.gameObject);
                 }
+                else if( Input.GetMouseButtonDown(1))
+                {
+                    leader.CommandAttack(target.gameObject);
+                }
                 return true;    //outside the click check to allow hover detection;
             }
             return false;
@@ -64,6 +71,10 @@ namespace RPG.Control
                 {
                     harvester.Store(target.gameObject);
                 }
+                else if (Input.GetMouseButtonDown(1))
+                {
+                    leader.CommandStore(target.gameObject);
+                }
                 return true;    //outside the click check to allow hover detection;
             }
             return false;
@@ -75,12 +86,16 @@ namespace RPG.Control
 
             foreach (RaycastHit hit in hits)
             {
-                HarvestTarget target = hit.transform.GetComponent<HarvestTarget>(); 
+                HarvestTarget target = hit.transform.GetComponent<HarvestTarget>();
                 if (target == null || !harvester.CanHarvest(target.gameObject)) continue;
 
                 if (Input.GetMouseButtonDown(0))
                 {
                     harvester.Harvest(target.gameObject);
+                }
+                else if (Input.GetMouseButtonDown(1))
+                {
+                    leader.CommandHarvest(target.gameObject);
                 }
                 return true;    //outside the click check to allow hover detection;
             }

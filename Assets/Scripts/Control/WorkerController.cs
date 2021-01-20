@@ -12,17 +12,16 @@ namespace RPG.Control
     public class WorkerController : MonoBehaviour
     {
         EntityDetector detector;
-        PheromoneFollower follower;
+        PheromoneFollower pheromoneFollower;
         Harvester harvester;
         Fighter fighter;
-
         Explorer explorer;
         GameObject nest;
 
         private void Start()
         {
             detector = GetComponent<EntityDetector>();
-            follower = GetComponent<PheromoneFollower>();
+            pheromoneFollower = GetComponent<PheromoneFollower>();
             harvester = GetComponent<Harvester>();
             fighter = GetComponent<Fighter>();
             explorer = GetComponent<Explorer>();
@@ -33,23 +32,24 @@ namespace RPG.Control
             if (EvaluateStore()) return;
             if (EvaluateAttack()) return;
             if (EvaluateHarvest()) return;
-            if (!follower.routeEnded) return; //following a pheromone trail
+            if (!pheromoneFollower.routeEnded) return; //following a pheromone trail
 
             DisableCurrentRoute(); //if got here means that trail leads to somewhere without a valid target. Disable it.
 
-            if(EvaluateFindRoute()) return;
+            if (EvaluateFindRoute()) return;
 
-            if(EvaluateExplore()) return;
+            if (EvaluateExplore()) return;
 
             GetComponent<Mover>().MoveTo(nest.transform.position);  // if nothing else can be done wait in the nest
         }
 
+
         private void DisableCurrentRoute()
         {
-            if (follower.lastWaypoint != null)
+            if (pheromoneFollower.lastWaypoint != null)
             {
-                follower.lastWaypoint.DisableRoute();  //route has ended and cannot find food or enemy
-                follower.Cancel();
+                pheromoneFollower.lastWaypoint.DisableRoute();  //route has ended and cannot find food or enemy
+                pheromoneFollower.Cancel();
             }
         }
 
@@ -69,7 +69,7 @@ namespace RPG.Control
             if (target != null && fighter.CanAttack(target))
             {
                 GetComponent<Fighter>().Attack(target);
-                follower.Cancel();   // to avoid mark as invalid last waypoint
+                pheromoneFollower.Cancel();   // to avoid mark as invalid last waypoint
                 return true;
             }
             return false;
@@ -80,7 +80,7 @@ namespace RPG.Control
             if (target != null && harvester.CanHarvest(target))
             {
                 GetComponent<Harvester>().Harvest(target);
-                follower.Cancel();   // to avoid mark as invalid last waypoint
+                pheromoneFollower.Cancel();   // to avoid mark as invalid last waypoint
                 return true;
             }
             return false;
@@ -95,7 +95,7 @@ namespace RPG.Control
 
             if (target != null && target.LeadsSomewhere())
             {
-                follower.StartRoute(target.GetComponent<PheromoneWaypoint>());
+                pheromoneFollower.StartRoute(target.GetComponent<PheromoneWaypoint>());
                 return true;
             }
 
@@ -105,7 +105,7 @@ namespace RPG.Control
 
             if (target != null && target.LeadsSomewhere())
             {
-                follower.StartRoute(target.GetComponent<PheromoneWaypoint>());
+                pheromoneFollower.StartRoute(target.GetComponent<PheromoneWaypoint>());
                 return true;
             }
 
