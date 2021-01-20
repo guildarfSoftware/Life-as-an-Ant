@@ -29,19 +29,9 @@ namespace RPG.Core
 
         private void OnTriggerEnter(Collider other)
         {
-            switch (other.gameObject.tag)
-            {
-                case "Enemy":
-                case "Food":
-                case "PheromoneCombat":
-                case "PheromoneHarvest":
-                    {
-                        closeEntities.Add(other.gameObject);
-                        break;
-                    }
-                default: return;
-            }
+            print(other.gameObject.name);
 
+            closeEntities.Add(other.gameObject);
         }
 
         private void OnTriggerExit(Collider other)
