@@ -52,7 +52,17 @@ namespace RPG.Core
             }
 
             return rList;
-        } 
+        }
+        public GameObject GetEntityWithTag(string tag)
+        {
+            List<GameObject> rList = new List<GameObject>();
+            for (int i = 0; i < closeEntities.Count; i++)
+            {
+                GameObject entity = closeEntities[i];
+                if (entity != null && entity.tag == tag) return entity;
+            }
+            return null;
+        }
 
         public void Sort(Comparison<GameObject> comparison)
         {
