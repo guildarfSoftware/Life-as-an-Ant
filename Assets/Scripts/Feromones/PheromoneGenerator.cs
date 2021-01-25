@@ -24,16 +24,6 @@ namespace RPG.Pheromones
         private void Start()
         {
             StartCoroutine(GenerationProcess());
-
-            harvester = GetComponent<Harvester>();
-            harvester.fooodGrabbed += () => { StartGeneration(PheromoneType.Harvest); };
-            harvester.foodDeposit += StopGeneration;
-
-            fighter = GetComponent<Fighter>();
-            fighter.EnterCombat += () => { StartGeneration(PheromoneType.Combat, combatCooldown); };
-
-            Health health = GetComponent<Health>();
-            health.OnDamaged += () => { StartGeneration(PheromoneType.Combat, combatCooldown); };
         }
 
         private void Update()
@@ -83,9 +73,6 @@ namespace RPG.Pheromones
 
         public void StartGeneration(PheromoneType type, float duration = -1)
         {
-
-            if (PheromoneSourceInRange(type)) return;
-
             generating = true;
 
             if (duration != -1)
@@ -106,31 +93,7 @@ namespace RPG.Pheromones
         public void StopGeneration()
         {
             generating = false;
+            lastGenerated = null;
         }
-
-
-        bool PheromoneSourceInRange(PheromoneType type)
-        {
-            EntityDetector detector = GetComponent<EntityDetector>();
-            if(detector ==null) return false;
-            string pheromoneTag = ((type == PheromoneType.Combat) ? "PheromoneCombat" : "PheromoneHarvest");
-            List<GameObject> waypoints = detector.GetEntitiesWithTag(pheromoneTag);
-
-            if (waypoints == null || waypoints.Count == 0) return false;
-
-            foreach (GameObject pheromoneObject in waypoints)
-            {
-                PheromoneWaypoint waypoint = pheromoneObject.transform.GetComponent<PheromoneWaypoint>();
-
-                if (waypoint == null) continue;
-
-                if (waypoint.distanceFromSource == 0 && waypoint.LeadsSomewhere()) return true;
-
-            }
-
-            return false;
-
-        }
-
     }
 }
