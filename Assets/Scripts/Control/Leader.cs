@@ -98,7 +98,7 @@ namespace RPG.Control
 
         Follower GetFirstFollower()
         {
-            if(followers.Count == 0)  return null;
+            if (followers.Count == 0) return null;
             return followers[0];
         }
 

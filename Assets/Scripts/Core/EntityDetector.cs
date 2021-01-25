@@ -21,9 +21,9 @@ namespace RPG.Core
 
         private void Update()
         {
-            for (int i = closeEntities.Count-1; i >= 0; i--)    // @TODO change this method and find other way to remove null members
+            for (int i = closeEntities.Count - 1; i >= 0; i--)    // @TODO change this method and find other way to remove null members
             {
-                if(closeEntities[i]==null) closeEntities.RemoveAt(i);
+                if (closeEntities[i] == null) closeEntities.RemoveAt(i);
             }
         }
 
@@ -44,7 +44,7 @@ namespace RPG.Core
 
         public List<GameObject> GetEntitiesWithTag(string tag)
         {
-            List<GameObject> rList =  new List<GameObject>();
+            List<GameObject> rList = new List<GameObject>();
             for (int i = 0; i < closeEntities.Count; i++)
             {
                 GameObject entity = closeEntities[i];

@@ -47,11 +47,11 @@ namespace RPG.Control
             nest = GameObject.FindGameObjectWithTag("Nest");
             player = GameObject.FindGameObjectWithTag("Player");
 
-            DefaultState();
+            FollowTheLeader();
         }
         private void Update()
         {
-            if(target == null) DefaultState();
+            if(target == null) FollowTheLeader();
             switch (currentState)
             {
                 case AntState.notifying:
@@ -60,7 +60,7 @@ namespace RPG.Control
                         if(GetDistance(target) < targetRange)
                         {
                             pheromoneGenerator.StopGeneration();
-                            DefaultState();
+                            FollowTheLeader();
                         }
                         break;
                     }
@@ -69,7 +69,7 @@ namespace RPG.Control
                         fighter.Attack(target);
                         if(target.transform.GetComponent<Health>().IsDead)
                         {
-                            DefaultState();
+                            FollowTheLeader();
                         }
                         break;
                     }
@@ -79,7 +79,7 @@ namespace RPG.Control
 
                         if(harvester.IsEmpty)
                         {
-                            DefaultState();
+                            FollowTheLeader();
                         }
 
                         break;
@@ -89,7 +89,7 @@ namespace RPG.Control
                         harvester.Harvest(target);
                         if(harvester.IsFull || target.GetComponent<HarvestTarget>().IsEmpty)
                         {
-                            Store(nest);
+                            FollowTheLeader();
                         }
 
                         break;
@@ -104,7 +104,7 @@ namespace RPG.Control
                     }
                 default: 
                  {
-                     DefaultState();
+                     FollowTheLeader();
                      break;
                  }
             }
@@ -122,19 +122,19 @@ namespace RPG.Control
             return Vector3.Distance(target.transform.position,transform.position);
         }
 
-        internal void Harvest(GameObject target)
+        public void Harvest(GameObject target)
         {
             this.target = target;
             ChangeState(AntState.harvesting);
             harvester.Harvest(target);
         }
-        internal void Attack(GameObject target)
+        public void Attack(GameObject target)
         {
             this.target = target;
             ChangeState(AntState.attacking);
             fighter.Attack(target);
         }
-        internal void NotifyNest(PheromoneType pheromoneType)
+        public void NotifyNest(PheromoneType pheromoneType)
         {
             target = nest;
             ChangeState(AntState.notifying);
@@ -149,7 +149,7 @@ namespace RPG.Control
             harvester.Store(target);
         }
 
-        public void DefaultState()
+        public void FollowTheLeader()
         {
             target=player;
             currentState = AntState.following;
