@@ -106,7 +106,14 @@ namespace RPG.Control
         {
             foreach (Follower follower in followers)
             {
-                follower.Harvest(gameObject);
+                if (follower == notifier)
+                {
+                    follower.NotifyNest(PheromoneType.Harvest);
+                }
+                else
+                {
+                    follower.Harvest(gameObject);
+                }
             }
         }
 
@@ -121,6 +128,17 @@ namespace RPG.Control
                 else
                 {
                     follower.Attack(gameObject);
+                }
+            }
+        }
+
+        public void FollowMeCommand()
+        {
+            foreach (Follower follower in followers)
+            {
+                if (follower != notifier)   //notify to nest cannot be overwritten
+                {
+                    follower.FollowTheLeader();
                 }
             }
         }

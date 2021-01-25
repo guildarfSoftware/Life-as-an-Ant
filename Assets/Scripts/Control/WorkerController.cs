@@ -16,7 +16,10 @@ namespace RPG.Control
         Harvester harvester;
         Fighter fighter;
         Explorer explorer;
+        Health health;
         GameObject nest;
+        float stopPheromoneDistance = 3f;
+        bool generatingPheromones;
 
         private void Start()
         {
@@ -25,18 +28,24 @@ namespace RPG.Control
             harvester = GetComponent<Harvester>();
             fighter = GetComponent<Fighter>();
             explorer = GetComponent<Explorer>();
+            health = GetComponent<Health>();
+
+            harvester.fooodGrabbed += StartFoodPheromones;
+            fighter.EnterCombat += StartCombatPheromones;
+            GetComponent<Health>().OnDamaged += StartCombatPheromones;
+
             nest = GameObject.FindGameObjectWithTag("Nest");
         }
         private void Update()
         {
+            if (health.IsDead) return;
+
+            if (EvaluateNotifyNest()) return;   //if generating pheromones return to nest to notify
+
             if (EvaluateStore()) return;
-            if (EvaluateAttack()) return;
+
+            if (EvaluateCombat()) return;
             if (EvaluateHarvest()) return;
-            if (!pheromoneFollower.routeEnded) return; //following a pheromone trail
-
-            DisableCurrentRoute(); //if got here means that trail leads to somewhere without a valid target. Disable it.
-
-            if (EvaluateFindRoute()) return;
 
             if (EvaluateExplore()) return;
 
@@ -53,6 +62,18 @@ namespace RPG.Control
             }
         }
 
+        bool EvaluateNotifyNest()
+        {
+            if (!generatingPheromones) return false;
+            GetComponent<Mover>().StartMovement(nest.transform.position);
+            if (GetDistance(nest)<stopPheromoneDistance)
+            {
+                StopPheromones();
+                return false;
+            }
+            return true;
+        }
+
         bool EvaluateStore()
         {
             if (!harvester.IsEmpty && harvester.CanStore(nest))
@@ -63,49 +84,75 @@ namespace RPG.Control
             return false;
         }
 
-        bool EvaluateAttack()
+        bool EvaluateCombat()
         {
             GameObject target = GetClosestEntityWithTag("Enemy");
-            if (target != null && fighter.CanAttack(target))
+            if (target != null && fighter.CanAttack(target))    //an enemy is close enought to attack
             {
                 GetComponent<Fighter>().Attack(target);
-                pheromoneFollower.Cancel();   // to avoid mark as invalid last waypoint
                 return true;
             }
-            return false;
+
+            if (pheromoneFollower.lastWaypoint != null &&
+                pheromoneFollower.lastWaypoint.pheromoneType == PheromoneType.Combat)
+            {
+                if (!pheromoneFollower.routeEnded)   //following a combat pheromone trail
+                {
+                    return true;
+                }
+                else    // combat trail ended without valid target
+                {
+                    DisableCurrentRoute();
+                }
+            }
+
+            return FollowCloseTrail(PheromoneType.Combat);
         }
+
+
         bool EvaluateHarvest()
         {
             GameObject target = GetClosestEntityWithTag("Food");
             if (target != null && harvester.CanHarvest(target))
             {
                 GetComponent<Harvester>().Harvest(target);
-                pheromoneFollower.Cancel();   // to avoid mark as invalid last waypoint
                 return true;
             }
-            return false;
+
+            if (pheromoneFollower.lastWaypoint != null &&
+                pheromoneFollower.lastWaypoint.pheromoneType == PheromoneType.Harvest)
+            {
+                if (!pheromoneFollower.routeEnded)   //following a harvest pheromone trail
+                {
+                    return true;
+                }
+                else    // harvest trail ended without valid target
+                {
+                    DisableCurrentRoute();
+                }
+            }
+
+            return FollowCloseTrail(PheromoneType.Harvest);
 
         }
 
-        bool EvaluateFindRoute()
+        bool FollowCloseTrail(PheromoneType type)   // follows a trail of the type if exist return true
         {
-            List<GameObject> waypoints = detector.GetEntitiesWithTag("PheromoneCombat");
+            List<GameObject> waypoints;
+            if (type == PheromoneType.Combat)
+            {
+                waypoints = detector.GetEntitiesWithTag("PheromoneCombat");
+            }
+            else
+            {
+                waypoints = detector.GetEntitiesWithTag("PheromoneHarvest");
+            }
 
             PheromoneWaypoint target = GetWaypointClosestToSource(waypoints);
 
             if (target != null && target.LeadsSomewhere())
             {
-                pheromoneFollower.StartRoute(target.GetComponent<PheromoneWaypoint>());
-                return true;
-            }
-
-            waypoints = detector.GetEntitiesWithTag("PheromoneHarvest");
-
-            target = GetWaypointClosestToSource(waypoints);
-
-            if (target != null && target.LeadsSomewhere())
-            {
-                pheromoneFollower.StartRoute(target.GetComponent<PheromoneWaypoint>());
+                pheromoneFollower.StartRoute(target);
                 return true;
             }
 
@@ -158,6 +205,40 @@ namespace RPG.Control
         {
             if (gObject == null) return -1;
             return Vector3.Distance(transform.position, gObject.transform.position);
+        }
+
+
+        void StartFoodPheromones()
+        {
+            if (detector.GetEntityWithTag("PheromoneHarvest") == null) //check to avoid multiple trails
+            {
+                GetComponent<PheromoneGenerator>().StartGeneration(PheromoneType.Harvest);
+                generatingPheromones = true;
+            }
+        }
+
+        void StartCombatPheromones()
+        {
+            if (detector.GetEntityWithTag("PheromoneCombat") == null) //check to avoid multiple trails
+            {
+                GetComponent<PheromoneGenerator>().StartGeneration(PheromoneType.Combat);
+                generatingPheromones = true;
+            }
+        }
+
+
+        void StopPheromones()
+        {
+            GetComponent<PheromoneGenerator>().StopGeneration();
+            generatingPheromones = false;
+        }
+
+
+        private void OnDisable()
+        {
+            harvester.fooodGrabbed -= StartFoodPheromones;
+            fighter.EnterCombat -= StartCombatPheromones;
+            GetComponent<Health>().OnDamaged -= StartCombatPheromones;
         }
     }
 }

@@ -45,7 +45,7 @@ namespace RPG.Pheromones
 
         public void UpdateKillTime()
         {
-            killTime = timeToDestroy;
+            if(leadsSomewhere) killTime = timeToDestroy;
         }
 
         private void OnDrawGizmos()
