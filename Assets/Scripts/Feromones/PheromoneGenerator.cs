@@ -1,6 +1,4 @@
 using UnityEngine;
-using RPG.Harvest;
-using RPG.Combat;
 using System.Collections;
 using RPG.Core;
 using System;
@@ -14,12 +12,12 @@ namespace RPG.Pheromones
         float timeBetweenWaypoints = 0.5f;
         [SerializeField] bool generating;
         PheromoneType generatingType;
-
-        Harvester harvester;
-        Fighter fighter;
         PheromoneWaypoint lastGenerated = null;
         float pheromoneDuration;
         const float combatCooldown = 15f;
+
+        [SerializeField] Gradient gradientHarvest, gradientCombat;
+        [SerializeField] Material trailMaterial;
 
         private void Start()
         {
@@ -29,7 +27,7 @@ namespace RPG.Pheromones
         private void Update()
         {
             pheromoneDuration -= Time.deltaTime;
-            if ( pheromoneDuration < 0)
+            if (pheromoneDuration < 0)
             {
                 generating = false;
             }
@@ -48,6 +46,11 @@ namespace RPG.Pheromones
                         newWaypoint.distanceFromSource = lastGenerated.distanceFromSource + 1;
                         lastGenerated.nextWaypoint = newWaypoint;
                     }
+                    else //first waypoint of trail
+                    {
+                        AttachTrailGenerator();
+                    }
+
                     newWaypoint.previousWaypoint = lastGenerated;
                     lastGenerated = newWaypoint;
 
@@ -59,7 +62,11 @@ namespace RPG.Pheromones
 
         private PheromoneWaypoint CreatePheromoneWaypoint()
         {
-            GameObject waypointObject = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+
+            string name = (generatingType == PheromoneType.Combat ? "Combat" : "Harvest") + " Waypoint";
+            name += " " + (lastGenerated == null ? 0 : lastGenerated.distanceFromSource + 1);
+
+            GameObject waypointObject = new GameObject(name);//GameObject.CreatePrimitive(PrimitiveType.Sphere);
             waypointObject.transform.position = transform.position;
 
             (waypointObject.AddComponent<SphereCollider>()).isTrigger = true;
@@ -73,8 +80,6 @@ namespace RPG.Pheromones
 
         public void StartGeneration(PheromoneType type, float duration = -1)
         {
-            generating = true;
-
             if (duration != -1)
             {
                 pheromoneDuration = duration;
@@ -84,16 +89,59 @@ namespace RPG.Pheromones
                 pheromoneDuration = float.MaxValue;
             }
 
-            if (type == generatingType) return;
-            lastGenerated = null;
-            generatingType = type;
+            if (type != generatingType)
+            {
+                StopGeneration(); //Resets trail
+                generatingType = type;
+            }
 
+            generating = true;
         }
 
         public void StopGeneration()
         {
+            DetachTrailGenerator();
             generating = false;
             lastGenerated = null;
         }
+
+
+        private void AttachTrailGenerator()
+        {
+            GameObject trailGenerator = new GameObject("Trail Generator");
+
+            TrailRenderer trailRenderer = trailGenerator.AddComponent<TrailRenderer>();
+            trailRenderer.time = float.MaxValue;
+            trailRenderer.colorGradient = (generatingType == PheromoneType.Combat) ? gradientCombat : gradientHarvest;
+            trailRenderer.material = trailMaterial;
+
+            trailGenerator.transform.position = this.transform.position;
+            trailGenerator.transform.parent = this.transform;
+
+            // FollowTransform follow = trailGenerator.AddComponent<FollowTransform>();
+            // follow.target = this.transform;
+        }
+
+        void DetachTrailGenerator()//puts the trail follower in the last waypoint generator so they are destroyed together
+        {
+            TrailRenderer trailGenerator = GetComponentInChildren<TrailRenderer>();
+
+            if (trailGenerator != null)
+            {
+                trailGenerator.emitting = false;
+                if (lastGenerated != null)
+                {
+                    trailGenerator.transform.parent = lastGenerated.transform;
+                }
+                else
+                {
+                    trailGenerator.time = 10;
+                    Destroy(trailGenerator.gameObject, 10);
+                }
+            }
+        }
+
+
+
     }
 }

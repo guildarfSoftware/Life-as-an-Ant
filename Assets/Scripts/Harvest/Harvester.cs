@@ -119,7 +119,7 @@ namespace RPG.Harvest
 
             Storage storage = target.GetComponent<Storage>();
             if (storage == null) return false;
-            return carryAmount != 0;
+            return true;
         }
 
         public void Harvest(GameObject target)

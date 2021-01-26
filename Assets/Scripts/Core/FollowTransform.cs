@@ -5,7 +5,7 @@ namespace RPG.Core
     public class FollowTransform : MonoBehaviour
     {
         [SerializeField]
-        Transform target;
+        public Transform target;
         // Start is called before the first frame update
         void Start()
         {

@@ -12,7 +12,8 @@ namespace RPG.Pheromones
     //@TODO Change first node to reference the source, leads somewhere will be false id the reference disapears
     public class PheromoneWaypoint : MonoBehaviour
     {
-        private float killTime;
+        public float killTime { get; private set;}
+        float elapsedTime;
         private const float timeToDestroy = 240;
         public int distanceFromSource = 0;
         bool leadsSomewhere = true; //indicates if the route ends somewhere with food or enemies true by default
@@ -27,20 +28,21 @@ namespace RPG.Pheromones
         private void Update()
         {
             killTime -= Time.deltaTime;
+            elapsedTime += Time.deltaTime;
             if (killTime <= 0) Destroy(gameObject);
         }
 
         public void SetPheromoneType(PheromoneType type)
         {
             pheromoneType = type;
-            if (pheromoneType == PheromoneType.Harvest)
-            {
-                gameObject.GetComponent<MeshRenderer>().material.color = Color.yellow;
-            }
-            else
-            {
-                gameObject.GetComponent<MeshRenderer>().material.color = Color.red;
-            }
+            // if (pheromoneType == PheromoneType.Harvest)
+            // {
+            //     gameObject.GetComponent<MeshRenderer>().material.color = Color.yellow;
+            // }
+            // else
+            // {
+            //     gameObject.GetComponent<MeshRenderer>().material.color = Color.red;
+            // }
         }
 
         public void UpdateKillTime()
@@ -73,11 +75,15 @@ namespace RPG.Pheromones
         private void MarkAsInvalid()
         {
             leadsSomewhere = false;
-            killTime = 5 + distanceFromSource;
+            killTime = distanceFromSource;
+
+            TrailRenderer trailR = GetComponentInChildren<TrailRenderer>();
+            if(trailR!=null) trailR.time = elapsedTime + killTime;
+
             if (nextWaypoint != null) nextWaypoint.MarkAsInvalid();
         }
 
-        PheromoneWaypoint GetSourceWaypoint()
+        public PheromoneWaypoint GetSourceWaypoint()
         {
             if (previousWaypoint == null) return this;
             return previousWaypoint.GetSourceWaypoint();
