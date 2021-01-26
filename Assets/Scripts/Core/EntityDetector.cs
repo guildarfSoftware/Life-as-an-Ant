@@ -29,8 +29,6 @@ namespace RPG.Core
 
         private void OnTriggerEnter(Collider other)
         {
-            print(other.gameObject.name);
-
             closeEntities.Add(other.gameObject);
         }
 

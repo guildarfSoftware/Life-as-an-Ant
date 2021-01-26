@@ -77,7 +77,6 @@ namespace RPG.Combat
         {
             GetComponent<ActionScheduler>().StartAction(this);
             this.target = target.GetComponent<Health>();
-            print("Attack!");
         }
 
         public void Cancel()
@@ -92,7 +91,6 @@ namespace RPG.Combat
         {
             if (target == null) return;
             target.TakeDamage(weaponDamage);
-            print("Hit for "+weaponDamage +"damage");
             EnterCombat?.Invoke();
         }
 
