@@ -165,7 +165,7 @@ AnimatorController:
     m_Type: 9
     m_DefaultFloat: 0
     m_DefaultInt: 0
-    m_DefaultBool: 0
+    m_DefaultBool: 1
     m_Controller: {fileID: 0}
   - m_Name: stopAttack
     m_Type: 9
@@ -237,8 +237,7 @@ AnimatorState:
   m_MirrorParameterActive: 0
   m_CycleOffsetParameterActive: 0
   m_TimeParameterActive: 0
-  m_Motion: {fileID: 5888237121271392579, guid: 8ba9a735300daf5479c0b59b76bf0b00,
-    type: 3}
+  m_Motion: {fileID: 7400000, guid: 628194f663d1a3547acbc477dd7f7cf7, type: 2}
   m_Tag: 
   m_SpeedParameter: 
   m_MirrorParameter: 
