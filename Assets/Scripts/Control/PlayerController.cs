@@ -114,15 +114,16 @@ namespace RPG.Control
 
         private bool EvaluateMovement()
         {
-            RaycastHit hit;
-            bool hasHit = Physics.Raycast(GetMouseRay(), out hit);
-
-            if (hasHit)
+            RaycastHit[] hits = Physics.RaycastAll(GetMouseRay());
+            foreach (RaycastHit hit in hits)
             {
+                GameObject target = hit.transform.gameObject;
+                if (target == null || target.name != "Terrain") continue;
+
                 if (Input.GetMouseButton(0))
                 {
                     mover.StartMovement(hit.point);
-                    leader.FollowMeCommand();
+                    //leader.FollowMeCommand();
                 }
                 return true;
             }
