@@ -29,8 +29,10 @@ namespace RPG.Movement
             {
                 Cancel();
             }
-
-            WanderBehaviour();
+            else
+            {
+                WanderBehaviour();
+            }
 
         }
 
