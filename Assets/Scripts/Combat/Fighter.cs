@@ -47,7 +47,6 @@ namespace RPG.Combat
 
                 GetComponent<Animator>().ResetTrigger("stopAttack");
                 GetComponent<Animator>().SetTrigger("attack");
-                Hit();// @ToDo: integrate Hit event in animation
                 timeSinceLastAttack = 0;
             }
         }

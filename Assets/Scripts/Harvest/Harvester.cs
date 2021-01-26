@@ -62,7 +62,6 @@ namespace RPG.Harvest
 
             GetComponent<Animator>().ResetTrigger("stopAttack");
             GetComponent<Animator>().SetTrigger("attack");
-            Hit();// @ToDo: integrate Hit event in animation
         }
 
         private void HarvestBehaviour()
@@ -78,7 +77,6 @@ namespace RPG.Harvest
 
             GetComponent<Animator>().ResetTrigger("stopAttack");
             GetComponent<Animator>().SetTrigger("attack");
-            Hit();// @ToDo: integrate Hit event in animation
         }
 
         private void LookAt(Transform target)//Looks at transform only rotating in Y axys
