@@ -5,6 +5,7 @@ using System;
 using RPG.Core;
 using RPG.Harvest;
 using RPG.Pheromones;
+using UnityEngine.EventSystems;
 
 namespace RPG.Control
 {
@@ -48,6 +49,8 @@ namespace RPG.Control
 
         private bool EvaluateCombat()
         {
+            if(OverUIElement()) return false;
+
             RaycastHit[] hits = Physics.RaycastAll(GetMouseRay());
 
             foreach (RaycastHit hit in hits)
@@ -70,6 +73,8 @@ namespace RPG.Control
 
         private bool EvaluateStorage()
         {
+            if (OverUIElement()) return false;
+
             RaycastHit[] hits = Physics.RaycastAll(GetMouseRay());
 
             foreach (RaycastHit hit in hits)
@@ -92,6 +97,8 @@ namespace RPG.Control
 
         private bool EvaluateHarvest()
         {
+            if (OverUIElement()) return false;
+
             RaycastHit[] hits = Physics.RaycastAll(GetMouseRay());
 
             foreach (RaycastHit hit in hits)
@@ -114,7 +121,10 @@ namespace RPG.Control
 
         private bool EvaluateMovement()
         {
+            if (OverUIElement()) return false;
+
             RaycastHit[] hits = Physics.RaycastAll(GetMouseRay());
+
             foreach (RaycastHit hit in hits)
             {
                 GameObject target = hit.transform.gameObject;
@@ -166,6 +176,11 @@ namespace RPG.Control
         private static Ray GetMouseRay()
         {
             return Camera.main.ScreenPointToRay(Input.mousePosition);
+        }
+
+        private bool OverUIElement()
+        {
+            return EventSystem.current.IsPointerOverGameObject();
         }
     }
 }
