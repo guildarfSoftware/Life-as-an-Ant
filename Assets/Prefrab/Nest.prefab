@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 5902296734095268345}
   - component: {fileID: 5902296734095268346}
   - component: {fileID: 5902296734095268347}
+  - component: {fileID: 7659749828079536000}
   m_Layer: 0
   m_Name: Nest
   m_TagString: Nest
@@ -107,4 +108,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxCapacity: 200
-  storedAmount: 0
+--- !u!114 &7659749828079536000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5902296734095268340}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c2c781e672d3184e8f61220e9315ca6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  workerPrefab: {fileID: 2968504244971946530, guid: 8f273831d711bb04a97f54777b569626,
+    type: 3}
