@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 namespace RPG.Harvest
@@ -8,6 +9,7 @@ namespace RPG.Harvest
 
         public int MaxCapacity { get => maxCapacity; }
         public int storedAmount { get; private set; }
+        public Action onStoreChange;
 
         public bool IsFull { get => storedAmount >= maxCapacity; }
 
@@ -15,7 +17,14 @@ namespace RPG.Harvest
         {
             storedAmount += amount;
             storedAmount = Mathf.Min(storedAmount, maxCapacity);
+            onStoreChange?.Invoke();
         }
 
+        internal void Consume(int amount)
+        {
+            storedAmount-=amount;
+            storedAmount = Mathf.Max(storedAmount,0);
+            onStoreChange?.Invoke();
+        }
     }
 }
