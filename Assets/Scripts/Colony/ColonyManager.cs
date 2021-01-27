@@ -24,23 +24,21 @@ namespace RPG.Colony
             }
         }
 
-        // Update is called once per frame
-        void Update()
-        {
-
-        }
-
-        public bool CreateWorker()
+        public bool BuyWorker()
         {
             if (storage.storedAmount < 30) return false;
-
+            CreateWorker();
             storage.Consume(30);
+
+            return true;
+        }
+
+        private void CreateWorker()
+        {
             GameObject newAnt = GameObject.Instantiate(workerPrefab);
             newAnt.transform.position = transform.position;
             newAnt.transform.parent = transform;
             ants.Add(newAnt);
-
-            return true;
         }
     }
 }

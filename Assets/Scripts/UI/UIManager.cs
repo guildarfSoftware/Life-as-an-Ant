@@ -56,7 +56,7 @@ namespace RPG.UI
         // called in button onClick from editor
         public void TryBuyWorker()
         {
-            if(!colony.CreateWorker())
+            if(!colony.BuyWorker())
             {
                 print("Not enought food");
             }
