@@ -15,18 +15,21 @@ namespace RPG.Core
             get => isDead;
         }
 
-        [SerializeField] float maxHealth = 100f, health;
+        [SerializeField] float maxHealth = 100f;
+
+        public float currentHealth { private set; get; }
+        public float MaxHealth { get => maxHealth; }
 
         private void Start()
         {
-            health = maxHealth;
+            currentHealth = maxHealth;
         }
 
         public void TakeDamage(float amount)
         {
-            health = Mathf.Clamp(health - amount, 0, maxHealth);
+            currentHealth = Mathf.Clamp(currentHealth - amount, 0, maxHealth);
             OnDamaged?.Invoke();
-            if (health == 0)
+            if (currentHealth == 0)
             {
                 Die();
             }
@@ -37,7 +40,7 @@ namespace RPG.Core
             if (isDead) return;
 
             isDead = true;
-            
+
             OnDeath?.Invoke();
 
             GetComponent<Animator>().SetTrigger("die");
