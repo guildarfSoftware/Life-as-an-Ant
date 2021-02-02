@@ -1,13 +1,15 @@
 using UnityEngine;
 using RPG.Core;
 using System;
+using UnityEngine.AI;
+using RPG.Map;
 
 namespace RPG.Movement
 {
     public class Explorer : MonoBehaviour, IAction
     {
 
-        float epsilon = 0.1f;
+        float range = 1f;
         public bool TimeOut { get => wanderTimer <= 0; }
         float wanderTimer = 0;
         float coolDownTimer = 0;
@@ -20,6 +22,7 @@ namespace RPG.Movement
         public bool onCooldown { get => coolDownTimer > 0; }
 
         Vector3 targetPosition;
+        public bool wandering { private set; get; }
 
         private void Update()
         {
@@ -27,6 +30,7 @@ namespace RPG.Movement
             coolDownTimer -= Time.deltaTime;
             if (TimeOut)
             {
+                wandering = false;
                 Cancel();
             }
             else
@@ -40,10 +44,21 @@ namespace RPG.Movement
         {
             if (targetPosition != default(Vector3))
             {
-                if (Vector3.Distance(transform.position, targetPosition) < epsilon)
+                if (Vector3.Distance(transform.position, targetPosition) < range)
                 {
-                    targetPosition = GetRandomPosition(transform.position);
-                    GetComponent<Mover>().MoveTo(targetPosition);
+                    int attemps = 0;
+                    do
+                    {
+                        targetPosition = GetRandomPosition(transform.position);
+                        attemps++;
+                    } while (!MapTools.SampleTerrainPosition(targetPosition,targetPosition) && attemps < 10);
+
+                    if (attemps >= 10)
+                    {
+                        targetPosition = transform.position;
+                        transform.Rotate(new Vector3(0, 90, 0));
+                    }
+
                 }
                 else
                 {
@@ -55,8 +70,10 @@ namespace RPG.Movement
         public void Wander(float wanderTime = -1)
         {
             if (onCooldown) return;
+            GetComponent<ActionScheduler>().StartAction(this);
             targetPosition = GetRandomPosition(transform.position);
-            this.wanderTimer = wanderTime==-1? ExploreTime : wanderTime;
+            wandering = true;
+            this.wanderTimer = wanderTime == -1 ? ExploreTime : wanderTime;
             coolDownTimer = RestTime + wanderTime;
         }
 
@@ -68,13 +85,20 @@ namespace RPG.Movement
             localPos = Quaternion.Euler(0, rotation, 0) * localPos;
 
             Vector3 worldPos = transform.rotation * localPos + transform.position;
-
+            worldPos.y = MapTools.getTerrainHeight(worldPos);
             return worldPos;
         }
 
         public void Cancel()
         {
             targetPosition = default(Vector3);
+            wandering = false;
+        }
+
+        private void OnDrawGizmos()
+        {
+            Gizmos.color = Color.white;
+            Gizmos.DrawSphere(targetPosition,1f);
         }
 
     }

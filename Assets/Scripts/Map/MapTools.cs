@@ -1,6 +1,8 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AI;
+
 namespace RPG.Map
 {
 
@@ -25,8 +27,19 @@ namespace RPG.Map
 
         public static float getTerrainHeight(Vector3 position)
         {
-            // position += new Vector3(250,0,250); //added terrain offset
             return instance.terrain.SampleHeight(position) + instance.terrain.GetPosition().y;
+        }
+
+        public static bool SampleTerrainPosition(Vector3 originPosition, Vector3 samplesPosition)
+        {
+            NavMeshHit hit;
+            if(NavMesh.SamplePosition(originPosition,out hit,0.5f,NavMesh.AllAreas))
+            {
+                samplesPosition = hit.position;
+                return true;
+            }
+            samplesPosition = Vector3.zero;
+            return false;
         }
     }
 }

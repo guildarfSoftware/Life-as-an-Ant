@@ -66,7 +66,7 @@ namespace RPG.Control
         {
             if (!generatingPheromones) return false;
             GetComponent<Mover>().StartMovement(nest.transform.position);
-            if (GetDistance(nest)<stopPheromoneDistance)
+            if (GetDistance(nest) < stopPheromoneDistance)
             {
                 StopPheromones();
                 return false;
@@ -115,7 +115,7 @@ namespace RPG.Control
             GameObject target = GetClosestEntityWithTag("Food");
             if (target != null && harvester.CanHarvest(target))
             {
-                GetComponent<Harvester>().Harvest(target);
+                harvester.Harvest(target);
                 return true;
             }
 
@@ -161,7 +161,7 @@ namespace RPG.Control
 
         bool EvaluateExplore()
         {
-            if (!explorer.onCooldown) explorer.Wander(); //explore for a while around position if not on cooldown
+            if (!explorer.onCooldown && !explorer.wandering) explorer.Wander(); //start exploration behaviour
 
             if (!explorer.TimeOut)  //is exploring
             {

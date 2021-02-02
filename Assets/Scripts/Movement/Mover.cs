@@ -53,10 +53,10 @@ namespace RPG.Movement
             MoveTo(destination);
         }
 
-        public void MoveTo(Vector3 destination)
+        public bool MoveTo(Vector3 destination)
         {
-            navMeshAgent.destination = destination;
             navMeshAgent.isStopped = false;
+            return navMeshAgent.SetDestination(destination);
         }
 
         public void Cancel()
