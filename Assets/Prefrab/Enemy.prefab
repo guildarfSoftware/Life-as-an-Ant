@@ -9,7 +9,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 828475363384840092}
-  - component: {fileID: 439799245}
   - component: {fileID: 828475363384840093}
   - component: {fileID: 828475363384840095}
   - component: {fileID: 828475363384840094}
@@ -19,6 +18,7 @@ GameObject:
   - component: {fileID: 6712836311888383119}
   - component: {fileID: 8267910169923644329}
   - component: {fileID: 1106264261455282929}
+  - component: {fileID: 6755541054022420201}
   m_Layer: 0
   m_Name: Enemy
   m_TagString: Enemy
@@ -33,27 +33,14 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 828475363384840086}
-  m_LocalRotation: {x: 0, y: 0, z: 0.7071068, w: 0.7071068}
-  m_LocalPosition: {x: -137.2, y: 0.5, z: -144}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 5658515208504042021}
   m_Father: {fileID: 0}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 90}
---- !u!135 &439799245
-SphereCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 828475363384840086}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Radius: 0.5905132
-  m_Center: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!195 &828475363384840093
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -134,7 +121,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   isDead: 0
   maxHealth: 100
-  health: 0
 --- !u!114 &828475363384840087
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -190,6 +176,19 @@ MonoBehaviour:
   weaponRange: 2
   timeBetweenAtacks: 3
   weaponDamage: 5
+--- !u!65 &6755541054022420201
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 828475363384840086}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 2.6767273, y: 0.73466206, z: 2.0105438}
+  m_Center: {x: -0.002822876, y: 0.36733103, z: -0.22864532}
 --- !u!1001 &5264053649242981838
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -205,7 +204,7 @@ PrefabInstance:
     - target: {fileID: -8679921383154817045, guid: 8ba9a735300daf5479c0b59b76bf0b00,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 8ba9a735300daf5479c0b59b76bf0b00,
         type: 3}
