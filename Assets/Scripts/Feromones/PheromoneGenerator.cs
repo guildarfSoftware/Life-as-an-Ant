@@ -80,6 +80,7 @@ namespace RPG.Pheromones
 
         public void StartGeneration(PheromoneType type, float duration = -1)
         {
+            if (type == PheromoneType.None) return;
             if (duration != -1)
             {
                 pheromoneDuration = duration;

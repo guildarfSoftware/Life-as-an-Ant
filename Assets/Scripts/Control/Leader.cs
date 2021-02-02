@@ -12,9 +12,6 @@ namespace RPG.Control
         public int maxFollowers = 2;
         List<Follower> followers;
 
-        Follower notifier;    //will be in charge of sending pheromone signals to the nest
-
-
         private void Start()
         {
             followers = new List<Follower>();
@@ -67,7 +64,6 @@ namespace RPG.Control
             }
 
             followers.Add(follower);
-            if (notifier == null) notifier = follower;
         }
 
         public void RemoveFollower(GameObject followerObject)
@@ -78,13 +74,12 @@ namespace RPG.Control
 
             if (follower == null) return;
 
+            Destroy(follower);
+            followerObject.AddComponent<WorkerController>();// return ant to a worker intelligence
+
             if (followers.Contains(follower))
             {
                 followers.Remove(follower);
-                if (follower == notifier)
-                {
-                    notifier = GetFirstFollower();  //replaces the notifier or sets it null if no other follower available
-                }
             }
         }
 
@@ -102,33 +97,19 @@ namespace RPG.Control
             return followers[0];
         }
 
-        public void CommandHarvest(GameObject gameObject)
+        public void CommandHarvest(GameObject target)
         {
             foreach (Follower follower in followers)
             {
-                if (follower == notifier)
-                {
-                    follower.NotifyNest(PheromoneType.Harvest);
-                }
-                else
-                {
-                    follower.Harvest(gameObject);
-                }
+                follower.Harvest(target);
             }
         }
 
-        public void CommandAttack(GameObject gameObject)
+        public void CommandAttack(GameObject target)
         {
             foreach (Follower follower in followers)
             {
-                if (follower == notifier)
-                {
-                    follower.NotifyNest(PheromoneType.Combat);
-                }
-                else
-                {
-                    follower.Attack(gameObject);
-                }
+                follower.Attack(target);
             }
         }
 
@@ -136,10 +117,15 @@ namespace RPG.Control
         {
             foreach (Follower follower in followers)
             {
-                if (follower != notifier)   //notify to nest cannot be overwritten
-                {
-                    follower.FollowTheLeader();
-                }
+                follower.FollowTheLeader();
+            }
+        }
+
+        public void CommandNotify(PheromoneType pType, GameObject target)
+        {
+            foreach (Follower follower in followers)
+            {
+                if (follower.Notify(pType, target)) return;
             }
         }
     }

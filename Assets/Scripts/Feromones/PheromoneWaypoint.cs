@@ -6,6 +6,7 @@ namespace RPG.Pheromones
 {
     public enum PheromoneType
     {
+        None,
         Harvest,
         Combat,
     }
