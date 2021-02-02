@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using RPG.Harvest;
 using System;
+using RPG.Map;
 
 namespace RPG.Colony
 {
@@ -10,10 +11,10 @@ namespace RPG.Colony
     public class ColonyManager : MonoBehaviour
     {
         public Storage storage { get; private set; }
-        List<GameObject> ants =  new List<GameObject>();
+        List<GameObject> ants = new List<GameObject>();
 
         [SerializeField] GameObject workerPrefab;
-        [SerializeField] int startingAnts=0;
+        [SerializeField] int startingAnts = 0;
         // Start is called before the first frame update
         void Start()
         {
@@ -36,7 +37,9 @@ namespace RPG.Colony
         private void CreateWorker()
         {
             GameObject newAnt = GameObject.Instantiate(workerPrefab);
-            newAnt.transform.position = transform.position;
+            Vector3 spawnPos = transform.position;
+            spawnPos.y = MapTools.getTerrainHeight(spawnPos);
+            newAnt.transform.position = spawnPos;
             newAnt.transform.parent = transform;
             ants.Add(newAnt);
         }

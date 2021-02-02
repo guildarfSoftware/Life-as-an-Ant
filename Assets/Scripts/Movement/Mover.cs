@@ -20,6 +20,7 @@ namespace RPG.Movement
         {
             animator = GetComponent<Animator>();
             navMeshAgent = GetComponent<NavMeshAgent>();
+            navMeshAgent.Warp(transform.position);    
         }
 
         // Update is called once per frame
