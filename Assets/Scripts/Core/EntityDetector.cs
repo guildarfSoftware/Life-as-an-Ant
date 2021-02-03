@@ -16,6 +16,7 @@ namespace RPG.Core
         private void Start()
         {
             SphereCollider spCollider = GetComponent<SphereCollider>();
+            spCollider.isTrigger = true;
             spCollider.radius = scanRange;
         }
 

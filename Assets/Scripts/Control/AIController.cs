@@ -12,37 +12,44 @@ namespace RPG.Control
         [SerializeField] float suspicionTime = 6f;
         [SerializeField] PatrolPath patrolPath;
         [SerializeField] float waypointTolerance = 0.5f;
-        GameObject player;
+        GameObject target;
         Fighter fighter;
         Health health;
         Mover mover;
-
+        [SerializeField] EntityDetector detector;
         Vector3 guardPosition;
         Vector3 lastKnownPosition;
-        float timeSinceLastSawPlayer = Mathf.Infinity;
+        float timeSinceLastSawTarget = Mathf.Infinity;
         int currentWaypointIndex = 0;
 
         private void Start()
         {
             fighter = GetComponent<Fighter>();
-            player = GameObject.FindWithTag("Player");
+            target = GetValidTarget();
             health = GetComponent<Health>();
             mover = GetComponent<Mover>();
             guardPosition = transform.position;
         }
         private void Update()
         {
+
             if (health.IsDead) return;
 
-            timeSinceLastSawPlayer += Time.deltaTime;
+            if (target == null || !fighter.CanAttack(target))
+            {
+                target = GetValidTarget();
+                return;
+            }
 
-            if (InChaseDistance() && fighter.CanAttack(player))
+            timeSinceLastSawTarget += Time.deltaTime;
+
+            if (InChaseDistance() && fighter.CanAttack(target))
             {
                 EvaluateAttack();
-                timeSinceLastSawPlayer = 0;
-                lastKnownPosition = player.transform.position;
+                timeSinceLastSawTarget = 0;
+                lastKnownPosition = target.transform.position;
             }
-            else if (timeSinceLastSawPlayer < suspicionTime)
+            else if (timeSinceLastSawTarget < suspicionTime)
             {
                 EvaluateSuspicion();
             }
@@ -52,9 +59,24 @@ namespace RPG.Control
             }
         }
 
+        private GameObject GetValidTarget()
+        {
+            if (detector == null) return null;
+
+            GameObject target = detector.GetEntityWithTag("Player");
+
+            if (target != null && fighter.CanAttack(target)) return target;
+
+            target = detector.GetEntityWithTag("Worker");
+
+            if (target != null && fighter.CanAttack(target)) return target;
+
+            return null;
+        }
+
         private void EvaluateAttack()
         {
-            fighter.Attack(player);
+            fighter.Attack(target);
         }
 
         private void EvaluateSuspicion()
@@ -96,13 +118,9 @@ namespace RPG.Control
 
         }
 
-        private void EvaluateCombat()
-        {
-        }
-
         float GetDistanceToPlayer()
         {
-            return Vector3.Distance(transform.position, player.transform.position);
+            return Vector3.Distance(transform.position, target.transform.position);
         }
 
         bool InChaseDistance()
