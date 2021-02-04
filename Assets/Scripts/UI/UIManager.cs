@@ -4,6 +4,7 @@ using UnityEngine;
 using RPG.Core;
 using RPG.Colony;
 using System;
+using UnityEngine.UI;
 
 namespace RPG.UI
 {
@@ -14,6 +15,10 @@ namespace RPG.UI
         Health playerHealth;
         [SerializeField] GameObject upgradesMenu;
         ColonyManager colony;
+
+
+        float timer;
+        [SerializeField] Text storageText, foodConsumption;
 
         // Start is called before the first frame update
         void Start()
@@ -34,6 +39,16 @@ namespace RPG.UI
             }
         }
 
+        private void Update()
+        {
+            timer += Time.deltaTime;
+            if (timer > 1)
+            {
+                UpdateFoodConsumptionText();
+                timer = 0;
+            }
+        }
+
         void UpdateHealthBar()
         {
             if (playerHealth == null) return;
@@ -44,7 +59,15 @@ namespace RPG.UI
         void UpdateStorageText()
         {
             if (colony == null) return;
-            UIStorageText.instance.SetValue((int)colony.storage.storedAmount);
+            string currentStored = ((int)colony.storage.storedAmount).ToString();
+            string maxCapacity = colony.storage.MaxCapacity.ToString();
+            storageText.text = currentStored + "/" + maxCapacity;
+        }
+        void UpdateFoodConsumptionText()
+        {
+            if (colony == null) return;
+            string twoDecimalsText = colony.foodRequirement.ToString("0.0");
+            foodConsumption.text = "- " + twoDecimalsText + "/s";
         }
 
         private void OnDisable()

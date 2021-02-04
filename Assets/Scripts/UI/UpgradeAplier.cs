@@ -25,11 +25,17 @@ namespace RPG.UI
         public void OnClick()
         {
             if (!CheckCost()) return;
-            if(upgrade.upgradeTime > 0)
+            
+            bool repetableClick = upgrade.bonusElement != BonusElement.Worker && upgrade.bonusElement != BonusElement.Princess;
+
+            if(!repetableClick) GetComponent<Button>().interactable = false;
+            
+            
+            if (upgrade.upgradeTime > 0)
             {
                 Invoke("ApplyBonus", upgrade.upgradeTime);
             }
-            else 
+            else
             {
                 ApplyBonus();
             }

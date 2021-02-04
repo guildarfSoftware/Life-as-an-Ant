@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   upgradetext: CarryCapacity I
   bonus: 2
-  bonusElement: 0
+  bonusElement: 6
   upgradeTime: 0
   foodCost: 300
   workerCost: 0

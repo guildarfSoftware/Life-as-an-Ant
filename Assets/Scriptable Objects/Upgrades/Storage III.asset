@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   upgradetext: Storage III
   bonus: 1000
-  bonusElement: 0
+  bonusElement: 1
   upgradeTime: 360
   foodCost: 500
   workerCost: 60
