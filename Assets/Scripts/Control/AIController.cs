@@ -81,6 +81,7 @@ namespace RPG.Control
 
         private void EvaluateSuspicion()
         {
+            target = null;
             GetComponent<ActionScheduler>().CancelCurrentAction();
         }
 
