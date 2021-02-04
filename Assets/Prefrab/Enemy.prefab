@@ -121,7 +121,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isDead: 0
-  maxHealth: 100
 --- !u!114 &828475363384840087
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -146,7 +145,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6c2067fe018fa9245a69846b87be0b4c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  chaseDistance: 5
+  chaseDistance: 7
   suspicionTime: 6
   patrolPath: {fileID: 0}
   waypointTolerance: 0.5
@@ -177,7 +176,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   weaponRange: 2
   timeBetweenAtacks: 3
-  weaponDamage: 5
 --- !u!65 &6755541054022420201
 BoxCollider:
   m_ObjectHideFlags: 0
