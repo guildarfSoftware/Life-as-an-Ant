@@ -10,7 +10,7 @@ namespace RPG.Core
         [SerializeField] bool isDead;
 
         public Action OnDeath;
-        public Action OnDamaged;
+        public Action OnHealthChange;
         public bool IsDead
         {
             get => isDead;
@@ -29,7 +29,7 @@ namespace RPG.Core
         public void TakeDamage(float amount)
         {
             currentHealth = Mathf.Clamp(currentHealth - amount, 0, maxHealth);
-            OnDamaged?.Invoke();
+            OnHealthChange?.Invoke();
             if (currentHealth == 0)
             {
                 Die();
@@ -53,6 +53,7 @@ namespace RPG.Core
         {
             currentHealth += v;
             currentHealth = Mathf.Min(currentHealth,maxHealth);
+            OnHealthChange?.Invoke();
         }
     }
 }

@@ -28,7 +28,7 @@ namespace RPG.UI
             if (player != null)
             {
                 playerHealth = player.GetComponent<Health>();
-                if (playerHealth != null) playerHealth.OnDamaged += UpdateHealthBar;
+                if (playerHealth != null) playerHealth.OnHealthChange += UpdateHealthBar;
             }
 
             GameObject nest = GameObject.FindWithTag("Nest");
@@ -72,7 +72,7 @@ namespace RPG.UI
 
         private void OnDisable()
         {
-            if (playerHealth != null) playerHealth.OnDamaged -= UpdateHealthBar;
+            if (playerHealth != null) playerHealth.OnHealthChange -= UpdateHealthBar;
             if (colony != null) colony.storage.onStoreChange += UpdateStorageText;
         }
 

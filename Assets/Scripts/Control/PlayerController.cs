@@ -35,7 +35,6 @@ namespace RPG.Control
             harvester.fooodGrabbed += StartFoodPheromones;
             harvester.foodDeposit += StopPheromones;
             fighter.EnterCombat += StartCombatPheromones;
-            GetComponent<Health>().OnDamaged += StartCombatPheromones;
         }
         void Update()
         {
@@ -172,7 +171,6 @@ namespace RPG.Control
             harvester.fooodGrabbed -= StartFoodPheromones;
             harvester.foodDeposit -= StopPheromones;
             fighter.EnterCombat -= StartCombatPheromones;
-            GetComponent<Health>().OnDamaged -= StartCombatPheromones;
         }
 
         private static Ray GetMouseRay()

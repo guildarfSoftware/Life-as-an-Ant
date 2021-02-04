@@ -32,7 +32,6 @@ namespace RPG.Control
 
             harvester.fooodGrabbed += StartFoodPheromones;
             fighter.EnterCombat += StartCombatPheromones;
-            GetComponent<Health>().OnDamaged += StartCombatPheromones;
 
             nest = GameObject.FindGameObjectWithTag("Nest");
         }
@@ -238,7 +237,6 @@ namespace RPG.Control
         {
             harvester.fooodGrabbed -= StartFoodPheromones;
             fighter.EnterCombat -= StartCombatPheromones;
-            GetComponent<Health>().OnDamaged -= StartCombatPheromones;
         }
     }
 }
