@@ -48,5 +48,11 @@ namespace RPG.Core
             GetComponent<ActionScheduler>().CancelCurrentAction();
 
         }
+
+        internal void Heal(float v)
+        {
+            currentHealth += v;
+            currentHealth = Mathf.Min(currentHealth,maxHealth);
+        }
     }
 }

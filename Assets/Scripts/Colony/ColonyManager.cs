@@ -5,6 +5,7 @@ using RPG.Harvest;
 using System;
 using RPG.Map;
 using RPG.Control;
+using RPG.Core;
 
 namespace RPG.Colony
 {
@@ -14,15 +15,21 @@ namespace RPG.Colony
         static ColonyManager instance;
         public Storage storage { get; private set; }
 
+        public float foodRequirement { get => princesses.Count * AntStats.princessFoodConsumption + allAnts.Count * AntStats.workerFoodConsumption; }
+
         int maxPopulation = 15;
         List<GameObject> allAnts = new List<GameObject>();
         List<GameObject> availableAnts = new List<GameObject>();
         List<GameObject> buildingAnts = new List<GameObject>();
         List<GameObject> followerAnts = new List<GameObject>();
+        List<float> princesses = new List<float>(); //list of alive princesses float indicates their health
+
         GameObject playerAnt;
         Leader leader;
         [SerializeField] GameObject workerPrefab;
         [SerializeField] int startingAnts = 0;
+
+        float timer1Second;
 
         public void IncreaseMaxStorage(int storageBonus)
         {
@@ -36,8 +43,13 @@ namespace RPG.Colony
             instance = this;
 
             playerAnt = GameObject.FindGameObjectWithTag("Player");
-            if (playerAnt != null) leader = playerAnt.GetComponent<Leader>();
+            if (playerAnt != null)
+            {
+                leader = playerAnt.GetComponent<Leader>();
+                allAnts.Add(playerAnt);
+            } 
             storage = GetComponent<Storage>();
+            storage.StoreResource(20);
 
             for (int i = 0; i < startingAnts; i++)
             {
@@ -47,6 +59,14 @@ namespace RPG.Colony
 
         private void Update()
         {
+            timer1Second += Time.deltaTime;
+
+            if (timer1Second > 1)
+            {
+                FeedAnts();
+                timer1Second = 0;
+            }
+
             if (leader != null)
             {
                 if (leader.needsFollower && availableAnts.Count > 0)
@@ -58,6 +78,91 @@ namespace RPG.Colony
                 }
 
             }
+        }
+
+        void FeedAnts()
+        {
+            float foodConsumed = 0;
+            int lowPriorityPrincesses = (int)(princesses.Count * 0.3f); // 30% of princesses will eat last to ensure some workers survive famine
+            List<int> markedForRemoval = new List<int>();
+
+            if(storage.storedAmount == 0) 
+            {
+                playerAnt.GetComponent<Health>().TakeDamage(1);
+            }
+            else
+            {
+                foodConsumed += AntStats.workerFoodConsumption;
+                playerAnt.GetComponent<Health>().Heal(0.25f); //recover health lost
+            }
+
+            if (princesses.Count > 0)
+            {
+                for (int i = 0; i < princesses.Count - lowPriorityPrincesses; i++)
+                {
+                    if (foodConsumed < storage.storedAmount)
+                    {
+                        foodConsumed += AntStats.princessFoodConsumption;
+                        princesses[i] += 0.25f; //recover health lost after hunger
+                        princesses[i] = Mathf.Min(princesses[i], AntStats.Health);
+                    }
+                    else
+                    {
+                        princesses[i] -= 1; //1 damage per second if can't eat;
+                        if (princesses[i] <= 0)
+                        {
+                            markedForRemoval.Add(i);
+                        }
+                    }
+                }
+            }
+
+            for (int i = 1; i < allAnts.Count; i++) //start on 1 because player is on position 0 and already fed
+            {
+                Health antHealth = allAnts[i].GetComponent<Health>();
+
+                if (foodConsumed < storage.storedAmount)
+                {
+                    foodConsumed += AntStats.workerFoodConsumption;
+                    antHealth.Heal(0.25f); //recover health lost after hunger
+                }
+                else
+                {
+                    antHealth.TakeDamage(1);//1 damage per second if can't eat;
+                }
+            }
+
+
+            for (int i = lowPriorityPrincesses; i < princesses.Count; i++)  //low priority princesses eat last
+            {
+                if (foodConsumed < storage.storedAmount)
+                {
+                    foodConsumed += AntStats.princessFoodConsumption;
+                    princesses[i] += 0.25f; //recover health lost after hunger
+                    princesses[i] = Mathf.Min(princesses[i], AntStats.Health);
+                }
+                else
+                {
+                    princesses[i] -= 1; //1 damage per second if can't eat;
+                    if (princesses[i] <= 0)
+                    {
+                        markedForRemoval.Add(i);
+                    }
+                }
+            }
+            if (markedForRemoval.Count > 0)
+            {
+                MessageManager.Message(markedForRemoval.Count.ToString() + " princesses died due to starvation");
+
+                for (int i = markedForRemoval.Count; i >= 0; i--)
+                {
+                    int indexToRemove = markedForRemoval[i];
+                    princesses.RemoveAt(indexToRemove);
+                }
+            }
+
+            if (foodConsumed > storage.storedAmount) MessageManager.Message("SomeAnts are starving and may die. Gather some food Quick!!");
+            storage.Consume(foodConsumed);
         }
 
         void StartBuildingProcess(int workersNeeded, float releaseTime)   //@todo make this start only when enought ants are waiting on the nest;
@@ -140,12 +245,12 @@ namespace RPG.Colony
         {
             if (foodCost > instance.storage.storedAmount)
             {
-                print("not enought food");
+                MessageManager.Message("Not enought food");
                 return false;
             }
             if (workerCost > instance.availableAnts.Count + instance.followerAnts.Count)
             {
-                print("not enought workers");
+                MessageManager.Message("Not enought workers");
                 return false;
             }
             return true;
@@ -164,7 +269,7 @@ namespace RPG.Colony
 
         public static void IncreaseMaxFollowers(int bonus)
         {
-            instance.leader.maxFollowers+=bonus;
+            instance.leader.maxFollowers += bonus;
         }
 
         public static void AddWorker()

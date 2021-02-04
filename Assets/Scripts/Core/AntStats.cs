@@ -5,8 +5,8 @@ namespace RPG.Core
 {
     public static class AntStats
     {
-        public static float Damage=5, Speed=8, CarryCapacity=5, Health=20;
-
+        public static float Damage = 5, Speed = 8, CarryCapacity = 5, Health = 20;
+        public static float workerFoodConsumption = 0.05f, princessFoodConsumption = 0.2f;
         internal static void IncreaseMaxHealth(float bonus)
         {
             Health += bonus;
