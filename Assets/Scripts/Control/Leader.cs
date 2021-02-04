@@ -11,6 +11,7 @@ namespace RPG.Control
     {
         public int maxFollowers = 2;
         List<Follower> followers;
+        internal bool needsFollower{get => maxFollowers - followers.Count > 0;}
 
         private void Start()
         {

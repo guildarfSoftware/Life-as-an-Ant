@@ -5,11 +5,12 @@ using System;
 
 namespace RPG.Combat
 {
+
     public class Fighter : MonoBehaviour, IAction
     {
         [SerializeField] float weaponRange = 2.0f;
         [SerializeField] float timeBetweenAtacks = 12.0f;
-        [SerializeField] float weaponDamage=5;
+        [SerializeField] float damage { get => AntStats.Damage; }
         Health target;
         public Action EnterCombat;
         float timeSinceLastAttack = Mathf.Infinity;
@@ -35,7 +36,7 @@ namespace RPG.Combat
         private void AttackBehaviour()
         {
             LookAt(target.transform);
-            
+
 
             if (timeSinceLastAttack > timeBetweenAtacks)
             {
@@ -90,7 +91,7 @@ namespace RPG.Combat
         void Hit()
         {
             if (target == null) return;
-            target.TakeDamage(weaponDamage);
+            target.TakeDamage(damage);
             EnterCombat?.Invoke();
         }
 

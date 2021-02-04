@@ -5,7 +5,7 @@ namespace RPG.Harvest
 {    
     public class HarvestTarget : MonoBehaviour
     {
-        [SerializeField] int remainingResource = 100;
+        [SerializeField] float remainingResource = 100;
         public bool IsEmpty { get => remainingResource == 0; }
 
         private void Start()
@@ -14,9 +14,9 @@ namespace RPG.Harvest
         }
 
 
-        public int GrabResource(int triedAmount)
+        public float GrabResource(float triedAmount)
         {
-            int grabedAmount = 0;
+            float grabedAmount = 0;
             if (triedAmount > remainingResource)
             {
                 grabedAmount = remainingResource;

@@ -5,18 +5,19 @@ using System;
 
 namespace RPG.Harvest
 {
+
     public class Harvester : MonoBehaviour, IAction//@TODO: separate Harvester into 3 clases harvest, storage and transport(internal capacity)
     {
         [SerializeField] float harvestRange = 2.0f;
-        [SerializeField] int maxCapacity = 7;
-        int carryAmount;
+        [SerializeField] float maxCapacity { get => AntStats.CarryCapacity; }
+        float carryAmount;
         public bool IsFull { get => carryAmount >= maxCapacity; }
         public bool IsEmpty { get => carryAmount == 0; }
         GameObject target;
         [SerializeField] GameObject food;
 
         public Action fooodGrabbed;
-        public Action foodDeposit; 
+        public Action foodDeposit;
 
         private void Update()
         {
@@ -140,7 +141,7 @@ namespace RPG.Harvest
         {
             if (HarvestHit())
             {
-                Cancel(); 
+                Cancel();
                 return;
             }
             if (StorageHit())

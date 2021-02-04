@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+
 namespace RPG.Core
 {
     [RequireComponent(typeof(Animator))]
@@ -15,7 +16,7 @@ namespace RPG.Core
             get => isDead;
         }
 
-        [SerializeField] float maxHealth = 100f;
+        float maxHealth {get=> AntStats.Health;}
 
         public float currentHealth { private set; get; }
         public float MaxHealth { get => maxHealth; }

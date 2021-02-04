@@ -15,12 +15,14 @@ namespace RPG.Movement
         NavMeshAgent navMeshAgent;
         Animator animator;
 
+        float speed { get => AntStats.Speed; }
+
         // Start is called before the first frame update
         void Start()
         {
             animator = GetComponent<Animator>();
             navMeshAgent = GetComponent<NavMeshAgent>();
-            navMeshAgent.Warp(transform.position);    
+            navMeshAgent.Warp(transform.position);
         }
 
         // Update is called once per frame
@@ -31,7 +33,11 @@ namespace RPG.Movement
                 Cancel();
                 navMeshAgent.enabled = false;
             }
-            UpdateAnimator();
+            else
+            {
+                navMeshAgent.speed = speed;
+                UpdateAnimator();
+            }
         }
 
         private bool IsDead()
@@ -61,7 +67,7 @@ namespace RPG.Movement
 
         public void Cancel()
         {
-            if(!navMeshAgent.enabled) return;
+            if (!navMeshAgent.enabled) return;
             navMeshAgent.isStopped = true;
         }
     }
