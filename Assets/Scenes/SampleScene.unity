@@ -1949,7 +1949,6 @@ GameObject:
   - component: {fileID: 1163967632}
   - component: {fileID: 1163967635}
   - component: {fileID: 1163967634}
-  - component: {fileID: 1163967633}
   m_Layer: 5
   m_Name: StorageUI
   m_TagString: Untagged
@@ -1977,19 +1976,6 @@ RectTransform:
   m_AnchoredPosition: {x: 729.1, y: -431}
   m_SizeDelta: {x: 345.83356, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &1163967633
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1163967631}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 75e95ee12919efc4d9ba51176430040e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  text: {fileID: 0}
 --- !u!114 &1163967634
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2567,7 +2553,6 @@ GameObject:
   - component: {fileID: 1768736931}
   - component: {fileID: 1768736934}
   - component: {fileID: 1768736933}
-  - component: {fileID: 1768736932}
   m_Layer: 5
   m_Name: FoodConsumption
   m_TagString: Untagged
@@ -2595,19 +2580,6 @@ RectTransform:
   m_AnchoredPosition: {x: 828.78, y: -508.51}
   m_SizeDelta: {x: 146.47708, y: 55.047333}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &1768736932
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1768736930}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 75e95ee12919efc4d9ba51176430040e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  text: {fileID: 0}
 --- !u!114 &1768736933
 MonoBehaviour:
   m_ObjectHideFlags: 0
