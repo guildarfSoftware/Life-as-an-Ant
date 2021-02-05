@@ -1,14 +1,19 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using RPG.Map;
+using RPG.Core;
+using RPG.Harvest;
 
-namespace RPG.Map
+namespace RPG.Resources
 {
     public class ResourceGenerator : MonoBehaviour  //@todo acount for terrain height to avoid underground spawns
     {
         [SerializeField] GameObject foodPrefab, enemyPrefab;
         float spawnTimer;
         const float spawnTime = 60;
+
+        [SerializeField] EnemyStats[] enemyStats;
 
         Vector3 nestPosition;
 
@@ -64,9 +69,18 @@ namespace RPG.Map
 
         private void SpawnEnemy(int tier, Vector3 position)
         {
+            EnemyStats stats = enemyStats[tier];
+
             Vector3 spawnPosition = position + nestPosition;
             spawnPosition.y = MapTools.getTerrainHeight(spawnPosition);
-            GameObject.Instantiate(enemyPrefab, spawnPosition, Quaternion.identity);
+            GameObject newEnemy = GameObject.Instantiate(enemyPrefab, spawnPosition, Quaternion.identity);
+
+            SkinnedMeshRenderer renderer=newEnemy.GetComponentInChildren<SkinnedMeshRenderer>();
+            renderer.materials = stats.materials;
+            GameObject model = renderer.gameObject; 
+            model.transform.localScale *= stats.scale;
+            newEnemy.GetComponent<StatsManager>().values= stats;
+            newEnemy.GetComponent<HarvestTarget>().SetFoodAmount(stats.FoodAmount);
         }
 
         private Vector3 RandomPosition(int tier)
@@ -86,11 +100,6 @@ namespace RPG.Map
 
             return position;
 
-        }
-        private void OnDrawGizmos()
-        {
-            Gizmos.color = Color.black;
-            Gizmos.DrawSphere(gizmoPos, 0.5f);
         }
     }
 }
