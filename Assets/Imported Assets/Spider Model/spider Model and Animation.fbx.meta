@@ -15,7 +15,17 @@ ModelImporter:
   - first:
       74: -4197978993949967941
     second: Armature.spider.001|spider.walk
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: spider
+    second: {fileID: 2100000, guid: 22f7ec7edff8128429b157edc38ccc1e, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: spider.legs
+    second: {fileID: 2100000, guid: 55a4005c084130845975ce45b44e016e, type: 2}
   materials:
     materialImportMode: 1
     materialName: 0
