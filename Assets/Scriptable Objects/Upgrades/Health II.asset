@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Health II
   m_EditorClassIdentifier: 
   upgradetext: 
-  bonus: 30
+  bonus: 15
   bonusElement: 4
   upgradeTime: 0
   foodCost: 800
