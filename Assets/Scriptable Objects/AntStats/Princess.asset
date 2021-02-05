@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f35aa29be42b3bd4eb0cf07237a758ea, type: 3}
+  m_Name: Princess
+  m_EditorClassIdentifier: 
+  baseHealth: 50
+  healthBonus: 0
+  baseDamage: 0
+  damageBonus: 0
+  baseSpeed: 0
+  speedBonus: 0
+  baseCarryCapacity: 0
+  carryCapacityBonus: 0
+  foodConsumption: 0.2
