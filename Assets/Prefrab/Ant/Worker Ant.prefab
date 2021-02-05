@@ -134,6 +134,17 @@ PrefabInstance:
       propertyPath: weaponDamage
       value: 5
       objectReference: {fileID: 0}
+    - target: {fileID: 5672137341804900580, guid: 6d0eebdde1daece4e8079c4e61617975,
+        type: 3}
+      propertyPath: stats
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 5672137341804900580, guid: 6d0eebdde1daece4e8079c4e61617975,
+        type: 3}
+      propertyPath: values
+      value: 
+      objectReference: {fileID: 11400000, guid: 0fc20157e50914e48a77febbde289b15,
+        type: 2}
     m_RemovedComponents:
     - {fileID: 2058078041318833869, guid: 6d0eebdde1daece4e8079c4e61617975, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 6d0eebdde1daece4e8079c4e61617975, type: 3}

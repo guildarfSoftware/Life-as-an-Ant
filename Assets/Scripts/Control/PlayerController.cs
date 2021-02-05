@@ -81,14 +81,13 @@ namespace RPG.Control
             foreach (RaycastHit hit in hits)
             {
                 Storage target = hit.transform.GetComponent<Storage>();
+                
+                
                 if (target == null || !harvester.CanStore(target.gameObject)) continue;
 
                 if (Input.GetMouseButtonDown(0))
                 {
                     harvester.Store(target.gameObject);
-                    // }
-                    // else if (Input.GetMouseButtonDown(1))
-                    // {
                     leader.CommandStore(target.gameObject);
                 }
                 return true;    //outside the click check to allow hover detection;

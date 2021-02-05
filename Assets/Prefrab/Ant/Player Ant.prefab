@@ -1,17 +1,5 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!114 &7284084309098236407
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1311607418217786915}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6bb6c7a11b8228a4095eacee49ec6d6e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &2129246940
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -24,7 +12,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6310a4d5a4ae025489527bb6ba3b1588, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxFollowers: 2
+  maxFollowers: 0
+--- !u!114 &7284084309098236407
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1311607418217786915}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6bb6c7a11b8228a4095eacee49ec6d6e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &179415274433315480
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -97,6 +97,17 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5672137341804900580, guid: 6d0eebdde1daece4e8079c4e61617975,
+        type: 3}
+      propertyPath: stats
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 5672137341804900580, guid: 6d0eebdde1daece4e8079c4e61617975,
+        type: 3}
+      propertyPath: values
+      value: 
+      objectReference: {fileID: 11400000, guid: ce2c1e29973b06b49b68aa6133aa7023,
+        type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 6d0eebdde1daece4e8079c4e61617975, type: 3}
 --- !u!1 &1311607418217786915 stripped

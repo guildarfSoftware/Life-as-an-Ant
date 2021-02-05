@@ -19,6 +19,7 @@ GameObject:
   - component: {fileID: 8267910169923644329}
   - component: {fileID: 1106264261455282929}
   - component: {fileID: 6755541054022420201}
+  - component: {fileID: 6903847099028157001}
   m_Layer: 0
   m_Name: Enemy
   m_TagString: Enemy
@@ -188,6 +189,19 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 2.6767273, y: 0.73466206, z: 2.0105438}
   m_Center: {x: -0.002822876, y: 0.36733103, z: -0.22864532}
+--- !u!114 &6903847099028157001
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 828475363384840086}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0d5e2607a791f7447a7d0ccf0ac160b4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  stats: {fileID: 11400000, guid: 72d848250d0690d469ba5479edf46f00, type: 2}
 --- !u!1 &2498084557552310863
 GameObject:
   m_ObjectHideFlags: 0
@@ -328,6 +342,16 @@ PrefabInstance:
       propertyPath: m_Name
       value: uploads_files_2648598_spider
       objectReference: {fileID: 0}
+    - target: {fileID: 2284797311674274359, guid: 8ba9a735300daf5479c0b59b76bf0b00,
+        type: 3}
+      propertyPath: m_Materials.Array.data[1]
+      value: 
+      objectReference: {fileID: 2100000, guid: 394ab4eb4f9b62849b570e714bf9ce16, type: 2}
+    - target: {fileID: 2284797311674274359, guid: 8ba9a735300daf5479c0b59b76bf0b00,
+        type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 983e19bb4ef86434e8db3573698b19cd, type: 2}
     m_RemovedComponents:
     - {fileID: 5866666021909216657, guid: 8ba9a735300daf5479c0b59b76bf0b00, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 8ba9a735300daf5479c0b59b76bf0b00, type: 3}

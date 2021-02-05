@@ -265,6 +265,7 @@ GameObject:
   - component: {fileID: 2058078041318833866}
   - component: {fileID: 2058078041318833864}
   - component: {fileID: -3151749583465586211}
+  - component: {fileID: 5672137341804900580}
   m_Layer: 0
   m_Name: Ant
   m_TagString: Untagged
@@ -497,6 +498,19 @@ MonoBehaviour:
     m_NumColorKeys: 2
     m_NumAlphaKeys: 2
   trailMaterial: {fileID: 10306, guid: 0000000000000000f000000000000000, type: 0}
+--- !u!114 &5672137341804900580
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1175064306015005883}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0d5e2607a791f7447a7d0ccf0ac160b4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  stats: {fileID: 0}
 --- !u!1 &1193949239841813939
 GameObject:
   m_ObjectHideFlags: 0
