@@ -8,7 +8,8 @@ namespace RPG.Harvest
         [SerializeField] float maxCapacity = 200;
 
         public float MaxCapacity { get => maxCapacity; }
-        public float storedAmount { get; private set; }
+        [SerializeField] float storedAmount;
+        public float StoredAmount { get => storedAmount; }
         public Action onStoreChange;
 
         public bool IsFull { get => storedAmount >= maxCapacity; }
@@ -27,8 +28,8 @@ namespace RPG.Harvest
 
         internal void Consume(float amount)
         {
-            storedAmount-=amount;
-            storedAmount = Mathf.Max(storedAmount,0);
+            storedAmount -= amount;
+            storedAmount = Mathf.Max(storedAmount, 0);
             onStoreChange?.Invoke();
         }
     }

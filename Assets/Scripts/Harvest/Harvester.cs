@@ -9,7 +9,8 @@ namespace RPG.Harvest
     public class Harvester : MonoBehaviour, IAction//@TODO: separate Harvester into 3 clases harvest, storage and transport(internal capacity)
     {
         [SerializeField] float harvestRange = 2.0f;
-        [SerializeField] float maxCapacity { get => AntStats.CarryCapacity; }
+        StatsManager stats ;
+        [SerializeField] float maxCapacity { get => ((AntStats)stats.values).CarryCapacity; }
         float carryAmount;
         public bool IsFull { get => carryAmount >= maxCapacity; }
         public bool IsEmpty { get => carryAmount == 0; }
@@ -19,6 +20,10 @@ namespace RPG.Harvest
         public Action fooodGrabbed;
         public Action foodDeposit;
 
+        private void Start()
+        {
+            stats = GetComponent<StatsManager>();
+        }
         private void Update()
         {
             if (target == null) return;
@@ -120,6 +125,7 @@ namespace RPG.Harvest
 
             Storage storage = target.GetComponent<Storage>();
             if (storage == null) return false;
+           // if(carryAmount == 0) return false;
             return true;
         }
 

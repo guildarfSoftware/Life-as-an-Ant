@@ -59,7 +59,7 @@ namespace RPG.UI
         void UpdateStorageText()
         {
             if (colony == null) return;
-            string currentStored = ((int)colony.storage.storedAmount).ToString();
+            string currentStored = ((int)colony.storage.StoredAmount).ToString();
             string maxCapacity = colony.storage.MaxCapacity.ToString();
             storageText.text = currentStored + "/" + maxCapacity;
         }

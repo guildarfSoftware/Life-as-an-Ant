@@ -10,13 +10,16 @@ namespace RPG.Combat
     {
         [SerializeField] float weaponRange = 2.0f;
         [SerializeField] float timeBetweenAtacks = 12.0f;
-        [SerializeField] float damage { get => AntStats.Damage; }
+
+        StatsManager stats;
+        [SerializeField] float damage { get => stats.values.Damage; }
         Health target;
         public Action EnterCombat;
         float timeSinceLastAttack = Mathf.Infinity;
 
         private void Update()
         {
+            stats = GetComponent<StatsManager>();
             timeSinceLastAttack += Time.deltaTime;
 
             if (target == null) return;

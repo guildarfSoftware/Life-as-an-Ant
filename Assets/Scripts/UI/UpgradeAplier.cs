@@ -26,7 +26,7 @@ namespace RPG.UI
         {
             if (!CheckCost()) return;
             
-            bool repetableClick = upgrade.bonusElement != BonusElement.Worker && upgrade.bonusElement != BonusElement.Princess;
+            bool repetableClick = upgrade.bonusElement == BonusElement.Worker || upgrade.bonusElement == BonusElement.Princess;
 
             if(!repetableClick) GetComponent<Button>().interactable = false;
             
@@ -73,26 +73,22 @@ namespace RPG.UI
                     }
                 case BonusElement.Health:
                     {
-                        AntStats.IncreaseMaxHealth(upgrade.bonus);
-
+                        ColonyManager.IncreaseMaxHealth(upgrade.bonus);
                         break;
                     }
                 case BonusElement.Damage:
                     {
-
-                        AntStats.IncreaseMaxDamage(upgrade.bonus);
+                        ColonyManager.IncreaseMaxDamage(upgrade.bonus);
                         break;
                     }
                 case BonusElement.Speed:
                     {
-
-                        AntStats.IncreaseMaxSpeed(upgrade.bonus);
+                        ColonyManager.IncreaseMaxSpeed(upgrade.bonus);
                         break;
                     }
                 case BonusElement.CarryCapacity:
                     {
-
-                        AntStats.IncreaseCarryCapacity(upgrade.bonus);
+                        ColonyManager.IncreaseCarryCapacity(upgrade.bonus);
                         break;
                     }
                 case BonusElement.Worker:
@@ -102,7 +98,6 @@ namespace RPG.UI
                     }
                 case BonusElement.Princess:
                     {
-
                         ColonyManager.AddPrincess();
                         break;
                     }

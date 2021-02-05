@@ -1,3 +1,4 @@
+using System;
 using RPG.Core;
 using UnityEngine;
 
@@ -34,6 +35,10 @@ namespace RPG.Harvest
 
             return grabedAmount;
         }
-        
+
+        internal void SetFoodAmount(float foodAmount)
+        {
+            remainingResource = foodAmount;
+        }
     }
 }

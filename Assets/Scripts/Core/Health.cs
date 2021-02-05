@@ -16,13 +16,16 @@ namespace RPG.Core
             get => isDead;
         }
 
-        float maxHealth {get=> AntStats.Health;}
+        StatsManager stats;
+
+        float maxHealth {get=> stats.values.Health;}
 
         public float currentHealth { private set; get; }
         public float MaxHealth { get => maxHealth; }
 
         private void Start()
         {
+            stats = GetComponent<StatsManager>();
             currentHealth = maxHealth;
         }
 

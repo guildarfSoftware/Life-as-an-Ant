@@ -14,12 +14,14 @@ namespace RPG.Movement
     {
         NavMeshAgent navMeshAgent;
         Animator animator;
+        StatsManager stats;
 
-        float speed { get => AntStats.Speed; }
+        float speed { get => stats.values.Speed; }
 
         // Start is called before the first frame update
         void Start()
         {
+            stats = GetComponent<StatsManager>();
             animator = GetComponent<Animator>();
             navMeshAgent = GetComponent<NavMeshAgent>();
             navMeshAgent.Warp(transform.position);
@@ -39,6 +41,8 @@ namespace RPG.Movement
                 UpdateAnimator();
             }
         }
+
+
 
         private bool IsDead()
         {
