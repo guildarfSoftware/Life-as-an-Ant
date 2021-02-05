@@ -16,7 +16,7 @@ namespace RPG.Control
         Fighter fighter;
         Health health;
         Mover mover;
-        [SerializeField] EntityDetector detector;
+        EntityDetector detector;
         Vector3 guardPosition;
         Vector3 lastKnownPosition;
         float timeSinceLastSawTarget = Mathf.Infinity;
@@ -24,6 +24,7 @@ namespace RPG.Control
 
         private void Start()
         {
+            detector = GetComponentInChildren<EntityDetector>();
             fighter = GetComponent<Fighter>();
             target = GetValidTarget();
             health = GetComponent<Health>();

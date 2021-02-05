@@ -42,7 +42,7 @@ namespace RPG.Control
         private void Start()
         {
             pheromoneGenerator = GetComponent<PheromoneGenerator>();
-            detector = GetComponent<EntityDetector>();
+            detector = GetComponentInChildren<EntityDetector>();
             pheromoneFollower = GetComponent<PheromoneFollower>();
             harvester = GetComponent<Harvester>();
             fighter = GetComponent<Fighter>();

@@ -23,7 +23,7 @@ namespace RPG.Control
 
         private void Start()
         {
-            detector = GetComponent<EntityDetector>();
+            detector = GetComponentInChildren<EntityDetector>();
             pheromoneFollower = GetComponent<PheromoneFollower>();
             harvester = GetComponent<Harvester>();
             fighter = GetComponent<Fighter>();

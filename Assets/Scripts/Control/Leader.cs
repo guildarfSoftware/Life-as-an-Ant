@@ -32,7 +32,7 @@ namespace RPG.Control
 
         GameObject FindCloseWorkerAnt()
         {
-            EntityDetector detector = GetComponent<EntityDetector>();
+            EntityDetector detector = GetComponentInChildren<EntityDetector>();
             if (detector == null) return null;
             var workers = detector.GetEntitiesWithTag("Worker");
 

@@ -4,14 +4,14 @@ using System.Collections.Generic;
 
 namespace RPG.Pheromones
 {
-    [RequireComponent(typeof(EntityDetector))]
     public class PheromoneStopper : MonoBehaviour
     {
         EntityDetector detector;
 
         private void Start()
         {
-            detector = GetComponent<EntityDetector>();
+            detector = GetComponentInChildren<EntityDetector>();
+            if(detector == null) detector = EntityDetector.CreateDetector(gameObject);
         }
 
         private void Update()

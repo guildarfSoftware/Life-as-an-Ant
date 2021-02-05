@@ -13,6 +13,15 @@ namespace RPG.Core
 
         public List<GameObject> CloseEntities { get => closeEntities; }
 
+        public static EntityDetector CreateDetector(GameObject parent)
+        {
+            GameObject detector = new GameObject("Detector");
+            detector.transform.position = parent.transform.position;
+            detector.transform.parent = parent.transform;
+
+            return detector.AddComponent<EntityDetector>();
+        }
+
         private void Start()
         {
             SphereCollider spCollider = GetComponent<SphereCollider>();

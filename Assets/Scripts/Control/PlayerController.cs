@@ -13,6 +13,7 @@ namespace RPG.Control
     [RequireComponent(typeof(Fighter))]
     public class PlayerController : MonoBehaviour
     {
+        private const int pheromoneTrailDuration = 90;
         Mover mover;
         Fighter fighter;
         Harvester harvester;
@@ -30,7 +31,7 @@ namespace RPG.Control
             mover = GetComponent<Mover>();
             health = GetComponent<Health>();
             leader = GetComponent<Leader>();
-            detector = GetComponent<EntityDetector>();
+            detector = GetComponentInChildren<EntityDetector>();
 
             harvester.fooodGrabbed += StartFoodPheromones;
             harvester.foodDeposit += StopPheromones;
@@ -48,7 +49,7 @@ namespace RPG.Control
 
         private bool EvaluateCombat()
         {
-            if(OverUIElement()) return false;
+            if (OverUIElement()) return false;
 
             RaycastHit[] hits = Physics.RaycastAll(GetMouseRay());
 
@@ -60,9 +61,9 @@ namespace RPG.Control
                 if (Input.GetMouseButtonDown(0))
                 {
                     fighter.Attack(target.gameObject);
-                // }
-                // else if (Input.GetMouseButtonDown(1))
-                // {
+                    // }
+                    // else if (Input.GetMouseButtonDown(1))
+                    // {
                     leader.CommandNotify(PheromoneType.Combat, target.gameObject);
                     leader.CommandAttack(target.gameObject);
                 }
@@ -85,9 +86,9 @@ namespace RPG.Control
                 if (Input.GetMouseButtonDown(0))
                 {
                     harvester.Store(target.gameObject);
-                // }
-                // else if (Input.GetMouseButtonDown(1))
-                // {
+                    // }
+                    // else if (Input.GetMouseButtonDown(1))
+                    // {
                     leader.CommandStore(target.gameObject);
                 }
                 return true;    //outside the click check to allow hover detection;
@@ -109,9 +110,9 @@ namespace RPG.Control
                 if (Input.GetMouseButtonDown(0))
                 {
                     harvester.Harvest(target.gameObject);
-                // }
-                // else if (Input.GetMouseButtonDown(1))
-                // {
+                    // }
+                    // else if (Input.GetMouseButtonDown(1))
+                    // {
                     leader.CommandNotify(PheromoneType.Harvest, target.gameObject);
                     leader.CommandHarvest(target.gameObject);
                 }
@@ -144,7 +145,7 @@ namespace RPG.Control
         {
             if (detector.GetEntityWithTag("PheromoneHarvest") == null) //check to avoid multiple trails
             {
-                GetComponent<PheromoneGenerator>().StartGeneration(PheromoneType.Harvest, 60);
+                GetComponent<PheromoneGenerator>().StartGeneration(PheromoneType.Harvest, pheromoneTrailDuration);
                 generatingPheromones = true;
             }
         }
@@ -153,7 +154,7 @@ namespace RPG.Control
         {
             if (detector.GetEntityWithTag("PheromoneCombat") == null) //check to avoid multiple trails
             {
-                GetComponent<PheromoneGenerator>().StartGeneration(PheromoneType.Combat, 60);
+                GetComponent<PheromoneGenerator>().StartGeneration(PheromoneType.Combat, pheromoneTrailDuration);
                 generatingPheromones = true;
             }
         }
