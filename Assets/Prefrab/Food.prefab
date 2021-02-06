@@ -46,7 +46,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8ad1829d5b42c1a4aa4be8bdbf99411e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  remainingResource: 500
+  remainingResource: 150
 --- !u!135 &6738924910536340524
 SphereCollider:
   m_ObjectHideFlags: 0
