@@ -18,7 +18,7 @@ namespace RPG.Core
 
         StatsManager stats;
 
-        float maxHealth {get=> stats.values.Health;}
+        float maxHealth { get => stats.values.Health; }
 
         public float currentHealth { private set; get; }
         public float MaxHealth { get => maxHealth; }
@@ -46,19 +46,29 @@ namespace RPG.Core
 
             isDead = true;
 
-            OnDeath?.Invoke();
 
             GetComponent<Animator>().SetTrigger("die");
+            GetComponent<Animator>().SetBool("Dead", true);
             GetComponent<ActionScheduler>().CancelCurrentAction();
 
+            OnDeath?.Invoke();
         }
 
         internal void Heal(float amount)
         {
-            if(currentHealth == maxHealth) return;
+            if (currentHealth == maxHealth) return;
             currentHealth += amount;
-            currentHealth = Mathf.Min(currentHealth,maxHealth);
+            currentHealth = Mathf.Min(currentHealth, maxHealth);
             OnHealthChange?.Invoke();
+        }
+
+        internal void Revive()
+        {
+            currentHealth = maxHealth;
+            isDead = false;
+            OnHealthChange();
+            GetComponent<Animator>().ResetTrigger("die");
+            GetComponent<Animator>().SetBool("Dead", false);
         }
     }
 }

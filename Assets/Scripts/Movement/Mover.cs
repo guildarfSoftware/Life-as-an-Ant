@@ -37,6 +37,7 @@ namespace RPG.Movement
             }
             else
             {
+                navMeshAgent.enabled = true;
                 navMeshAgent.speed = speed;
                 UpdateAnimator();
             }

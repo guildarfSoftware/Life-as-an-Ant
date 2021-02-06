@@ -120,6 +120,14 @@ namespace RPG.Control
             return false;
         }
 
+        internal void Respawn(GameObject substitute)
+        {
+            transform.position = substitute.transform.position;
+            transform.rotation = substitute.transform.rotation;
+
+            health.Revive();
+        }
+
         private bool EvaluateMovement()
         {
             if (OverUIElement()) return false;

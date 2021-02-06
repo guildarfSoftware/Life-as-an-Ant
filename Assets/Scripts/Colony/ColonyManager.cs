@@ -52,6 +52,7 @@ namespace RPG.Colony
             playerAnt = GameObject.FindGameObjectWithTag("Player");
             if (playerAnt != null)
             {
+                playerAnt.GetComponent<Health>().OnDeath += ()=>{Invoke("RespawnPlayer",1f);};
                 leader = playerAnt.GetComponent<Leader>();
                 allAnts.Add(playerAnt);
             }
@@ -88,6 +89,26 @@ namespace RPG.Colony
                 }
 
             }
+        }
+
+        void RespawnPlayer()
+        {
+            if (currentPopulation > 1)  //there is at least 1 ant apart from the player
+            {
+                MessageManager.Message("You Died but you can now control another ant of the colony");
+                GameObject substitute = allAnts[allAnts.Count-1];
+                
+                playerAnt.GetComponent<PlayerController>().Respawn(substitute);
+
+                substitute.GetComponent<Health>().OnDeath();
+                Destroy(substitute);
+
+
+                return;
+            }
+
+            MessageManager.Message("Game Over");
+
         }
 
         void FeedAnts()
@@ -303,7 +324,7 @@ namespace RPG.Colony
         {
             if (instance.allAnts.Count >= instance.maxPopulation)
             {
-                MessageManager.Message("Reached Max population. Upograde population limit to keep growing");
+                MessageManager.Message("Reached Max population. Upgrade population limit to keep growing");
                 return;
             }
 
