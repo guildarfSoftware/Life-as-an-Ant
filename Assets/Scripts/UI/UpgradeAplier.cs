@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using RPG.Colony;
-using RPG.Core;
+using RPG.Resources;
 
 namespace RPG.UI
 {
@@ -74,16 +74,19 @@ namespace RPG.UI
                 case BonusElement.Health:
                     {
                         ColonyManager.IncreaseMaxHealth(upgrade.bonus);
+                        EnemyGenerator.IncreaseDifficulty((int)upgrade.bonus /5);
                         break;
                     }
                 case BonusElement.Damage:
                     {
                         ColonyManager.IncreaseMaxDamage(upgrade.bonus);
+                        EnemyGenerator.IncreaseDifficulty((int)upgrade.bonus * 2);
                         break;
                     }
                 case BonusElement.Speed:
                     {
                         ColonyManager.IncreaseMaxSpeed(upgrade.bonus);
+                        EnemyGenerator.IncreaseDifficulty((int)upgrade.bonus);
                         break;
                     }
                 case BonusElement.CarryCapacity:
@@ -94,11 +97,13 @@ namespace RPG.UI
                 case BonusElement.Worker:
                     {
                         ColonyManager.AddWorker();
+                        EnemyGenerator.IncreaseDifficulty(1);
                         break;
                     }
                 case BonusElement.Princess:
                     {
                         ColonyManager.AddPrincess();
+                        EnemyGenerator.IncreaseDifficulty(3);
                         break;
                     }
                 case BonusElement.None:

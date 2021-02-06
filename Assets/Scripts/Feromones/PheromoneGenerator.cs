@@ -101,6 +101,7 @@ namespace RPG.Pheromones
 
         public void StopGeneration()
         {
+            if(generating)CreatePheromoneWaypoint();
             DetachTrailGenerator();
             generating = false;
             lastGenerated = null;

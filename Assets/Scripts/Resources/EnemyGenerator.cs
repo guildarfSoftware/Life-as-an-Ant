@@ -10,19 +10,19 @@ namespace RPG.Resources
 {
     public class EnemyGenerator : MonoBehaviour  //@todo acount for terrain height to avoid underground spawns
     {
+        public static EnemyGenerator instance;
         [SerializeField] GameObject enemyPrefab;
-        float spawnTimer;
-        const float spawnTime = 60;
+        float eventTimer;
+        const float timeBetweenEvents = 90;
 
         [SerializeField] EnemyStats[] enemyStats;
-
         [SerializeField] PatrolPath[] editorDefinedPatrolsTierI;
         [SerializeField] PatrolPath[] editorDefinedPatrolsTierII;
         [SerializeField] PatrolPath[] editorDefinedPatrolsTierIII;
 
         Dictionary<PatrolPath, PatrolData> patrolInformation;
-        float newPatrolCountDown;
-        float timeBetweenNewPatrols = 60;
+        float patrolTimer;
+        float timeBetweenNewPatrols = 30;
         [SerializeField] int[] startingEnemies;
         Vector3 nestPosition;
 
@@ -31,6 +31,7 @@ namespace RPG.Resources
         [SerializeField] float startAngle, maxAngle;
         List<GameObject> activeResources;
 
+        [SerializeField]int dificultyValue; //increases on enemy kills and princess population
 
         struct PatrolData
         {
@@ -46,6 +47,8 @@ namespace RPG.Resources
 
         private void Start()
         {
+            if(instance != null) Debug.LogWarning("multiple instance of enemy generator actives");
+            instance = this;
             activeResources = new List<GameObject>();
             GameObject nest = GameObject.FindGameObjectWithTag("Nest");
             if (nest != null) nestPosition = nest.transform.position;
@@ -79,10 +82,11 @@ namespace RPG.Resources
 
         private void Update()
         {
-            newPatrolCountDown -= Time.deltaTime;
-            if (newPatrolCountDown < 0)
+            eventTimer -= Time.deltaTime;
+            patrolTimer -= Time.deltaTime;
+            if (patrolTimer < 0)
             {
-                newPatrolCountDown = timeBetweenNewPatrols;
+                patrolTimer = timeBetweenNewPatrols;
                 PatrolPath emptyPatrol = GetEmptyPatrol();
                 if (emptyPatrol != null)
                 {
@@ -90,9 +94,71 @@ namespace RPG.Resources
                 }
             }
 
-            if (Input.GetKeyDown(KeyCode.A)) CreateAttackWave(0, 3);
-            if (Input.GetKeyDown(KeyCode.S)) CreateAttackWave(1, 3);
-            if (Input.GetKeyDown(KeyCode.D)) CreateAttackWave(2, 3);
+            if (eventTimer < 0)
+            {
+                eventTimer = timeBetweenEvents;
+                RandomEvent();
+                IncreaseDifficulty((int)(timeBetweenEvents)/30); //increase dificulty 2 times per minute passed
+            }
+        }
+
+        static public void IncreaseDifficulty(int amount)
+        {
+            instance.dificultyValue += amount;
+        }
+
+        void RandomEvent()
+        {
+            int randomValue = UnityEngine.Random.Range(0, dificultyValue);
+
+            if (randomValue > 200)
+            {
+                CreateAttackWave(2, (randomValue-100) / 100);
+            }
+            else if (randomValue > 140)
+            {
+                CreateAttackWave(1, randomValue / 40);
+            }
+            else if (randomValue > 100)
+            {
+                CreateAttackWave(0, randomValue / 20);
+            }
+            else if (randomValue > 75)
+            {
+                createGuardian(2, RandomPosition(2));
+            }
+            else if (randomValue > 70)
+            {
+                CreateAttackWave(1, 4);
+            }
+            else if (randomValue > 50)
+            {
+                CreateAttackWave(1, 2);
+            }
+            else if (randomValue > 35)
+            {
+                CreateAttackWave(0, 4);
+            }
+            else if (randomValue > 25)
+            {
+                CreateAttackWave(1, 1);
+            }
+            else if (randomValue > 16)
+            {
+                createGuardian(2,RandomPosition(2));
+            }
+            else if (randomValue > 15)
+            {
+                CreateAttackWave(0, 2);
+            }
+            else if (randomValue > 10)
+            {
+                createGuardian(1, RandomPosition(1));
+            }
+            else if (randomValue > 5)
+            {
+                createGuardian(0, RandomPosition(0));
+            }
         }
 
         private PatrolPath GetEmptyPatrol()
@@ -145,6 +211,8 @@ namespace RPG.Resources
 
             GameObject newEnemy = GameObject.Instantiate(enemyPrefab, spawnPosition, Quaternion.identity);
 
+            newEnemy.transform.SetParent(transform);
+
             SkinnedMeshRenderer renderer = newEnemy.GetComponentInChildren<SkinnedMeshRenderer>();
             renderer.materials = stats.materials;
 
@@ -153,6 +221,9 @@ namespace RPG.Resources
 
             newEnemy.GetComponent<StatsManager>().values = stats;
             newEnemy.GetComponent<HarvestTarget>().SetFoodAmount(stats.FoodAmount);
+
+            newEnemy.GetComponent<Health>().OnDeath += ()=>{IncreaseDifficulty(tier+1);};   //each enemy killed increases dificulty value
+
             return newEnemy;
         }
 
