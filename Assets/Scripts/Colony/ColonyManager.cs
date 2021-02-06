@@ -20,6 +20,7 @@ namespace RPG.Colony
         public float foodRequirement { get => princesses.Count * princesStats.foodConsumption + allAnts.Count * workerStats.foodConsumption; }
 
         int maxPopulation = 15;
+        public int MaxPopulation { get => maxPopulation; }
         List<GameObject> allAnts = new List<GameObject>();
         List<GameObject> availableAnts = new List<GameObject>();
         List<GameObject> buildingAnts = new List<GameObject>();
@@ -32,7 +33,11 @@ namespace RPG.Colony
         [SerializeField] int startingAnts = 0;
 
         float timer1Second;
+        internal Action onPopulationChange;
 
+        public int AvailableAntsCount { get => availableAnts.Count; }
+        public int currentPopulation { get => allAnts.Count; }
+        public int princessPopulation { get => princesses.Count; }
         public void IncreaseMaxStorage(int storageBonus)
         {
             storage.IncreaseMaxCapacity(storageBonus);
@@ -57,6 +62,8 @@ namespace RPG.Colony
             {
                 CreateWorker();
             }
+
+            onPopulationChange?.Invoke();
         }
 
         private void Update()
@@ -204,13 +211,13 @@ namespace RPG.Colony
                     i++;
                 }
             }
-
         }
 
         void DeactivateAntForSeconds(GameObject ant, float reactivateTime)
         {
             ant.SetActive(false);
             buildingAnts.Add(ant);
+            onPopulationChange?.Invoke();
 
             Invoke("ReactivateWorker", reactivateTime);
         }
@@ -223,6 +230,7 @@ namespace RPG.Colony
                 reactivatedAnt.SetActive(true);
                 buildingAnts.RemoveAt(buildingAnts.Count - 1);
                 availableAnts.Add(reactivatedAnt);
+                onPopulationChange?.Invoke();
             }
         }
 
@@ -270,6 +278,7 @@ namespace RPG.Colony
         public static void IncreaseMaxPopulation(int bonus)
         {
             instance.maxPopulation += bonus;
+            instance.onPopulationChange?.Invoke();
         }
 
         public static void IncreaseMaxFollowers(int bonus)
@@ -279,12 +288,19 @@ namespace RPG.Colony
 
         public static void AddWorker()
         {
+            if (instance.allAnts.Count >= instance.maxPopulation)
+            {
+                MessageManager.Message("Reached Max population. Upograde population limit to keep growing");
+                return;
+            }
+
             instance.CreateWorker();
         }
 
         public static void AddPrincess()
         {
             instance.princesses.Add(instance.princesStats.Health);
+            instance.onPopulationChange?.Invoke();
         }
 
         internal static void IncreaseMaxHealth(float bonus)

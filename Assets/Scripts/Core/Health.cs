@@ -27,6 +27,7 @@ namespace RPG.Core
         {
             stats = GetComponent<StatsManager>();
             currentHealth = maxHealth;
+            OnHealthChange?.Invoke();
         }
 
         public void TakeDamage(float amount)
@@ -52,9 +53,10 @@ namespace RPG.Core
 
         }
 
-        internal void Heal(float v)
+        internal void Heal(float amount)
         {
-            currentHealth += v;
+            if(currentHealth == maxHealth) return;
+            currentHealth += amount;
             currentHealth = Mathf.Min(currentHealth,maxHealth);
             OnHealthChange?.Invoke();
         }

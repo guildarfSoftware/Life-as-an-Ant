@@ -18,7 +18,7 @@ namespace RPG.UI
 
 
         float timer;
-        [SerializeField] Text storageText, foodConsumption;
+        [SerializeField] Text storageText, foodConsumption, workerPopulation, princessPopulation;
 
         // Start is called before the first frame update
         void Start()
@@ -35,20 +35,24 @@ namespace RPG.UI
             if (nest != null)
             {
                 colony = nest.GetComponent<ColonyManager>();
-                if (colony != null) colony.storage.onStoreChange += UpdateStorageText;
+                if (colony != null)
+                {
+                    colony.onPopulationChange += UpdatePopulationText;
+                    colony.onPopulationChange += UpdatePrincessCountText;
+                    colony.onPopulationChange += UpdateFoodConsumptionText;
+                    colony.storage.onStoreChange += UpdateStorageText;
+                }
             }
+            UpdateAll();
         }
-
-        private void Update()
+        void UpdateAll()
         {
-            timer += Time.deltaTime;
-            if (timer > 1)
-            {
-                UpdateFoodConsumptionText();
-                timer = 0;
-            }
+            UpdateHealthBar();
+            UpdateStorageText();
+            UpdateFoodConsumptionText();
+            UpdatePopulationText();
+            UpdatePrincessCountText();
         }
-
         void UpdateHealthBar()
         {
             if (playerHealth == null) return;
@@ -61,19 +65,38 @@ namespace RPG.UI
             if (colony == null) return;
             string currentStored = ((int)colony.storage.StoredAmount).ToString();
             string maxCapacity = colony.storage.MaxCapacity.ToString();
-            storageText.text = currentStored + "/" + maxCapacity;
+            storageText.text = $"{currentStored}/ {maxCapacity}";
         }
         void UpdateFoodConsumptionText()
         {
             if (colony == null) return;
             string twoDecimalsText = colony.foodRequirement.ToString("0.0");
-            foodConsumption.text = "- " + twoDecimalsText + "/s";
+            foodConsumption.text = $"- {twoDecimalsText}/s";
         }
 
+        void UpdatePopulationText()
+        {
+            if (colony == null) return;
+            string availableAnts = colony.AvailableAntsCount.ToString();
+            string currentPopulation = colony.currentPopulation.ToString();
+            string maxPopulation = colony.MaxPopulation.ToString();
+            workerPopulation.text = $"({availableAnts}) {currentPopulation}/{maxPopulation}";
+        }
+        void UpdatePrincessCountText()
+        {
+            if (colony == null) return;
+            princessPopulation.text = colony.princessPopulation.ToString();
+        }
         private void OnDisable()
         {
             if (playerHealth != null) playerHealth.OnHealthChange -= UpdateHealthBar;
-            if (colony != null) colony.storage.onStoreChange += UpdateStorageText;
+            if (colony != null)
+            {
+                colony.onPopulationChange -= UpdatePopulationText;
+                colony.onPopulationChange -= UpdatePrincessCountText;
+                colony.onPopulationChange -= UpdateFoodConsumptionText;
+                colony.storage.onStoreChange -= UpdateStorageText;
+            }
         }
 
         public void EnableUpgradesMenu()

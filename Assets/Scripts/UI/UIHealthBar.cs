@@ -14,11 +14,6 @@ namespace RPG.UI
         private void Awake()
         {
             instance = this;
-        }
-
-        // Start is called before the first frame update
-        void Start()
-        {
             originalSize = mask.rectTransform.rect.height;
         }
 
