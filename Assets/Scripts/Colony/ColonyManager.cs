@@ -84,6 +84,7 @@ namespace RPG.Colony
                     leader.AddFollower(ant);
                     followerAnts.Add(ant);
                     availableAnts.RemoveAt(availableAnts.Count - 1);
+                    onPopulationChange?.Invoke();
                 }
 
             }

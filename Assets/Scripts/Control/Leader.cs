@@ -18,18 +18,6 @@ namespace RPG.Control
             followers = new List<Follower>();
         }
 
-        private void Update()
-        {
-            if (followers.Count < maxFollowers)
-            {
-                GameObject newFollower = FindCloseWorkerAnt();
-                if (newFollower != null)
-                {
-                    AddFollower(newFollower);
-                }
-            }
-        }
-
         GameObject FindCloseWorkerAnt()
         {
             EntityDetector detector = GetComponentInChildren<EntityDetector>();
@@ -65,6 +53,8 @@ namespace RPG.Control
             }
 
             followers.Add(follower);
+
+            follower.GetComponent<Health>().OnDeath += ()=>{RemoveFollower(followerObject);};
         }
 
         public void RemoveFollower(GameObject followerObject)
@@ -74,9 +64,6 @@ namespace RPG.Control
             Follower follower = followerObject.GetComponent<Follower>();
 
             if (follower == null) return;
-
-            Destroy(follower);
-            followerObject.AddComponent<WorkerController>();// return ant to a worker intelligence
 
             if (followers.Contains(follower))
             {

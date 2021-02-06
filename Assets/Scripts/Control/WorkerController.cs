@@ -37,10 +37,10 @@ namespace RPG.Control
         }
         private void Update()
         {
-            if (health.IsDead) 
+            if (health.IsDead)
             {
                 Destroy(this);
-                Destroy(gameObject,30);
+                Destroy(gameObject, 30);
                 return;
             }
 
@@ -240,8 +240,8 @@ namespace RPG.Control
 
         private void OnDisable()
         {
-            harvester.fooodGrabbed -= StartFoodPheromones;
-            fighter.EnterCombat -= StartCombatPheromones;
+            if (harvester != null) harvester.fooodGrabbed -= StartFoodPheromones;
+            if (fighter != null) fighter.EnterCombat -= StartCombatPheromones;
         }
     }
 }

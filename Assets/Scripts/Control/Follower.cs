@@ -12,6 +12,7 @@ namespace RPG.Control
 {
     public class Follower : MonoBehaviour
     {
+        Health health;
         EntityDetector detector;
         PheromoneFollower pheromoneFollower;
         Harvester harvester;
@@ -41,6 +42,7 @@ namespace RPG.Control
 
         private void Start()
         {
+            health = GetComponent<Health>(); 
             pheromoneGenerator = GetComponent<PheromoneGenerator>();
             detector = GetComponentInChildren<EntityDetector>();
             pheromoneFollower = GetComponent<PheromoneFollower>();
@@ -56,6 +58,11 @@ namespace RPG.Control
         }
         private void Update()
         {
+            if(health.IsDead) 
+            {
+                Destroy(gameObject, 30);
+                return;
+            }
             if (target == null) currentState = AntState.iddle;
 
             if (!isNotifying() && LeaderIsTooFar()) FollowTheLeader();
