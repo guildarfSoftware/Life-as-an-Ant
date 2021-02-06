@@ -244,8 +244,20 @@ namespace RPG.Colony
 
             newAnt.GetComponent<StatsManager>().values = workerStats;
 
+            newAnt.GetComponent<Health>().OnDeath += () => { RemoveAnt(newAnt); };
+
             allAnts.Add(newAnt);
             availableAnts.Add(newAnt);
+            onPopulationChange?.Invoke();
+        }
+
+        void RemoveAnt(GameObject ant)
+        {
+            if (allAnts.Contains(ant)) allAnts.Remove(ant);
+            if (availableAnts.Contains(ant)) availableAnts.Remove(ant);
+            if (buildingAnts.Contains(ant)) buildingAnts.Remove(ant);
+            if (followerAnts.Contains(ant)) followerAnts.Remove(ant);
+            onPopulationChange?.Invoke();
         }
 
         public static void ApplyCost(int foodCost, int workerCost, float upgradeTime)
@@ -306,7 +318,7 @@ namespace RPG.Colony
         internal static void IncreaseMaxHealth(float bonus)
         {
             instance.workerStats.healthBonus += bonus;
-            AntStats stats = (AntStats) instance.playerAnt.GetComponent<StatsManager>().values;
+            AntStats stats = (AntStats)instance.playerAnt.GetComponent<StatsManager>().values;
             stats.healthBonus += bonus;
         }
 

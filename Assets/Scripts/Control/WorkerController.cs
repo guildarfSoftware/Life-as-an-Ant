@@ -37,7 +37,12 @@ namespace RPG.Control
         }
         private void Update()
         {
-            if (health.IsDead) return;
+            if (health.IsDead) 
+            {
+                Destroy(this);
+                Destroy(gameObject,30);
+                return;
+            }
 
             if (EvaluateNotifyNest()) return;   //if generating pheromones return to nest to notify
 
