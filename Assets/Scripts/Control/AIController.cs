@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using RPG.Combat;
 using RPG.Core;
 using RPG.Movement;
@@ -29,16 +30,18 @@ namespace RPG.Control
             target = GetValidTarget();
             health = GetComponent<Health>();
             mover = GetComponent<Mover>();
-            guardPosition = transform.position;
         }
         private void Update()
         {
 
             if (health.IsDead) return;
 
+            target = GetValidTarget();
+            
             if (target == null || !fighter.CanAttack(target))
             {
-                target = GetValidTarget();
+                EvaluatePatrol();
+
                 return;
             }
 
@@ -60,15 +63,26 @@ namespace RPG.Control
             }
         }
 
+        public void SetPatrolPath(PatrolPath patrolPath)
+        {
+            this.patrolPath = patrolPath;
+        }
+
+        public void SetGuardPosition(Vector3 position)
+        {
+            guardPosition = position;
+        }
         private GameObject GetValidTarget()
         {
             if (detector == null) return null;
 
-            GameObject target = detector.GetEntityWithTag("Player");
+            List<GameObject> workerAnts = detector.GetEntitiesWithTag("Worker");
+            foreach (GameObject target in workerAnts)
+            {
+                if (target != null && fighter.CanAttack(target)) return target;
+            }
 
-            if (target != null && fighter.CanAttack(target)) return target;
-
-            target = detector.GetEntityWithTag("Worker");
+            target = detector.GetEntityWithTag("Player");
 
             if (target != null && fighter.CanAttack(target)) return target;
 

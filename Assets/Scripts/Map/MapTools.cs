@@ -30,7 +30,7 @@ namespace RPG.Map
             return instance.terrain.SampleHeight(position) + instance.terrain.GetPosition().y;
         }
 
-        public static bool SampleTerrainPosition(Vector3 originPosition, Vector3 samplesPosition)
+        public static bool SampleTerrainPosition(Vector3 originPosition, out Vector3 samplesPosition)
         {
             NavMeshHit hit;
             if(NavMesh.SamplePosition(originPosition,out hit,0.5f,NavMesh.AllAreas))

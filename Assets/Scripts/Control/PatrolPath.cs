@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using RPG.Map;
 
 namespace RPG.Control
 {
@@ -9,6 +10,17 @@ namespace RPG.Control
     {
         const float wayPointGizmosRadius = 0.3f;
         int currentWaypoint;
+
+        private void Start()
+        {
+            for (int i = 0; i < transform.childCount; i++)
+            {
+                Transform waypoint = transform.GetChild(i);
+                Vector3 position = waypoint.position;
+                position.y = MapTools.getTerrainHeight(position);
+                waypoint.position=position;
+            }
+        }
         private void OnDrawGizmos()
         {
             Gizmos.color = Color.white;

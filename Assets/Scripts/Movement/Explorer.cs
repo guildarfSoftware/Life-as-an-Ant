@@ -51,7 +51,7 @@ namespace RPG.Movement
                     {
                         targetPosition = GetRandomPosition(transform.position);
                         attemps++;
-                    } while (!MapTools.SampleTerrainPosition(targetPosition,targetPosition) && attemps < 10);
+                    } while (!MapTools.SampleTerrainPosition(targetPosition, out targetPosition) && attemps < 10);
 
                     if (attemps >= 10)
                     {
