@@ -23,7 +23,7 @@ namespace RPG.Core
         public float currentHealth { private set; get; }
         public float MaxHealth { get => maxHealth; }
 
-        private void Start()
+        private void Awake()
         {
             stats = GetComponent<StatsManager>();
             currentHealth = maxHealth;
