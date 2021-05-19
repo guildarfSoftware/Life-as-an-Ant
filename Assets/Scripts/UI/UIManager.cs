@@ -70,8 +70,8 @@ namespace RPG.UI
         void UpdateFoodConsumptionText()
         {
             if (colony == null) return;
-            string twoDecimalsText = colony.foodRequirement.ToString("0.0");
-            foodConsumption.text = $"- {twoDecimalsText}/s";
+            string oneDecimalsText = colony.foodRequirement.ToString("0.0");
+            foodConsumption.text = $"-{oneDecimalsText}/s";
         }
 
         void UpdatePopulationText()
@@ -80,7 +80,7 @@ namespace RPG.UI
             string availableAnts = colony.AvailableAntsCount.ToString();
             string currentPopulation = colony.currentPopulation.ToString();
             string maxPopulation = colony.MaxPopulation.ToString();
-            workerPopulation.text = $"({availableAnts}) {currentPopulation}/{maxPopulation}";
+            workerPopulation.text = $"{currentPopulation}/{maxPopulation}";
         }
         void UpdatePrincessCountText()
         {
