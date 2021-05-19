@@ -52,18 +52,21 @@ namespace RPG.UI
         {
             StringBuilder sb = new StringBuilder();
 
-            sb.AppendLine($"Food Cost:  {ColonyManager.GetStoredFood().ToString("0.0")} / {currentUpgrade.foodCost}");
+            sb.Append($"Food Cost:  {ColonyManager.GetStoredFood().ToString("0.0")} / {currentUpgrade.foodCost}");
             if (currentUpgrade.workerCost > 0)
-            {                
+            {
+                sb.AppendLine();  
                 sb.Append($"Workers needed: {ColonyManager.GetAvailableWorkersCount()}");
 
                 if(ColonyManager.GetFollowerCount() != 0)
                 {
                     sb.Append($" + {ColonyManager.GetFollowerCount()} ");
                 }
-                sb.AppendLine ($"/ {currentUpgrade.workerCost}");
+                sb.Append($"/ {currentUpgrade.workerCost}");
 
-                sb.AppendLine($"Time to upgrade: {currentUpgrade.upgradeTime} seconds");
+                sb.AppendLine();
+
+                sb.Append($"Time to upgrade: {currentUpgrade.upgradeTime} seconds");
             }
             return sb.ToString();
         }
