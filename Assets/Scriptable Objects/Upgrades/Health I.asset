@@ -12,9 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7668b13cd738e7e468d207fc82f4d425, type: 3}
   m_Name: Health I
   m_EditorClassIdentifier: 
-  upgradetext: 
+  upgradetext: Health I
   bonus: 10
   bonusElement: 4
   upgradeTime: 0
   foodCost: 400
   workerCost: 0
+  repeteable: 0

@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -29,6 +30,7 @@ namespace RPG.UI
 
         public float upgradeTime;
         public int foodCost, workerCost;
+        public bool repeteable;
 
         public override string ToString()
         {

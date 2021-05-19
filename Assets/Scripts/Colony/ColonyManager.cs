@@ -288,26 +288,10 @@ namespace RPG.Colony
             instance.StartBuildingProcess(workerCost, upgradeTime);
         }
 
-        public static bool CheckCost(int foodCost, int workerCost)
-        {
-            if (foodCost > instance.storage.StoredAmount)
-            {
-                MessageManager.Message("Not enought food");
-                return false;
-            }
-            if (workerCost > instance.availableAnts.Count + instance.followerAnts.Count)
-            {
-                MessageManager.Message("Not enought workers");
-                return false;
-            }
-            return true;
-        }
-
         public static void IncreaseMaxStorage(float bonus)
         {
             instance.storage.IncreaseMaxCapacity(bonus);
         }
-
 
         public static void IncreaseMaxPopulation(int bonus)
         {
@@ -364,5 +348,22 @@ namespace RPG.Colony
             AntStats stats = (AntStats)instance.playerAnt.GetComponent<StatsManager>().values;
             stats.carryCapacityBonus += bonus;
         }
+
+
+        public static float GetStoredFood()
+        {
+            return instance.storage.StoredAmount;
+        }
+
+        public static int GetAvailableWorkersCount()
+        { 
+            return instance.availableAnts.Count;
+        }
+
+        public static int GetFollowerCount()
+        {
+            return  instance.followerAnts.Count;
+        }
+
     }
 }
