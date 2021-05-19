@@ -95,7 +95,7 @@ namespace RPG.Colony
         {
             if (currentPopulation > 1)  //there is at least 1 ant apart from the player
             {
-                MessageManager.Message("You Died but you can now control another ant of the colony");
+                MessageManager.Message("Oops", "You Died but you can now control another ant of the colony", null, null);
                 GameObject substitute = allAnts[allAnts.Count-1];
                 
                 playerAnt.GetComponent<PlayerController>().Respawn(substitute);
@@ -107,7 +107,7 @@ namespace RPG.Colony
                 return;
             }
 
-            MessageManager.Message("Game Over");
+            MessageManager.Message("Game Over", " You died", null, null);
 
         }
 
@@ -183,7 +183,7 @@ namespace RPG.Colony
             }
             if (markedForRemoval.Count > 0)
             {
-                MessageManager.Message(markedForRemoval.Count.ToString() + " princesses died due to starvation");
+                MessageManager.Message("Oops", markedForRemoval.Count.ToString() + " princesses died due to starvation", null, null);
 
                 for (int i = markedForRemoval.Count; i >= 0; i--)
                 {
@@ -192,7 +192,7 @@ namespace RPG.Colony
                 }
             }
 
-            if (foodConsumed > storage.StoredAmount) MessageManager.Message("SomeAnts are starving and may die. Gather some food Quick!!");
+            if (foodConsumed > storage.StoredAmount) MessageManager.Message("Carefull", "Some ants are starving and may die. Gather some food Quick!!", null, null);
             storage.Consume(foodConsumed);
         }
 
@@ -308,7 +308,7 @@ namespace RPG.Colony
         {
             if (instance.allAnts.Count >= instance.maxPopulation)
             {
-                MessageManager.Message("Reached Max population. Upgrade population limit to keep growing");
+                MessageManager.Message("Ooops", "Reached Max population. Upgrade population limit to keep growing",  null, null);
                 return;
             }
 

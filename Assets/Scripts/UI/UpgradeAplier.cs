@@ -20,6 +20,11 @@ namespace RPG.UI
         [SerializeField] Button button;
         [SerializeField] Text buttonText;
 
+        bool isMaxLevel;
+        bool isBuilding;
+
+        float remainingBuildTime;
+
         int upgradesDone = 0;
         Upgrade currentUpgrade { get { return upgrades[upgradesDone]; } }
 
@@ -39,11 +44,13 @@ namespace RPG.UI
 
         private void Update()
         {
+            if (isMaxLevel || isBuilding) return;
             checkCostCounter -= Time.deltaTime;
             if (checkCostCounter < 0)
             {
-                button.interactable = CheckCost();
                 checkCostCounter = checkCostTime;
+
+                button.interactable = CheckCost();
                 costText.text = GetCostText();
             }
         }
@@ -55,10 +62,10 @@ namespace RPG.UI
             sb.Append($"Food Cost:  {ColonyManager.GetStoredFood().ToString("0.0")} / {currentUpgrade.foodCost}");
             if (currentUpgrade.workerCost > 0)
             {
-                sb.AppendLine();  
+                sb.AppendLine();
                 sb.Append($"Workers needed: {ColonyManager.GetAvailableWorkersCount()}");
 
-                if(ColonyManager.GetFollowerCount() != 0)
+                if (ColonyManager.GetFollowerCount() != 0)
                 {
                     sb.Append($" + {ColonyManager.GetFollowerCount()} ");
                 }
@@ -73,30 +80,22 @@ namespace RPG.UI
 
         public void OnClick()
         {
+            if(isMaxLevel||isBuilding) return;
             if (!CheckCost()) return;
 
-            bool repetableClick = currentUpgrade.repeteable;
-
-            if (!repetableClick)
-            {
-                if ((upgradesDone + 1) < upgrades.Length)
-                {
-                    upgradesDone++;
-                    buttonText.text = currentUpgrade.upgradetext;
-                }
-            }
-
+            PayCost();
 
             if (currentUpgrade.upgradeTime > 0)
             {
-                Invoke("ApplyBonus", currentUpgrade.upgradeTime);
+                isBuilding = true;
+                buttonText.text = "Building";
+                button.interactable = false;
+                StartCoroutine(ApplyDelayedBonus(currentUpgrade.upgradeTime));
             }
             else
             {
                 ApplyBonus();
             }
-
-            PayCost();
         }
 
         bool CheckCost()
@@ -125,6 +124,28 @@ namespace RPG.UI
         void PayCost()
         {
             ColonyManager.ApplyCost(currentUpgrade.foodCost, currentUpgrade.workerCost, currentUpgrade.upgradeTime);
+        }
+
+        void UpdateTier()
+        {
+
+            bool repetableClick = currentUpgrade.repeteable;
+
+            if (!repetableClick)
+            {
+                if ((upgradesDone + 1) < upgrades.Length)
+                {
+                    upgradesDone++;
+                    buttonText.text = currentUpgrade.upgradetext;
+                }
+                else
+                {
+                    isMaxLevel = true;
+                    button.interactable = false;
+                    buttonText.text = "MAX";
+                    costText.text = "Max level reached";
+                }
+            }
         }
 
         void ApplyBonus()
@@ -187,7 +208,26 @@ namespace RPG.UI
                         return;
                     }
             }
+            UpdateTier();
         }
+
+        IEnumerator ApplyDelayedBonus(float delayedTime)
+        {
+            remainingBuildTime = delayedTime;
+            costText.text = $"Remaining time: {remainingBuildTime}s";
+
+            while( remainingBuildTime > 0)
+            {  
+                yield return new WaitForSeconds(1);
+                remainingBuildTime -= 1;
+                costText.text = $"Remaining time: {remainingBuildTime}s";
+            }
+
+            isBuilding = false;
+            ApplyBonus();
+
+        }
+
     }
 
 }
