@@ -15,9 +15,10 @@ namespace RPG.Core
         public float CarryCapacity => baseCarryCapacity + carryCapacityBonus;
         public float foodConsumption;
 
-        private void Awake()
+        public override void ResetBonus ()
         {
             carryCapacityBonus = 0;
+            base.ResetBonus();
         }
     }
 

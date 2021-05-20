@@ -326,6 +326,11 @@ namespace RPG.Colony
             instance.workerStats.healthBonus += bonus;
             AntStats stats = (AntStats)instance.playerAnt.GetComponent<StatsManager>().values;
             stats.healthBonus += bonus;
+
+            foreach(GameObject ant in instance.allAnts)
+            {
+                ant.GetComponent<Health>().Heal(bonus);
+            }
         }
 
         internal static void IncreaseMaxDamage(float bonus)

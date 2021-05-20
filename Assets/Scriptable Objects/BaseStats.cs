@@ -18,11 +18,12 @@ namespace RPG.Core
         public float speedBonus;
         public float Speed => baseSpeed + speedBonus;
 
-        private void Awake()
+        public virtual void ResetBonus()
         {
             healthBonus = 0;
             damageBonus = 0;
             speedBonus = 0;
         }
+
     }
 }

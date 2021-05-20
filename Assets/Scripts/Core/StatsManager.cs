@@ -10,5 +10,10 @@ namespace RPG.Core
     {
         public BaseStats values;
 
+        private void Awake()
+        {
+            values.ResetBonus();
+        }
+
     }
 }

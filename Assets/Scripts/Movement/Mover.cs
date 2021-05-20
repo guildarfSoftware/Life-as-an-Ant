@@ -15,7 +15,8 @@ namespace RPG.Movement
         NavMeshAgent navMeshAgent;
         Animator animator;
         StatsManager stats;
-
+        Vector3? destination;
+        float precision = 0.2f;
         float speed { get => stats.values.Speed; }
 
         // Start is called before the first frame update
@@ -30,20 +31,19 @@ namespace RPG.Movement
         // Update is called once per frame
         void Update()
         {
-            if (IsDead())
+            navMeshAgent.speed = speed;
+            if (IsDead()|| destination == null || ArrivedAtDestination())
             {
                 Cancel();
-                navMeshAgent.enabled = false;
             }
-            else
-            {
-                navMeshAgent.enabled = true;
-                navMeshAgent.speed = speed;
-                UpdateAnimator();
-            }
+
+            UpdateAnimator();
         }
 
-
+        private bool ArrivedAtDestination()
+        {
+            return (Vector3.Distance(destination.Value, transform.position) < precision);
+        }
 
         private bool IsDead()
         {
@@ -67,14 +67,15 @@ namespace RPG.Movement
         public bool MoveTo(Vector3 destination)
         {
             navMeshAgent.isStopped = false;
+            this.destination = destination;
             return navMeshAgent.SetDestination(destination);
         }
 
         public void Cancel()
         {
-            if (!navMeshAgent.enabled) return;
+            destination = null;
             navMeshAgent.isStopped = true;
-            navMeshAgent.velocity=Vector3.zero;
+            //navMeshAgent.velocity = Vector3.zero;
         }
     }
 }
