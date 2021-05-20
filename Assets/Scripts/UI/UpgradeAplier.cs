@@ -90,7 +90,15 @@ namespace RPG.UI
                 isBuilding = true;
                 buttonText.text = "Building";
                 button.interactable = false;
-                StartCoroutine(ApplyDelayedBonus(currentUpgrade.upgradeTime));
+                if(currentUpgrade.bonusElement == BonusElement.Population)
+                {
+                    BuildingIconManager.StartPopulationTimer(currentUpgrade.upgradeTime);
+                }
+                else if(currentUpgrade.bonusElement == BonusElement.Storage)
+                {
+                    BuildingIconManager.StartStorageTimer(currentUpgrade.upgradeTime);
+                }
+                CoroutineManager.Instance.StartCoroutine(ApplyDelayedBonus(currentUpgrade.upgradeTime));
             }
             else
             {
@@ -220,7 +228,7 @@ namespace RPG.UI
             {  
                 yield return new WaitForSeconds(1);
                 remainingBuildTime -= 1;
-                costText.text = $"Remaining time: {remainingBuildTime}s";
+                if(costText.isActiveAndEnabled) costText.text = $"Remaining time: {remainingBuildTime}s";
             }
 
             isBuilding = false;
