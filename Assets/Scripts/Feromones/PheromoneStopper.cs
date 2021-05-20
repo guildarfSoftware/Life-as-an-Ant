@@ -30,7 +30,7 @@ namespace RPG.Pheromones
                 PheromoneGenerator generator = ant.GetComponent<PheromoneGenerator>();
                 if (generator != null)
                 {
-                    generator.StopGeneration();
+                    generator.StopGeneration(transform);
                 }
             }
         }

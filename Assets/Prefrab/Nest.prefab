@@ -106,7 +106,7 @@ BoxCollider:
   m_Enabled: 1
   serializedVersion: 2
   m_Size: {x: 1, y: 1, z: 1.8925018}
-  m_Center: {x: 0, y: 0, z: 0.004600525}
+  m_Center: {x: 0, y: 0.5, z: 0.004600525}
 --- !u!114 &5902296734095268347
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -120,6 +120,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxCapacity: 200
+  storedAmount: 0
 --- !u!114 &7659749828079536000
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -132,6 +133,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5c2c781e672d3184e8f61220e9315ca6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  workerStats: {fileID: 0}
+  princesStats: {fileID: 0}
   workerPrefab: {fileID: 2968504244971946530, guid: 8f273831d711bb04a97f54777b569626,
     type: 3}
   startingAnts: 0

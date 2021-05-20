@@ -39,20 +39,7 @@ namespace RPG.Pheromones
             {
                 if (generating)
                 {
-                    PheromoneWaypoint newWaypoint = CreatePheromoneWaypoint();
-
-                    if (lastGenerated != null)
-                    {
-                        newWaypoint.distanceFromSource = lastGenerated.distanceFromSource + 1;
-                        lastGenerated.nextWaypoint = newWaypoint;
-                    }
-                    else //first waypoint of trail
-                    {
-                        AttachTrailGenerator();
-                    }
-
-                    newWaypoint.previousWaypoint = lastGenerated;
-                    lastGenerated = newWaypoint;
+                    AddPheromoneWaypoint(transform.position);
 
                     yield return new WaitForSeconds(timeBetweenWaypoints);
                 }
@@ -60,14 +47,13 @@ namespace RPG.Pheromones
             }
         }
 
-        private PheromoneWaypoint CreatePheromoneWaypoint()
+        private PheromoneWaypoint CreatePheromoneWaypoint(Vector3 position)
         {
-
             string name = (generatingType == PheromoneType.Combat ? "Combat" : "Harvest") + " Waypoint";
             name += " " + (lastGenerated == null ? 0 : lastGenerated.distanceFromSource + 1);
 
             GameObject waypointObject = new GameObject(name);//GameObject.CreatePrimitive(PrimitiveType.Sphere);
-            waypointObject.transform.position = transform.position;
+            waypointObject.transform.position = position;
 
             (waypointObject.AddComponent<SphereCollider>()).isTrigger = true;
             waypointObject.tag = generatingType == PheromoneType.Combat ? "PheromoneCombat" : "PheromoneHarvest";
@@ -99,14 +85,33 @@ namespace RPG.Pheromones
             generating = true;
         }
 
-        public void StopGeneration()
+        public void StopGeneration(Transform endPosition = null)
         {
-            if(generating)CreatePheromoneWaypoint();
+            if(endPosition == null) endPosition=transform;
+            if (generating) AddPheromoneWaypoint(endPosition.position);
             DetachTrailGenerator();
             generating = false;
             lastGenerated = null;
         }
 
+
+        private void AddPheromoneWaypoint(Vector3 position)
+        {
+            PheromoneWaypoint newWaypoint = CreatePheromoneWaypoint(position);
+
+            if (lastGenerated != null)
+            {
+                newWaypoint.distanceFromSource = lastGenerated.distanceFromSource + 1;
+                lastGenerated.nextWaypoint = newWaypoint;
+            }
+            else //first waypoint of trail
+            {
+                AttachTrailGenerator();
+            }
+
+            newWaypoint.previousWaypoint = lastGenerated;
+            lastGenerated = newWaypoint;
+        }
 
         private void AttachTrailGenerator()
         {
