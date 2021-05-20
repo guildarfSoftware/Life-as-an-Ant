@@ -74,6 +74,7 @@ namespace RPG.Movement
         {
             if (!navMeshAgent.enabled) return;
             navMeshAgent.isStopped = true;
+            navMeshAgent.velocity=Vector3.zero;
         }
     }
 }
