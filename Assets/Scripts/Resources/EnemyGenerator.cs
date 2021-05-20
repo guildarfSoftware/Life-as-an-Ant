@@ -5,6 +5,7 @@ using RPG.Map;
 using RPG.Core;
 using RPG.Harvest;
 using RPG.Control;
+using RPG.UI;
 
 namespace RPG.Resources
 {
@@ -14,7 +15,7 @@ namespace RPG.Resources
         [SerializeField] GameObject enemyPrefab;
         float eventTimer;
         const float timeBetweenEvents = 90;
-
+        private const int QueenTier = 3;
         [SerializeField] EnemyStats[] enemyStats;
         [SerializeField] PatrolPath[] editorDefinedPatrolsTierI;
         [SerializeField] PatrolPath[] editorDefinedPatrolsTierII;
@@ -32,6 +33,7 @@ namespace RPG.Resources
         List<GameObject> activeResources;
 
         [SerializeField]int dificultyValue; //increases on enemy kills and princess population
+        private bool spawnerActive = true;
 
         struct PatrolData
         {
@@ -53,7 +55,7 @@ namespace RPG.Resources
             GameObject nest = GameObject.FindGameObjectWithTag("Nest");
             if (nest != null) nestPosition = nest.transform.position;
 
-            createGuardian(3, transform.position);
+            createGuardian(QueenTier, transform.position);
 
             for (int tier = 0; tier < startingEnemies.Length; tier++)
             {
@@ -82,6 +84,7 @@ namespace RPG.Resources
 
         private void Update()
         {
+            if(!spawnerActive) return;
             eventTimer -= Time.deltaTime;
             patrolTimer -= Time.deltaTime;
             if (patrolTimer < 0)
@@ -175,6 +178,11 @@ namespace RPG.Resources
         {
             GameObject newEnemy = CreateMindlessEnemy(tier);
 
+            if(tier == QueenTier)
+            {
+                newEnemy.GetComponent<Health>().OnDeath+= OnQueenDeath;
+            }
+
             newEnemy.GetComponent<AIController>().SetGuardPosition(position);
 
         }
@@ -245,5 +253,16 @@ namespace RPG.Resources
             return position;
 
         }
+
+        private void OnQueenDeath()
+        {
+            spawnerActive = false;
+            MessageManager.Message("Congratulations",
+                                    "You have finally defeated the queen, now the colony will be ok. Do you want to exit now?", 
+                                    UIManager.LoadMenuScene,
+                                    MessageManager.CloseMessage);
+        }
+
+
     }
 }

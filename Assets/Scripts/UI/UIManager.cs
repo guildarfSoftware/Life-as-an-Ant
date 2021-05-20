@@ -112,11 +112,16 @@ namespace RPG.UI
 
         public void ExitToMenu()
         {
-            MessageManager.Message("Exit to Menu", "Are you sure you want to exit and lose all progress?",LoadMenuScene, MessageManager.CloseMessage );
+            MessageManager.Message("Exit to Menu", "Are you sure you want to exit and lose all progress?",_loadMenuScene, MessageManager.CloseMessage );
         }
-        void LoadMenuScene()
+        void _loadMenuScene()
         {
             SceneManager.LoadScene("MainMenu");
+        }
+
+        public static void LoadMenuScene()
+        {
+            instance._loadMenuScene();
         }
     }
 }
