@@ -5,6 +5,7 @@ using RPG.Core;
 using RPG.Colony;
 using System;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 namespace RPG.UI
 {
@@ -107,6 +108,15 @@ namespace RPG.UI
         public void DisableUpgradesMenu()
         {
             upgradesMenu.SetActive(false);
+        }
+
+        public void ExitToMenu()
+        {
+            MessageManager.Message("Exit to Menu", "Are you sure you want to exit and lose all progress?",LoadMenuScene, MessageManager.CloseMessage );
+        }
+        void LoadMenuScene()
+        {
+            SceneManager.LoadScene("MainMenu");
         }
     }
 }

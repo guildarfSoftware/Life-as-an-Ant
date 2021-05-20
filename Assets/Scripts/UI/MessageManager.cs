@@ -18,7 +18,7 @@ public class MessageManager : MonoBehaviour
     const float TimeBetweenMessages = 1f; //1 seccond since closing 1 message until another can show up
     bool messageActive;
 
-    Queue<MessageInfo> MessageQueue = new Queue<MessageInfo>();
+    static Queue<MessageInfo> MessageQueue = new Queue<MessageInfo>();
     void Start()
     {
         if (instance != null) Debug.LogWarning("multiple messageManager instances");
@@ -37,10 +37,9 @@ public class MessageManager : MonoBehaviour
 
     public static void Message(string title, string textInfo, UnityAction accept, UnityAction cancel)
     {
-
         MessageInfo message = new MessageInfo(title, textInfo, accept, cancel);
-        if (instance.MessageQueue.Contains(message)) return; //avoid repeated messages
-        instance.MessageQueue.Enqueue(message);
+        if (MessageQueue.Contains(message)) return; //avoid repeated messages
+        MessageQueue.Enqueue(message);
     }
 
     void MessagePopUp(MessageInfo message)
@@ -59,7 +58,7 @@ public class MessageManager : MonoBehaviour
         {
             buttonCancel.gameObject.SetActive(true);
             buttonCancel.onClick.AddListener(message.cancelAction);
-            buttonCancel.onClick.AddListener(CloseMessage);
+            buttonCancel.onClick.AddListener(_closeMessage);
         }
         else
         {
@@ -70,16 +69,21 @@ public class MessageManager : MonoBehaviour
         {
             buttonAccept.onClick.AddListener(message.acceptAction);
         }
-        buttonAccept.onClick.AddListener(CloseMessage);
+        buttonAccept.onClick.AddListener(_closeMessage);
 
     }
 
-    public void CloseMessage()
+    public void _closeMessage()
     {
         messageWindow.SetActive(false);
         messageActive = false;
         cooldDownTimer = TimeBetweenMessages;
         Time.timeScale = 1;
+    }
+
+    public static void CloseMessage()
+    {
+        //dummy method to close message externally usign message listener
     }
 
     struct MessageInfo
