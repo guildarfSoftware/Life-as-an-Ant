@@ -34,6 +34,7 @@ namespace RPG.Colony
 
         float timer1Second;
         internal Action onPopulationChange;
+        private int timeWithoutFood;
 
         public int AvailableAntsCount { get => availableAnts.Count; }
         public int currentPopulation { get => allAnts.Count; }
@@ -52,13 +53,14 @@ namespace RPG.Colony
             playerAnt = GameObject.FindGameObjectWithTag("Player");
             if (playerAnt != null)
             {
-                playerAnt.GetComponent<Health>().OnDeath += ()=>{Invoke("RespawnPlayer",1f);};
+                playerAnt.GetComponent<Health>().OnDeath += () => { Invoke("RespawnPlayer", 1f); };
                 leader = playerAnt.GetComponent<Leader>();
                 allAnts.Add(playerAnt);
             }
             storage = GetComponent<Storage>();
             storage.StoreResource(20);
 
+            WorkerPool.Initialize();
             for (int i = 0; i < startingAnts; i++)
             {
                 CreateWorker();
@@ -96,8 +98,8 @@ namespace RPG.Colony
             if (currentPopulation > 1)  //there is at least 1 ant apart from the player
             {
                 MessageManager.Message("Oops", "You Died but you can now control another ant of the colony", null, null);
-                GameObject substitute = allAnts[allAnts.Count-1];
-                
+                GameObject substitute = allAnts[allAnts.Count - 1];
+
                 playerAnt.GetComponent<PlayerController>().Respawn(substitute);
 
                 substitute.GetComponent<Health>().OnDeath();
@@ -113,86 +115,36 @@ namespace RPG.Colony
 
         void FeedAnts()
         {
-            float foodConsumed = 0;
-            int lowPriorityPrincesses = (int)(princesses.Count * 0.3f); // 30% of princesses will eat last to ensure some workers survive famine
-            List<int> markedForRemoval = new List<int>();
+            float foodConsumed = allAnts.Count * workerStats.foodConsumption;
 
-            if (storage.StoredAmount == 0)
+            if(foodConsumed> storage.StoredAmount)
             {
-                playerAnt.GetComponent<Health>().TakeDamage(1);
+                if(timeWithoutFood == 0)
+                {
+                    MessageManager.Message("Carefull", "Some ants are starving and may die. Gather some food Quick!!", null, null);
+                }
+                timeWithoutFood++;
             }
             else
             {
-                foodConsumed += workerStats.foodConsumption;
-                playerAnt.GetComponent<Health>().Heal(0.25f); //recover health lost
+                timeWithoutFood = 0;
             }
 
-            if (princesses.Count > 0)
+            if(timeWithoutFood> workerStats.Health)
             {
-                for (int i = 0; i < princesses.Count - lowPriorityPrincesses; i++)
+                int lastAntIndex = allAnts.Count-1;
+                Health lastAntHealth = allAnts[lastAntIndex].GetComponent<Health>();
+                if(lastAntIndex != 0)
                 {
-                    if (foodConsumed < storage.StoredAmount)
-                    {
-                        foodConsumed += princesStats.foodConsumption;
-                        princesses[i] += 0.25f; //recover health lost after hunger
-                        princesses[i] = Mathf.Min(princesses[i], princesStats.Health);
-                    }
-                    else
-                    {
-                        princesses[i] -= 1; //1 damage per second if can't eat;
-                        if (princesses[i] <= 0)
-                        {
-                            markedForRemoval.Add(i);
-                        }
-                    }
-                }
-            }
-
-            for (int i = 1; i < allAnts.Count; i++) //start on 1 because player is on position 0 and already fed
-            {
-                Health antHealth = allAnts[i].GetComponent<Health>();
-
-                if (foodConsumed < storage.StoredAmount)
-                {
-                    foodConsumed += workerStats.foodConsumption;
-                    antHealth.Heal(0.25f); //recover health lost after hunger
+                    lastAntHealth.TakeDamage(lastAntHealth.currentHealth);
                 }
                 else
                 {
-                    antHealth.TakeDamage(1);//1 damage per second if can't eat;
+                    lastAntHealth.TakeDamage(1);
                 }
+
             }
 
-
-            for (int i = lowPriorityPrincesses; i < princesses.Count; i++)  //low priority princesses eat last
-            {
-                if (foodConsumed < storage.StoredAmount)
-                {
-                    foodConsumed += princesStats.foodConsumption;
-                    princesses[i] += 0.25f; //recover health lost after hunger
-                    princesses[i] = Mathf.Min(princesses[i], princesStats.Health);
-                }
-                else
-                {
-                    princesses[i] -= 1; //1 damage per second if can't eat;
-                    if (princesses[i] <= 0)
-                    {
-                        markedForRemoval.Add(i);
-                    }
-                }
-            }
-            if (markedForRemoval.Count > 0)
-            {
-                MessageManager.Message("Oops", markedForRemoval.Count.ToString() + " princesses died due to starvation", null, null);
-
-                for (int i = markedForRemoval.Count; i >= 0; i--)
-                {
-                    int indexToRemove = markedForRemoval[i];
-                    princesses.RemoveAt(indexToRemove);
-                }
-            }
-
-            if (foodConsumed > storage.StoredAmount) MessageManager.Message("Carefull", "Some ants are starving and may die. Gather some food Quick!!", null, null);
             storage.Consume(foodConsumed);
         }
 
@@ -258,15 +210,18 @@ namespace RPG.Colony
 
         private void CreateWorker()
         {
-            GameObject newAnt = GameObject.Instantiate(workerPrefab);
+            GameObject newAnt = WorkerPool.GetWorker();
+            newAnt.transform.SetParent(transform, true);
+
             Vector3 spawnPos = transform.position;
             spawnPos.y = MapTools.getTerrainHeight(spawnPos);
             newAnt.transform.position = spawnPos;
-            newAnt.transform.parent = transform;
 
             newAnt.GetComponent<StatsManager>().values = workerStats;
 
             newAnt.GetComponent<Health>().OnDeath += () => { RemoveAnt(newAnt); };
+
+            newAnt.SetActive(true);
 
             allAnts.Add(newAnt);
             availableAnts.Add(newAnt);
@@ -308,7 +263,7 @@ namespace RPG.Colony
         {
             if (instance.allAnts.Count >= instance.maxPopulation)
             {
-                MessageManager.Message("Ooops", "Reached Max population. Upgrade population limit to keep growing",  null, null);
+                MessageManager.Message("Ooops", "Reached Max population. Upgrade population limit to keep growing", null, null);
                 return;
             }
 
@@ -324,10 +279,10 @@ namespace RPG.Colony
         internal static void IncreaseMaxHealth(float bonus)
         {
             instance.workerStats.healthBonus += bonus;
-            AntStats stats = (AntStats)instance.playerAnt.GetComponent<StatsManager>().values;
-            stats.healthBonus += bonus;
+            AntStats playerStats = (AntStats)instance.playerAnt.GetComponent<StatsManager>().values;
+            playerStats.healthBonus += bonus;
 
-            foreach(GameObject ant in instance.allAnts)
+            foreach (GameObject ant in instance.allAnts)
             {
                 ant.GetComponent<Health>().Heal(bonus);
             }
@@ -361,13 +316,13 @@ namespace RPG.Colony
         }
 
         public static int GetAvailableWorkersCount()
-        { 
+        {
             return instance.availableAnts.Count;
         }
 
         public static int GetFollowerCount()
         {
-            return  instance.followerAnts.Count;
+            return instance.followerAnts.Count;
         }
 
     }

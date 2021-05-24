@@ -12,14 +12,15 @@ namespace RPG.Resources
     {
         [SerializeField] GameObject foodPrefab;
         float spawnTimer;
+        [SerializeField] bool spawnAtStart;
         [SerializeField] float maxSpawnDistance, minSpawnDistance;
-        [SerializeField] const float spawnTime = 90;
+        [SerializeField] float spawnTime = 90;
         List<GameObject> activeResources;
         // Start is called before the first frame update
         void Start()
         {
             activeResources = new List<GameObject>();
-            SpawnFood(RandomPosition());
+            if(spawnAtStart)SpawnFood(RandomPosition());
         }
 
         // Update is called once per frame
@@ -50,6 +51,11 @@ namespace RPG.Resources
 
             Vector3 position = localPosition + transform.position;
             position.y = MapTools.getTerrainHeight(position);
+
+            if(!MapTools.SampleTerrainPosition(position, out position))
+            {
+                return RandomPosition();
+            } 
 
             return position;
 
