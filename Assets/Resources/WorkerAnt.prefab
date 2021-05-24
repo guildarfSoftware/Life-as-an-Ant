@@ -89,6 +89,11 @@ PrefabInstance:
       propertyPath: m_TagString
       value: Worker
       objectReference: {fileID: 0}
+    - target: {fileID: 1175064306015005883, guid: 6d0eebdde1daece4e8079c4e61617975,
+        type: 3}
+      propertyPath: m_Layer
+      value: 9
+      objectReference: {fileID: 0}
     - target: {fileID: 1947097027560322561, guid: 6d0eebdde1daece4e8079c4e61617975,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -175,6 +180,11 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 11400000, guid: 0fc20157e50914e48a77febbde289b15,
         type: 2}
+    - target: {fileID: 8383163474882752678, guid: 6d0eebdde1daece4e8079c4e61617975,
+        type: 3}
+      propertyPath: layerMask.m_Bits
+      value: 60416
+      objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 2058078041318833869, guid: 6d0eebdde1daece4e8079c4e61617975, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 6d0eebdde1daece4e8079c4e61617975, type: 3}

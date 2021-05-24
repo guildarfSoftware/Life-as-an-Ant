@@ -22,7 +22,7 @@ namespace RPG.Control
         {
             EntityDetector detector = GetComponentInChildren<EntityDetector>();
             if (detector == null) return null;
-            var workers = detector.GetEntitiesWithTag("Worker");
+            var workers = detector.GetEntitiesInLayer(LayerManager.workerLayer);
 
             foreach (var worker in workers)
             {

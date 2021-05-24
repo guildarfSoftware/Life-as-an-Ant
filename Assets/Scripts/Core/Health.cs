@@ -22,6 +22,7 @@ namespace RPG.Core
 
         public float currentHealth { private set; get; }
         public float MaxHealth { get => maxHealth; }
+        public Action onDamaged { get;  set; }
 
         private void Awake()
         {
@@ -34,6 +35,7 @@ namespace RPG.Core
         {
             currentHealth = Mathf.Clamp(currentHealth - amount, 0, maxHealth);
             OnHealthChange?.Invoke();
+            onDamaged?.Invoke();
             if (currentHealth == 0)
             {
                 Die();

@@ -8,9 +8,11 @@ namespace RPG.Core
     public class EntityDetector : MonoBehaviour
     {
         [SerializeField] float scanRange = 10f;
-
         List<GameObject> closeEntities = new List<GameObject>();
+        Dictionary<int, List<GameObject>> layeredEntities = new Dictionary<int, List<GameObject>>();
+        SphereCollider spCollider;
 
+        [SerializeField] LayerMask layerMask;
         public List<GameObject> CloseEntities { get => closeEntities; }
 
         public static EntityDetector CreateDetector(GameObject parent)
@@ -24,62 +26,99 @@ namespace RPG.Core
 
         private void Start()
         {
-            SphereCollider spCollider = GetComponent<SphereCollider>();
+            spCollider = GetComponent<SphereCollider>();
             spCollider.isTrigger = true;
             spCollider.radius = scanRange;
         }
 
         private void Update()
         {
-            for (int i = closeEntities.Count - 1; i >= 0; i--)    // @TODO change this method and find other way to remove null members
-            {
-                if (closeEntities[i] == null) closeEntities.RemoveAt(i);
-            }
+            // for (int i = closeEntities.Count - 1; i >= 0; i--)    // @TODO change this method and find other way to remove null members
+            // {
+            //     if (closeEntities[i] == null) closeEntities.RemoveAt(i);
+            // }
+
         }
 
         private void OnTriggerEnter(Collider other)
         {
-            closeEntities.Add(other.gameObject);
+            GameObject gObject = other.gameObject;
+            int layer = gObject.layer;
+
+            if (!inLayerMask(layer)) return;
+
+            if (!layeredEntities.ContainsKey(layer))
+            {
+                layeredEntities.Add(layer, new List<GameObject>());
+
+            }
+            layeredEntities[layer].Add(gObject);
+        }
+
+        private bool inLayerMask(int layer)
+        {
+            int bitwiseLayer = 1 << layer;
+
+            return (bitwiseLayer & layerMask.value) != 0;
         }
 
         private void OnTriggerExit(Collider other)
         {
-            if (closeEntities.Contains(other.gameObject))
+            GameObject gObject = other.gameObject;
+            int layer = gObject.layer;
+
+            if (!inLayerMask(layer)) return;
+
+            // if (closeEntities.Contains(other.gameObject))
+            // {
+            //     closeEntities.Remove(other.gameObject);
+            // }
+
+            //if (layeredEntities.ContainsKey(layer) && layeredEntities[layer].Contains(gObject))
             {
-                closeEntities.Remove(other.gameObject);
+                layeredEntities[layer].Remove(gObject);
             }
         }
 
-        public List<GameObject> GetEntitiesWithTag(string tag)
+        public IList<GameObject> GetEntitiesInLayer(int layer)
         {
-            List<GameObject> rList = new List<GameObject>();
-            for (int i = 0; i < closeEntities.Count; i++)
+            if (!layeredEntities.ContainsKey(layer)) return new List<GameObject>();
+
+            for (int i = layeredEntities[layer].Count - 1; i >= 0; i--)
             {
-                GameObject entity = closeEntities[i];
-                if (entity != null && entity.tag == tag) rList.Add(entity);
+                if (layeredEntities[layer][i] == null) layeredEntities[layer].RemoveAt(i);
             }
 
-            return rList;
+            return layeredEntities[layer].AsReadOnly();
         }
-        public GameObject GetEntityWithTag(string tag)
+        public GameObject GetEntityInLayer(int layer)
         {
-            List<GameObject> rList = new List<GameObject>();
-            for (int i = 0; i < closeEntities.Count; i++)
-            {
-                GameObject entity = closeEntities[i];
-                if (entity != null && entity.tag == tag) return entity;
-            }
-            return null;
+            IList<GameObject> rList = GetEntitiesInLayer(layer);
+            if (rList.Count == 0) return null;
+            return rList[0];
         }
 
-        public void Sort(Comparison<GameObject> comparison)
+        public GameObject GetClosestEntityInLayer(int layer)
         {
-            closeEntities.Sort(comparison);
+            List<GameObject> list = new List<GameObject>(GetEntitiesInLayer(layer));
+
+            list.Sort((a, b) => GetSquareDistance(a).CompareTo(GetSquareDistance(b)));  //sort by distance
+
+            if (list == null || list.Count == 0) return null;
+
+            return list[0];
         }
 
         internal void Reset()
         {
-            closeEntities.Clear();
+            layeredEntities.Clear();
+        }
+
+        private float GetSquareDistance(GameObject gObject)
+        {
+            if (gObject == null) return -1;
+            Vector3 result = transform.position - gObject.transform.position;
+            return result.sqrMagnitude;
         }
     }
 }

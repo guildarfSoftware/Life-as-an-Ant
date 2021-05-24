@@ -19,14 +19,14 @@ TagManager:
   - UI
   - 
   - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
+  - Player
+  - Worker
+  - Enemy
+  - Food
+  - Detector
+  - Nest
+  - PheromonesCombat
+  - PheromonesHarvest
   - 
   - 
   - 

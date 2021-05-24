@@ -20,7 +20,7 @@ GameObject:
   - component: {fileID: 1106264261455282929}
   - component: {fileID: 6755541054022420201}
   - component: {fileID: 6903847099028157001}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Enemy
   m_TagString: Enemy
   m_Icon: {fileID: 0}
@@ -213,7 +213,7 @@ GameObject:
   - component: {fileID: 2949871979803495052}
   - component: {fileID: 4938586375417666618}
   - component: {fileID: 7619658252214557614}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: Detector
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -260,6 +260,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   scanRange: 10
+  layerMask:
+    serializedVersion: 2
+    m_Bits: 768
 --- !u!1001 &5264053649242981838
 PrefabInstance:
   m_ObjectHideFlags: 0

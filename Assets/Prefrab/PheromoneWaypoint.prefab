@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 8975862554239093627}
   - component: {fileID: 8975862554239093626}
   - component: {fileID: 8975862554239093621}
-  m_Layer: 0
+  m_Layer: 14
   m_Name: PheromoneWaypoint
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -106,4 +106,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 65518642d8d37e84e98c4d88ecd535d5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  feromoneType: 0
+  distanceFromSource: 0
+  previousWaypoint: {fileID: 0}
+  nextWaypoint: {fileID: 0}
+  pheromoneType: 0

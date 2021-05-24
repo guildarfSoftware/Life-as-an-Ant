@@ -151,12 +151,14 @@ namespace RPG.Control
         {
             if (detector != null)
             {
-                string tag = pheromoneType == PheromoneType.Harvest ? "PheromoneHarvest" : "PheromoneCombat";
-                List<GameObject> waypoints = detector.GetEntitiesWithTag(tag);
-                if (waypoints.Count != 0)
+                IList<GameObject> waypoints = detector.GetEntitiesInLayer(LayerManager.pheromoneCombatLayer);
+                foreach (GameObject waypoint in waypoints)
                 {
-                    return false;
-                }
+                    if (waypoint.GetComponent<PheromoneWaypoint>().distanceFromSource == 0)
+                    {
+                        return false;
+                    }
+                }    
             }
             pheromoneGenerator.StartGeneration(pheromoneType);
             return true;

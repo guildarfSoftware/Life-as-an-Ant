@@ -13,6 +13,7 @@ namespace RPG.Pheromones
     //@TODO Change first node to reference the source, leads somewhere will be false id the reference disapears
     public class PheromoneWaypoint : MonoBehaviour
     {
+        int routeID;
         public float killTime { get; private set;}
         float elapsedTime;
         private const float timeToDestroy = 240;
@@ -36,14 +37,19 @@ namespace RPG.Pheromones
         public void SetPheromoneType(PheromoneType type)
         {
             pheromoneType = type;
-            // if (pheromoneType == PheromoneType.Harvest)
-            // {
-            //     gameObject.GetComponent<MeshRenderer>().material.color = Color.yellow;
-            // }
-            // else
-            // {
-            //     gameObject.GetComponent<MeshRenderer>().material.color = Color.red;
-            // }
+
+            int pheromoneLayer;
+
+            if (type == PheromoneType.Combat)
+            {
+                pheromoneLayer = LayerManager.pheromoneCombatLayer;
+            }
+            else
+            {
+                pheromoneLayer = LayerManager.pheromoneHarvestLayer;
+            }
+            
+            gameObject.layer = pheromoneLayer;
         }
 
         public void UpdateKillTime()

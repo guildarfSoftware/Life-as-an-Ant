@@ -76,13 +76,13 @@ namespace RPG.Control
         {
             if (detector == null) return null;
 
-            List<GameObject> workerAnts = detector.GetEntitiesWithTag("Worker");
+            IList<GameObject> workerAnts = detector.GetEntitiesInLayer(LayerManager.workerLayer);
             foreach (GameObject target in workerAnts)
             {
                 if (target != null && fighter.CanAttack(target)) return target;
             }
 
-            target = detector.GetEntityWithTag("Player");
+            target = detector.GetEntityInLayer(LayerManager.playerLayer);
 
             if (target != null && fighter.CanAttack(target)) return target;
 

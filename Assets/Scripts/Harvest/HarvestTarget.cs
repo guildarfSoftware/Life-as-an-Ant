@@ -11,7 +11,8 @@ namespace RPG.Harvest
 
         private void Start()
         {
-            if(GetComponent<Health>()!=null) GetComponent<Health>().OnDeath += ()=>gameObject.tag = "Food"; //if it was alive, on death change tag to food 
+            Health health =GetComponent<Health>();
+            if(health!=null) health.OnDeath += ()=>gameObject.layer = LayerManager.foodLayer; //if it was alive, on death change tag to food 
         }
 
 

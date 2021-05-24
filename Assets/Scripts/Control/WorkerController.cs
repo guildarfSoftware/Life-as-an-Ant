@@ -41,7 +41,8 @@ namespace RPG.Control
 
         private void OnDisable()
         {
-            StopPheromones();
+            generatingPheromones = false;
+            GetComponent<PheromoneGenerator>().StopGeneration();
             if (harvester != null) harvester.fooodGrabbed -= StartFoodPheromones;
             if (fighter != null) fighter.EnterCombat -= StartCombatPheromones;
         }
@@ -49,7 +50,7 @@ namespace RPG.Control
         public void DeathAnimationEnd() //called on antDeath Animation
         {
             CreateCorpse();
-            transform.GetChild(0).localRotation =  Quaternion.Euler(0,-90,0);
+            transform.GetChild(0).localRotation = Quaternion.Euler(0, -90, 0);
             WorkerPool.ReturnWorker(gameObject);
         }
 
@@ -103,9 +104,13 @@ namespace RPG.Control
         {
             if (!generatingPheromones) return false;
             GetComponent<Mover>().StartMovement(nest.transform.position);
-            if (GetDistance(nest) < stopPheromoneDistance)
+
+            float distanceToNest = Vector3.Distance(nest.transform.position, transform.position);
+
+            if (distanceToNest < stopPheromoneDistance)
             {
-                StopPheromones();
+                GetComponent<PheromoneGenerator>().StopGeneration(nest.transform);
+                generatingPheromones = false;
                 return false;
             }
             return true;
@@ -123,7 +128,7 @@ namespace RPG.Control
 
         bool EvaluateCombat()
         {
-            GameObject target = GetClosestEntityWithTag("Enemy");
+            GameObject target = detector.GetClosestEntityInLayer(LayerManager.enemyLayer);
             if (target != null && fighter.CanAttack(target))    //an enemy is close enought to attack
             {
                 GetComponent<Fighter>().Attack(target);
@@ -149,7 +154,7 @@ namespace RPG.Control
 
         bool EvaluateHarvest()
         {
-            GameObject target = GetClosestEntityWithTag("Food");
+            GameObject target = detector.GetClosestEntityInLayer(LayerManager.foodLayer);
             if (target != null && harvester.CanHarvest(target))
             {
                 harvester.Harvest(target);
@@ -175,23 +180,17 @@ namespace RPG.Control
 
         bool FollowCloseTrail(PheromoneType type)   // follows a trail of the type if exist return true
         {
-            List<GameObject> waypoints;
+            IList<GameObject> waypoints;
             if (type == PheromoneType.Combat)
             {
-                waypoints = detector.GetEntitiesWithTag("PheromoneCombat");
+                waypoints = detector.GetEntitiesInLayer(LayerManager.pheromoneCombatLayer);
             }
             else
             {
-                waypoints = detector.GetEntitiesWithTag("PheromoneHarvest");
+                waypoints = detector.GetEntitiesInLayer(LayerManager.pheromoneHarvestLayer);
             }
 
             PheromoneWaypoint target = GetWaypointClosestToSource(waypoints);
-
-            if (target != null && target.LeadsSomewhere())
-            {
-                pheromoneFollower.StartRoute(target);
-                return true;
-            }
 
             return false;
         }
@@ -208,7 +207,7 @@ namespace RPG.Control
             return false;
         }
 
-        PheromoneWaypoint GetWaypointClosestToSource(List<GameObject> waypoints)
+        PheromoneWaypoint GetWaypointClosestToSource(IList<GameObject> waypoints)
         {
             PheromoneWaypoint returnedWaypoint = null;
             if (waypoints != null && waypoints.Count != 0)
@@ -227,48 +226,47 @@ namespace RPG.Control
             return returnedWaypoint;
         }
 
-        private GameObject GetClosestEntityWithTag(string tag)
-        {
-            List<GameObject> list = detector.GetEntitiesWithTag(tag);
-
-            list.Sort((a, b) => GetDistance(a).CompareTo(GetDistance(b)));  //sort by distance
-
-            if (list == null || list.Count == 0) return null;
-
-            return list[0];
-        }
-
-        private float GetDistance(GameObject gObject)
-        {
-            if (gObject == null) return -1;
-            return Vector3.Distance(transform.position, gObject.transform.position);
-        }
-
-
         void StartFoodPheromones()
         {
-            if (detector.GetEntityWithTag("PheromoneHarvest") == null) //check to avoid multiple trails
-            {
-                GetComponent<PheromoneGenerator>().StartGeneration(PheromoneType.Harvest);
-                generatingPheromones = true;
-            }
+            if (PheromonesInRange(PheromoneType.Harvest)) return;
+
+            GetComponent<PheromoneGenerator>().StartGeneration(PheromoneType.Harvest);
+            generatingPheromones = true;
         }
 
         void StartCombatPheromones()
         {
-            if (detector.GetEntityWithTag("PheromoneCombat") == null) //check to avoid multiple trails
-            {
-                GetComponent<PheromoneGenerator>().StartGeneration(PheromoneType.Combat);
-                generatingPheromones = true;
-            }
+            if (PheromonesInRange(PheromoneType.Combat)) return;
+
+            GetComponent<PheromoneGenerator>().StartGeneration(PheromoneType.Combat);
+            generatingPheromones = true;
         }
 
 
-        void StopPheromones()
+        public bool PheromonesInRange(PheromoneType type)
         {
-            GetComponent<PheromoneGenerator>().StopGeneration();
-            generatingPheromones = false;
-        }
+            int pheromoneLayer;
 
+            if (type == PheromoneType.Combat)
+            {
+                pheromoneLayer = LayerManager.pheromoneCombatLayer;
+            }
+            else
+            {
+                pheromoneLayer = LayerManager.pheromoneHarvestLayer;
+            }
+
+            IList<GameObject> waypoints = detector.GetEntitiesInLayer(pheromoneLayer);
+            foreach (GameObject waypointObject in waypoints)
+            {
+                PheromoneWaypoint waypoint = waypointObject.GetComponent<PheromoneWaypoint>();
+                if (waypoint.pheromoneType == type && waypoint.distanceFromSource == 0)
+                {
+                    return true;
+                }
+
+            }
+            return false;
+        }
     }
 }

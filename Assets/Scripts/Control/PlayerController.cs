@@ -6,6 +6,7 @@ using RPG.Core;
 using RPG.Harvest;
 using RPG.Pheromones;
 using UnityEngine.EventSystems;
+using System.Collections.Generic;
 
 namespace RPG.Control
 {
@@ -81,8 +82,8 @@ namespace RPG.Control
             foreach (RaycastHit hit in hits)
             {
                 Storage target = hit.transform.GetComponent<Storage>();
-                
-                
+
+
                 if (target == null || !harvester.CanStore(target.gameObject)) continue;
 
                 if (Input.GetMouseButtonDown(0))
@@ -129,7 +130,7 @@ namespace RPG.Control
         }
 
         public void DeathAnimationEnd()
-        {}
+        { }
 
         private bool EvaluateMovement()
         {
@@ -153,22 +154,46 @@ namespace RPG.Control
         }
         void StartFoodPheromones()
         {
-            if (detector.GetEntityWithTag("PheromoneHarvest") == null) //check to avoid multiple trails
-            {
-                GetComponent<PheromoneGenerator>().StartGeneration(PheromoneType.Harvest, pheromoneTrailDuration);
-                generatingPheromones = true;
-            }
+            if (PheromonesInRange(PheromoneType.Harvest)) return;
+
+            GetComponent<PheromoneGenerator>().StartGeneration(PheromoneType.Harvest, pheromoneTrailDuration);
+            generatingPheromones = true;
         }
 
         void StartCombatPheromones()
         {
-            if (detector.GetEntityWithTag("PheromoneCombat") == null) //check to avoid multiple trails
-            {
-                GetComponent<PheromoneGenerator>().StartGeneration(PheromoneType.Combat, pheromoneTrailDuration);
-                generatingPheromones = true;
-            }
+            if (PheromonesInRange(PheromoneType.Combat)) return;
+
+            GetComponent<PheromoneGenerator>().StartGeneration(PheromoneType.Combat, pheromoneTrailDuration);
+            generatingPheromones = true;
         }
 
+
+        public bool PheromonesInRange(PheromoneType type)
+        {
+            int pheromoneLayer;
+
+            if(type==PheromoneType.Combat)
+            {
+                pheromoneLayer = LayerManager.pheromoneCombatLayer;
+            }
+            else
+            {
+                pheromoneLayer = LayerManager.pheromoneHarvestLayer;
+            }
+
+            IList<GameObject> waypoints = detector.GetEntitiesInLayer(pheromoneLayer);
+            foreach (GameObject waypointObject in waypoints)
+            {
+                PheromoneWaypoint waypoint = waypointObject.GetComponent<PheromoneWaypoint>();
+                if (waypoint.distanceFromSource == 0)
+                {
+                    return true;
+                }
+
+            }
+            return false;
+        }
 
         void StopPheromones()
         {
