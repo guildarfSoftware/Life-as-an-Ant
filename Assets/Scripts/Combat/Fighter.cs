@@ -12,17 +12,48 @@ namespace RPG.Combat
         [SerializeField] float timeBetweenAtacks = 12.0f;
 
         StatsManager stats;
+        Health health;
         [SerializeField] float damage { get => stats.values.Damage; }
         Health target;
         public Action EnterCombat;
+
+        float healingSpeed = 0.5f;
+
+        float inCombatCounter;
+        float inCombatTime = 5f;
         float timeSinceLastAttack = Mathf.Infinity;
+
+        private void Awake()
+        {
+            health = GetComponent<Health>();
+        }
+        void OnEnable()
+        {
+            EnterCombat+= ()=>{inCombatCounter = inCombatTime;};
+            health.onDamaged += EnterCombat;
+        }
+
+        void OnDisable()
+        {
+            health.onDamaged -= EnterCombat;    
+        }
 
         private void Update()
         {
             stats = GetComponent<StatsManager>();
             timeSinceLastAttack += Time.deltaTime;
+            inCombatCounter -= Time.deltaTime;
 
-            if (target == null) return;
+            if (inCombatCounter < 0)
+            {
+                health.Heal(healingSpeed * Time.deltaTime);
+            }
+            
+            if (target == null)
+            {
+                inCombatCounter = 0;
+                return;
+            }
 
             if (GetIsInRange())
             {
@@ -33,6 +64,7 @@ namespace RPG.Combat
             {
                 GetComponent<Mover>().MoveTo(target.transform.position);
             }
+
 
         }
 
