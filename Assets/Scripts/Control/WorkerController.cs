@@ -21,7 +21,7 @@ namespace RPG.Control
         float stopPheromoneDistance = 3f;
         bool generatingPheromones;
 
-        private void Start()
+        private void Awake()
         {
             detector = GetComponentInChildren<EntityDetector>();
             pheromoneFollower = GetComponent<PheromoneFollower>();
@@ -29,18 +29,34 @@ namespace RPG.Control
             fighter = GetComponent<Fighter>();
             explorer = GetComponent<Explorer>();
             health = GetComponent<Health>();
+            nest = GameObject.FindGameObjectWithTag("Nest");
+        }
+
+        private void OnEnable()
+        {
 
             harvester.fooodGrabbed += StartFoodPheromones;
             fighter.EnterCombat += StartCombatPheromones;
-
-            nest = GameObject.FindGameObjectWithTag("Nest");
         }
+
+        private void OnDisable()
+        {
+            StopPheromones();
+            if (harvester != null) harvester.fooodGrabbed -= StartFoodPheromones;
+            if (fighter != null) fighter.EnterCombat -= StartCombatPheromones;
+        }
+
+        public void DeathAnimationEnd() //called on antDeath Animation
+        {
+            CreateCorpse();
+            transform.GetChild(0).localRotation =  Quaternion.Euler(0,-90,0);
+            WorkerPool.ReturnWorker(gameObject);
+        }
+
         private void Update()
         {
             if (health.IsDead)
             {
-                Destroy(this);
-                Destroy(gameObject, 30);
                 return;
             }
 
@@ -54,6 +70,23 @@ namespace RPG.Control
             if (EvaluateExplore()) return;
 
             GetComponent<Mover>().MoveTo(nest.transform.position);  // if nothing else can be done wait in the nest
+        }
+
+        private void CreateCorpse()
+        {
+            Transform bodyTransform = transform.GetChild(0);
+            GameObject corpse = Instantiate(bodyTransform.gameObject, bodyTransform.position, bodyTransform.rotation);
+            GameObject.Destroy(corpse, 30);
+        }
+
+        public void Initialize()
+        {
+            if (health.IsDead)
+            {
+                health.Revive();
+            }
+            detector.Reset();
+            GetComponent<ActionScheduler>().CancelCurrentAction();
         }
 
 
@@ -237,11 +270,5 @@ namespace RPG.Control
             generatingPheromones = false;
         }
 
-
-        private void OnDisable()
-        {
-            if (harvester != null) harvester.fooodGrabbed -= StartFoodPheromones;
-            if (fighter != null) fighter.EnterCombat -= StartCombatPheromones;
-        }
     }
 }

@@ -46,7 +46,6 @@ namespace RPG.Core
 
             isDead = true;
 
-
             GetComponent<Animator>().SetTrigger("die");
             GetComponent<Animator>().SetBool("Dead", true);
             GetComponent<ActionScheduler>().CancelCurrentAction();
@@ -66,7 +65,7 @@ namespace RPG.Core
         {
             currentHealth = maxHealth;
             isDead = false;
-            OnHealthChange();
+            OnHealthChange?.Invoke();
             GetComponent<Animator>().ResetTrigger("die");
             GetComponent<Animator>().SetBool("Dead", false);
         }

@@ -128,6 +128,9 @@ namespace RPG.Control
             health.Revive();
         }
 
+        public void DeathAnimationEnd()
+        {}
+
         private bool EvaluateMovement()
         {
             if (OverUIElement()) return false;

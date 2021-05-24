@@ -77,5 +77,9 @@ namespace RPG.Core
             closeEntities.Sort(comparison);
         }
 
+        internal void Reset()
+        {
+            closeEntities.Clear();
+        }
     }
 }
