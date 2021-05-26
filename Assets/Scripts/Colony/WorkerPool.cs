@@ -13,7 +13,7 @@ public class WorkerPool
     const int initialCapacity = 6;
 
 
-    public static void Initialize()
+    public static void Initialize(GameObject caller)
     {
         prefabWorker = Resources.Load<GameObject>("WorkerAnt");
 
@@ -21,7 +21,9 @@ public class WorkerPool
 
         for (int i = 0; i < pool.Capacity; i++)
         {
-            pool.Add(GetNewWorker());
+            GameObject newWorker = GetNewWorker();
+            newWorker.transform.SetParent(caller.transform);
+            pool.Add(newWorker);
         }
 
 
@@ -68,7 +70,7 @@ public class WorkerPool
         {
             controller = worker.AddComponent<WorkerController>();
         }
-        
+
         worker.SetActive(false);
         pool.Add(worker);
     }

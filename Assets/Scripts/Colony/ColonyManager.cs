@@ -60,7 +60,7 @@ namespace RPG.Colony
             storage = GetComponent<Storage>();
             storage.StoreResource(20);
 
-            WorkerPool.Initialize();
+            WorkerPool.Initialize(this.gameObject);
             for (int i = 0; i < startingAnts; i++)
             {
                 CreateWorker();

@@ -37,7 +37,7 @@ namespace RPG.Pheromones
 
         private void Start()
         {
-            if(routesContainer == null) routesContainer = new GameObject("Routes");
+            if (routesContainer == null) routesContainer = new GameObject("Routes");
             StartCoroutine(GenerationProcess());
         }
 
@@ -54,10 +54,10 @@ namespace RPG.Pheromones
         {
             while (!safeExit)
             {
-                if(generating)
+                if (generating)
                 {
                     AddPheromoneWaypoint(transform.position);
-                   yield return new WaitForSeconds(timeBetweenWaypoints);
+                    yield return new WaitForSeconds(timeBetweenWaypoints);
                 }
                 yield return null;
             }
@@ -90,11 +90,11 @@ namespace RPG.Pheromones
             if (!generating) return;
             if (endPosition != null)
             {
-                 AddPheromoneWaypoint(endPosition.position);
+                AddPheromoneWaypoint(endPosition.position);
             }
 
             StopTrailGenerator();
-            
+
             currentRoute = null;
             generating = false;
             lastGenerated = null;
@@ -130,9 +130,16 @@ namespace RPG.Pheromones
         {
             GameObject trailGenerator = new GameObject("Trail Generator");
 
-            GameObject trailRoute = currentRoute;
+            int routeIndex = routeCount;
 
-            trailGenerator.AddComponent<OnDestroyListener>().AddListener(()=>{Destroy(trailRoute);});
+            trailGenerator.AddComponent<OnDestroyListener>().AddListener(
+            () =>
+                {
+                    GameObject trailRoute = routes[routeIndex];
+                    routes.Remove(routeIndex);
+                    Destroy(trailRoute);
+                }
+            );
 
             TrailRenderer trailRenderer = trailGenerator.AddComponent<TrailRenderer>();
             trailRenderer.time = float.MaxValue;
