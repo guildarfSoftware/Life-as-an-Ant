@@ -21,6 +21,7 @@ namespace RPG.Pheromones
 
         private void Start()
         {
+            if(routesContainer == null) routesContainer = new GameObject("Routes");
             StartCoroutine(GenerationProcess());
         }
 

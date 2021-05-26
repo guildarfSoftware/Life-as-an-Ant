@@ -192,6 +192,12 @@ namespace RPG.Control
 
             PheromoneWaypoint target = GetWaypointClosestToSource(waypoints);
 
+            if (target != null && target.LeadsSomewhere())
+            {
+                pheromoneFollower.StartRoute(target);
+                return true;
+            }
+
             return false;
         }
 
