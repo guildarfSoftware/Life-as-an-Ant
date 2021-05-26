@@ -77,5 +77,10 @@ namespace RPG.Movement
             navMeshAgent.isStopped = true;
             //navMeshAgent.velocity = Vector3.zero;
         }
+
+        public bool isCancelable()
+        {
+            return true;
+        }
     }
 }

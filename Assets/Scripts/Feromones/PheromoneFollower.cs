@@ -72,5 +72,10 @@ namespace RPG.Pheromones
             lastWaypoint = null;
             targetWaypoint = null;
         }
+
+        public bool isCancelable()
+        {
+            return true;
+        }
     }
 }

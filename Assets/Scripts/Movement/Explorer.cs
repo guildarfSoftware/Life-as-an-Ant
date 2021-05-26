@@ -101,5 +101,9 @@ namespace RPG.Movement
             Gizmos.DrawSphere(targetPosition,1f);
         }
 
+        public bool isCancelable()
+        {
+            return true;
+        }
     }
 }

@@ -15,6 +15,8 @@ namespace RPG.Harvest
         public bool IsFull { get => carryAmount >= maxCapacity; }
         public bool IsEmpty { get => carryAmount == 0; }
         GameObject target;
+
+        bool onAnimation;
         [SerializeField] GameObject food;
 
         public Action fooodGrabbed;
@@ -68,6 +70,7 @@ namespace RPG.Harvest
 
             GetComponent<Animator>().ResetTrigger("stopAttack");
             GetComponent<Animator>().SetTrigger("attack");
+            onAnimation = true;
         }
 
         private void HarvestBehaviour()
@@ -83,6 +86,7 @@ namespace RPG.Harvest
 
             GetComponent<Animator>().ResetTrigger("stopAttack");
             GetComponent<Animator>().SetTrigger("attack");
+            onAnimation = true;
         }
 
         private void LookAt(Transform target)//Looks at transform only rotating in Y axys
@@ -140,6 +144,7 @@ namespace RPG.Harvest
             target = null;
             GetComponent<Animator>().SetTrigger("stopAttack");
             GetComponent<Animator>().ResetTrigger("attack");
+            onAnimation = false;
         }
 
         //Animator Event
@@ -155,6 +160,7 @@ namespace RPG.Harvest
                 Cancel();
                 return;
             }
+            onAnimation = false;
         }
 
         private bool StorageHit()
@@ -178,6 +184,11 @@ namespace RPG.Harvest
             food.SetActive(true);
             fooodGrabbed?.Invoke();
             return true;
+        }
+
+        public bool isCancelable()
+        {
+            return !onAnimation;
         }
 
     }

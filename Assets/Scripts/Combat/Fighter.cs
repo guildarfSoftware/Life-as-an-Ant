@@ -10,7 +10,7 @@ namespace RPG.Combat
     {
         [SerializeField] float weaponRange = 2.0f;
         [SerializeField] float timeBetweenAtacks = 12.0f;
-
+        bool onAnimation;
         StatsManager stats;
         Health health;
         [SerializeField] float damage { get => stats.values.Damage; }
@@ -83,6 +83,7 @@ namespace RPG.Combat
 
                 GetComponent<Animator>().ResetTrigger("stopAttack");
                 GetComponent<Animator>().SetTrigger("attack");
+                onAnimation = true;
                 timeSinceLastAttack = 0;
             }
         }
@@ -120,6 +121,7 @@ namespace RPG.Combat
             target = null;
             GetComponent<Animator>().SetTrigger("stopAttack");
             GetComponent<Animator>().ResetTrigger("attack");
+            onAnimation = false;
         }
 
         //Animator Event
@@ -128,8 +130,14 @@ namespace RPG.Combat
             if (target == null) return;
             target.TakeDamage(damage);
             EnterCombat?.Invoke();
+            onAnimation = false;
+            
         }
 
+        public bool isCancelable()
+        {
+            return !onAnimation;
+        }
     }
 
 }
