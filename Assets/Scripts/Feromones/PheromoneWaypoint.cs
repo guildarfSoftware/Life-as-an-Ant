@@ -1,5 +1,6 @@
 
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace RPG.Pheromones
@@ -14,11 +15,12 @@ namespace RPG.Pheromones
     public class PheromoneWaypoint : MonoBehaviour
     {
         int routeID;
-        public float killTime { get; private set;}
+        public float killTime { get; private set; }
         float elapsedTime;
         private const float timeToDestroy = 240;
         public int distanceFromSource = 0;
         bool leadsSomewhere = true; //indicates if the route ends somewhere with food or enemies true by default
+        PheromoneWaypoint sourceWaypoint;
         public PheromoneWaypoint previousWaypoint;
         public PheromoneWaypoint nextWaypoint;      //points toward source: food or enemy
         public PheromoneType pheromoneType;
@@ -48,13 +50,13 @@ namespace RPG.Pheromones
             {
                 pheromoneLayer = LayerManager.pheromoneHarvestLayer;
             }
-            
+
             gameObject.layer = pheromoneLayer;
         }
 
         public void UpdateKillTime()
         {
-            if(leadsSomewhere) killTime = timeToDestroy;
+            if (leadsSomewhere) killTime = timeToDestroy;
         }
 
         private void OnDrawGizmos()
@@ -73,7 +75,8 @@ namespace RPG.Pheromones
 
         public void DisableRoute()
         {
-            GetSourceWaypoint().MarkAsInvalid();    // search the source node and marks it and all the following invalid
+            if (sourceWaypoint == null) return;
+            sourceWaypoint.MarkAsInvalid();    // search the source node and marks it and all the following invalid
         }
 
         /*
@@ -85,22 +88,50 @@ namespace RPG.Pheromones
             killTime = distanceFromSource;
 
             TrailRenderer trailR = GetComponentInChildren<TrailRenderer>();
-            if(trailR!=null) trailR.time = elapsedTime + killTime;
+            if (trailR != null) trailR.time = elapsedTime + killTime;
 
             if (nextWaypoint != null) nextWaypoint.MarkAsInvalid();
         }
 
-        public PheromoneWaypoint GetSourceWaypoint()
-        {
-            if (previousWaypoint == null) return this;
-            return previousWaypoint.GetSourceWaypoint();
-        }
-
         public bool LeadsSomewhere()
         {
-            if (!leadsSomewhere) return false;   //node marked as invalid
-            if (previousWaypoint != null) return previousWaypoint.LeadsSomewhere(); // check if node closer to source is valid 
-            return true;
+            if (sourceWaypoint == null) return false;
+            return sourceWaypoint.leadsSomewhere;
         }
+
+        public static PheromoneWaypoint CreatePheromoneWaypoint(PheromoneType type, PheromoneWaypoint previous, Vector3 position)
+        {
+            GameObject waypointObject = new GameObject();
+            waypointObject.transform.position = position;
+
+            waypointObject.AddComponent<SphereCollider>().isTrigger = true;
+
+            PheromoneWaypoint waypointScript = waypointObject.AddComponent<PheromoneWaypoint>();
+            waypointScript.SetPheromoneType(type);
+
+            if (previous != null)
+            {
+                previous.nextWaypoint = waypointScript;
+                waypointScript.previousWaypoint = previous;
+
+                waypointScript.distanceFromSource = previous.distanceFromSource + 1;
+                waypointScript.sourceWaypoint = previous.sourceWaypoint;
+            }
+            else
+            {
+                waypointScript.sourceWaypoint = waypointScript;
+            }
+
+            string name = (type == PheromoneType.Combat ? "Combat" : "Harvest") + " Waypoint " + waypointScript.distanceFromSource;
+            waypointObject.name = name;
+            return waypointScript;
+        }
+
+        public static PheromoneWaypoint CreateSourceWaypoint(PheromoneType type, Vector3 position)
+        {
+            return CreatePheromoneWaypoint(type, null, position);
+        }
+
+
     }
 }

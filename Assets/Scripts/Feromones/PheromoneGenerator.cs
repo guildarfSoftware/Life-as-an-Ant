@@ -8,6 +8,22 @@ namespace RPG.Pheromones
 {
     public class PheromoneGenerator : MonoBehaviour
     {
+
+        static Dictionary<int, GameObject> routes = new Dictionary<int, GameObject>();
+        static int routeCount;
+        static GameObject routesContainer;
+        GameObject currentRoute;
+        GameObject CurrentRoute
+        {
+            get
+            {
+                if (currentRoute == null)
+                {
+                    currentRoute = NewRoute();
+                }
+                return currentRoute;
+            }
+        }
         bool safeExit;
         float timeBetweenWaypoints = 0.5f;
         [SerializeField] bool generating;
@@ -38,31 +54,13 @@ namespace RPG.Pheromones
         {
             while (!safeExit)
             {
-                if (generating)
+                if(generating)
                 {
                     AddPheromoneWaypoint(transform.position);
-
-                    yield return new WaitForSeconds(timeBetweenWaypoints);
+                   yield return new WaitForSeconds(timeBetweenWaypoints);
                 }
                 yield return null;
             }
-        }
-
-        private PheromoneWaypoint CreatePheromoneWaypoint(Vector3 position)
-        {
-            string name = (generatingType == PheromoneType.Combat ? "Combat" : "Harvest") + " Waypoint";
-            name += " " + (lastGenerated == null ? 0 : lastGenerated.distanceFromSource + 1);
-
-            GameObject waypointObject = new GameObject(name);//GameObject.CreatePrimitive(PrimitiveType.Sphere);
-            waypointObject.transform.position = position;
-
-            (waypointObject.AddComponent<SphereCollider>()).isTrigger = true;
-            waypointObject.tag = generatingType == PheromoneType.Combat ? "PheromoneCombat" : "PheromoneHarvest";
-
-            PheromoneWaypoint waypointScript = waypointObject.AddComponent<PheromoneWaypoint>();
-            waypointScript.SetPheromoneType(generatingType);
-
-            return waypointScript;
         }
 
         public void StartGeneration(PheromoneType type, float duration = -1)
@@ -83,40 +81,58 @@ namespace RPG.Pheromones
                 generatingType = type;
             }
 
+            currentRoute = NewRoute();
             generating = true;
         }
 
         public void StopGeneration(Transform endPosition = null)
         {
-            if(endPosition == null) endPosition=transform;
-            if (generating) AddPheromoneWaypoint(endPosition.position);
-            DetachTrailGenerator();
+            if (!generating) return;
+            if (endPosition != null)
+            {
+                 AddPheromoneWaypoint(endPosition.position);
+            }
+
+            StopTrailGenerator();
+            
+            currentRoute = null;
             generating = false;
             lastGenerated = null;
         }
 
-
         private void AddPheromoneWaypoint(Vector3 position)
         {
-            PheromoneWaypoint newWaypoint = CreatePheromoneWaypoint(position);
+            PheromoneWaypoint newWaypoint;
 
             if (lastGenerated != null)
             {
-                newWaypoint.distanceFromSource = lastGenerated.distanceFromSource + 1;
-                lastGenerated.nextWaypoint = newWaypoint;
+                newWaypoint = PheromoneWaypoint.CreatePheromoneWaypoint(generatingType, lastGenerated, position);
+
             }
             else //first waypoint of trail
             {
-                AttachTrailGenerator();
+                newWaypoint = PheromoneWaypoint.CreateSourceWaypoint(generatingType, position);
+                StartTrailGenerator();
             }
 
-            newWaypoint.previousWaypoint = lastGenerated;
             lastGenerated = newWaypoint;
+
+            if (!newWaypoint.LeadsSomewhere())
+            {
+                StopGeneration();   //stop generating for a broken route
+            }
+
+            newWaypoint.transform.SetParent(CurrentRoute.transform);
+
         }
 
-        private void AttachTrailGenerator()
+        private void StartTrailGenerator()
         {
             GameObject trailGenerator = new GameObject("Trail Generator");
+
+            GameObject trailRoute = currentRoute;
+
+            trailGenerator.AddComponent<OnDestroyListener>().AddListener(()=>{Destroy(trailRoute);});
 
             TrailRenderer trailRenderer = trailGenerator.AddComponent<TrailRenderer>();
             trailRenderer.time = float.MaxValue;
@@ -125,12 +141,9 @@ namespace RPG.Pheromones
 
             trailGenerator.transform.position = this.transform.position;
             trailGenerator.transform.parent = this.transform;
-
-            // FollowTransform follow = trailGenerator.AddComponent<FollowTransform>();
-            // follow.target = this.transform;
         }
 
-        void DetachTrailGenerator()//puts the trail follower in the last waypoint generator so they are destroyed together
+        void StopTrailGenerator()//puts the trail follower in the last waypoint generator so they are destroyed together
         {
             TrailRenderer trailGenerator = GetComponentInChildren<TrailRenderer>();
 
@@ -143,13 +156,20 @@ namespace RPG.Pheromones
                 }
                 else
                 {
-                    trailGenerator.time = 10;
-                    Destroy(trailGenerator.gameObject, 10);
+                    trailGenerator.time = 5;
+                    Destroy(trailGenerator.gameObject, 5);
                 }
             }
         }
 
-
+        static GameObject NewRoute()
+        {
+            routeCount++;
+            GameObject newRoute = new GameObject("Route " + routeCount);
+            newRoute.transform.SetParent(routesContainer.transform);
+            routes.Add(routeCount, newRoute);
+            return newRoute;
+        }
 
     }
 }

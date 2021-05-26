@@ -33,7 +33,7 @@ namespace RPG.Pheromones
             GameObject player = detector.GetEntityInLayer(LayerManager.playerLayer);
             if (player != null)
             {
-
+                CloseAnts.Add(player);
             }
 
             foreach (GameObject ant in CloseAnts)
