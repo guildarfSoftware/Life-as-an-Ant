@@ -219,6 +219,9 @@ namespace RPG.Resources
 
             GameObject newEnemy = GameObject.Instantiate(enemyPrefab, spawnPosition, Quaternion.identity);
 
+            BoxCollider collider = newEnemy.GetComponent<BoxCollider>();
+            collider.size *= stats.scale; 
+
             newEnemy.transform.SetParent(transform);
 
             SkinnedMeshRenderer renderer = newEnemy.GetComponentInChildren<SkinnedMeshRenderer>();
