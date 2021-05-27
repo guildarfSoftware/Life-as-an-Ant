@@ -3,22 +3,22 @@ using System.Collections.Generic;
 using RPG.Combat;
 using RPG.Harvest;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-[RequireComponent(typeof(Image))]
 public class cursor : MonoBehaviour
 {
-    [SerializeField] Sprite attackSp, gatherSp, storeSp, moveSp,normalSp;
+    [SerializeField] Sprite attackSp, gatherSp, storeSp, moveSp, normalSp;
     [SerializeField] GameObject player;
     Fighter playerFighter;
     Harvester playerHarvester;
     public Vector3 offset;
-    Image spRenderer;
+    Image image;
     public Canvas myCanvas;
     void Start()
     {
-        //Cursor.visible = false;
-        spRenderer = GetComponent<Image>();
+        Cursor.visible = false;
+        image = GetComponent<Image>();
         playerFighter = player.GetComponent<Fighter>();
         playerHarvester = player.GetComponent<Harvester>();
     }
@@ -28,6 +28,9 @@ public class cursor : MonoBehaviour
     {
         Vector2 pos;
         RectTransformUtility.ScreenPointToLocalPointInRectangle(myCanvas.transform as RectTransform, Input.mousePosition, myCanvas.worldCamera, out pos);
+        RectTransform rectTransform = (transform as RectTransform);
+        pos.x += rectTransform.rect.width / 2;
+        pos.y -= rectTransform.rect.height / 2;
         transform.position = myCanvas.transform.TransformPoint(pos);
 
 
@@ -65,13 +68,16 @@ public class cursor : MonoBehaviour
             {
                 move = true;
             }
+
+
         }
 
-        if (attack) spRenderer.sprite = attackSp;
-        else if (store) spRenderer.sprite = storeSp;
-        else if (harvest) spRenderer.sprite = gatherSp;
-      //  else if (move) spRenderer.sprite = moveSp;
-        else spRenderer.sprite = normalSp;
+        if (EventSystem.current.IsPointerOverGameObject()) image.sprite = normalSp;
+        else if (attack) image.sprite = attackSp;
+        else if (store) image.sprite = storeSp;
+        else if (harvest) image.sprite = gatherSp;
+        else if (move) image.sprite = moveSp;
+        else image.sprite = normalSp;
 
     }
 }
