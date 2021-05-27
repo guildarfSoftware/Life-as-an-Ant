@@ -51,8 +51,6 @@ namespace RPG.Core
             GetComponent<Animator>().SetTrigger("die");
             GetComponent<Animator>().SetBool("Dead", true);
             GetComponent<ActionScheduler>().CancelCurrentAction();
-
-            OnDeath?.Invoke();
         }
 
         internal void Heal(float amount)
@@ -71,5 +69,13 @@ namespace RPG.Core
             GetComponent<Animator>().ResetTrigger("die");
             GetComponent<Animator>().SetBool("Dead", false);
         }
+
+
+        public void DeathAnimationEnd() //called on antDeath Animation
+        {
+            OnDeath?.Invoke();   
+        }
+
+
     }
 }

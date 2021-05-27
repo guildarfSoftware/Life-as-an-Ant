@@ -204,12 +204,6 @@ namespace RPG.UI
                         EnemyGenerator.IncreaseDifficulty(1);
                         break;
                     }
-                case BonusElement.Princess:
-                    {
-                        ColonyManager.AddPrincess();
-                        EnemyGenerator.IncreaseDifficulty(3);
-                        break;
-                    }
                 case BonusElement.None:
                 default:
                     {

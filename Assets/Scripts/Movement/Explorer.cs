@@ -12,14 +12,10 @@ namespace RPG.Movement
         float range = 1f;
         public bool TimeOut { get => wanderTimer <= 0; }
         float wanderTimer = 0;
-        float coolDownTimer = 0;
-        [SerializeField] const float RestTime = 30;
         [SerializeField] const float ExploreTime = 10;
 
         [SerializeField] float maxTravel = 12, minTravel = 6;
         [SerializeField] float maxAngle = 315, minAngle = 45;
-
-        public bool onCooldown { get => coolDownTimer > 0; }
 
         Vector3 targetPosition;
         public bool wandering { private set; get; }
@@ -27,7 +23,6 @@ namespace RPG.Movement
         private void Update()
         {
             wanderTimer -= Time.deltaTime;
-            coolDownTimer -= Time.deltaTime;
             if (TimeOut)
             {
                 wandering = false;
@@ -69,12 +64,10 @@ namespace RPG.Movement
 
         public void Wander(float wanderTime = -1)
         {
-            if (onCooldown) return;
             GetComponent<ActionScheduler>().StartAction(this);
             targetPosition = GetRandomPosition(transform.position);
             wandering = true;
             this.wanderTimer = wanderTime == -1 ? ExploreTime : wanderTime;
-            coolDownTimer = RestTime + wanderTime;
         }
 
         private Vector3 GetRandomPosition(Vector3 position)

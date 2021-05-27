@@ -17,9 +17,24 @@ namespace RPG.Control
         Fighter fighter;
         Explorer explorer;
         Health health;
+        Mover mover;
         GameObject nest;
+
+        float nestEntranceRange = 1f;
         float stopPheromoneDistance = 3f;
         bool generatingPheromones;
+        bool orderToReturn;
+        public Action<bool,GameObject> EnterAnthill;
+
+        AnthillMission mission;
+        bool needsRest;
+
+        enum AnthillMission
+        {
+            None,
+            Rest,
+            Build,
+        }
 
         private void Awake()
         {
@@ -29,29 +44,33 @@ namespace RPG.Control
             fighter = GetComponent<Fighter>();
             explorer = GetComponent<Explorer>();
             health = GetComponent<Health>();
+            mover = GetComponent<Mover>();
             nest = GameObject.FindGameObjectWithTag("Nest");
         }
 
         private void OnEnable()
         {
-
+            health.OnDeath += CreateCorpse;
             harvester.fooodGrabbed += StartFoodPheromones;
             fighter.EnterCombat += StartCombatPheromones;
+            
+            orderToReturn = false;
+            mission = AnthillMission.None;
+            if (health.IsDead)
+            {
+                health.Revive();
+            }
         }
 
         private void OnDisable()
         {
             generatingPheromones = false;
+            health.OnDeath -= CreateCorpse;
             GetComponent<PheromoneGenerator>().StopGeneration();
             if (harvester != null) harvester.fooodGrabbed -= StartFoodPheromones;
             if (fighter != null) fighter.EnterCombat -= StartCombatPheromones;
-        }
-
-        public void DeathAnimationEnd() //called on antDeath Animation
-        {
-            CreateCorpse();
-            transform.GetChild(0).localRotation = Quaternion.Euler(0, -90, 0);
-            WorkerPool.ReturnWorker(gameObject);
+            detector.Reset();
+            GetComponent<ActionScheduler>().CancelCurrentAction();
         }
 
         private void Update()
@@ -65,12 +84,33 @@ namespace RPG.Control
 
             if (EvaluateStore()) return;
 
+            if (EvaluateReturnToNest()) return;
+
             if (EvaluateCombat()) return;
             if (EvaluateHarvest()) return;
 
             if (EvaluateExplore()) return;
+        }
 
-            GetComponent<Mover>().MoveTo(nest.transform.position);  // if nothing else can be done wait in the nest
+
+        private bool EvaluateReturnToNest()
+        {
+            if (!orderToReturn||mission == AnthillMission.None) return false;
+
+            mover.MoveTo(nest.transform.position);
+            
+            float distanceToNest = Vector3.Distance(nest.transform.position, transform.position);
+
+            if (distanceToNest < nestEntranceRange)
+            {
+                needsRest = false;
+                bool isBuilder = mission == AnthillMission.Build;
+                orderToReturn = false;
+                mission = AnthillMission.None;
+                EnterAnthill?.Invoke(isBuilder,gameObject);
+            } 
+
+            return true;
         }
 
         private void CreateCorpse()
@@ -78,16 +118,11 @@ namespace RPG.Control
             Transform bodyTransform = transform.GetChild(0);
             GameObject corpse = Instantiate(bodyTransform.gameObject, bodyTransform.position, bodyTransform.rotation);
             GameObject.Destroy(corpse, 30);
+            transform.GetChild(0).localRotation = Quaternion.Euler(0, -90, 0);
         }
 
         public void Initialize()
         {
-            if (health.IsDead)
-            {
-                health.Revive();
-            }
-            detector.Reset();
-            GetComponent<ActionScheduler>().CancelCurrentAction();
         }
 
 
@@ -151,6 +186,16 @@ namespace RPG.Control
             return FollowCloseTrail(PheromoneType.Combat);
         }
 
+        public void ReturnToBuild()
+        {
+           orderToReturn = true;
+           mission = AnthillMission.Build;
+        }
+        public void ReturnToRest()
+        {
+            orderToReturn = true;
+            mission = AnthillMission.Rest;
+        }
 
         bool EvaluateHarvest()
         {
@@ -203,12 +248,18 @@ namespace RPG.Control
 
         bool EvaluateExplore()
         {
-            if (!explorer.onCooldown && !explorer.wandering) explorer.Wander(); //start exploration behaviour
+            if (!explorer.wandering && ! needsRest)
+            {
+                needsRest = true;
+                explorer.Wander(); //start exploration behaviour
+            } 
 
             if (!explorer.TimeOut)  //is exploring
             {
                 return true;
             }
+
+            ReturnToRest();
 
             return false;
         }

@@ -6,45 +6,47 @@ using System;
 using RPG.Map;
 using RPG.Control;
 using RPG.Core;
+using MyTools;
 
 namespace RPG.Colony
 {
     [RequireComponent(typeof(Storage))]
     public class ColonyManager : MonoBehaviour
     {
+        #region variables
         static ColonyManager instance;
-        public Storage storage { get; private set; }
 
-        [SerializeField] AntStats workerStats, princesStats;
-
-        public float foodRequirement { get => princesses.Count * princesStats.foodConsumption + allAnts.Count * workerStats.foodConsumption; }
-
-        int maxPopulation = 15;
-        public int MaxPopulation { get => maxPopulation; }
-        List<GameObject> allAnts = new List<GameObject>();
-        List<GameObject> availableAnts = new List<GameObject>();
-        List<GameObject> buildingAnts = new List<GameObject>();
-        List<GameObject> followerAnts = new List<GameObject>();
-        List<float> princesses = new List<float>(); //list of alive princesses float indicates their health
-
-        GameObject playerAnt;
-        Leader leader;
+        [SerializeField] AntStats workerStats;
         [SerializeField] GameObject workerPrefab;
         [SerializeField] int startingAnts = 0;
 
-        float timer1Second;
-        internal Action onPopulationChange;
-        private int timeWithoutFood;
+        public Action onPopulationChange;
+        public Storage storage { get; private set; }
+        public int MaxPopulation { get => maxPopulation; }
+        public int currentPopulation { get => AvailableAnts + buildingAntsCount; }
+        public int AvailableAnts { get => AvailableWorkers + followerAnts.Count + 1; }
+        public int AvailableWorkers { get => availableAnts.Count + restingAnts - buildingAntsRequired; }
+        public int buildingAntsCount { get => buildingAntsCollected + buildingAntsRequired; }
+        public float foodRequirement { get => currentPopulation * workerStats.foodConsumption; }
 
-        public int AvailableAntsCount { get => availableAnts.Count; }
-        public int currentPopulation { get => allAnts.Count; }
-        public int princessPopulation { get => princesses.Count; }
-        public void IncreaseMaxStorage(int storageBonus)
-        {
-            storage.IncreaseMaxCapacity(storageBonus);
-        }
 
-        // Start is called before the first frame update
+        int maxPopulation = 15;
+        List<GameObject> allAnts = new List<GameObject>();
+        List<GameObject> availableAnts = new List<GameObject>();
+        List<GameObject> followerAnts = new List<GameObject>();
+        int buildingAntsRequired;
+        int buildingAntsCollected;
+        int restingAnts;
+
+        GameObject playerAnt;
+        Leader leader;
+
+        float oneSecondCounter;
+        int timeWithoutFood;
+        float restTime = 10f;
+        #endregion
+
+        #region UnityMethods
         void Awake()
         {
             if (instance != null) Debug.LogWarning("Warning: multiple colonyManager instances active");
@@ -58,9 +60,9 @@ namespace RPG.Colony
                 allAnts.Add(playerAnt);
             }
             storage = GetComponent<Storage>();
-            storage.StoreResource(20);
 
             WorkerPool.Initialize(this.gameObject);
+
             for (int i = 0; i < startingAnts; i++)
             {
                 CreateWorker();
@@ -71,55 +73,24 @@ namespace RPG.Colony
 
         private void Update()
         {
-            timer1Second += Time.deltaTime;
+            oneSecondCounter += Time.deltaTime;
 
-            if (timer1Second > 1)
+            if (oneSecondCounter > 1)
             {
                 FeedAnts();
-                timer1Second = 0;
-            }
-
-            if (leader != null)
-            {
-                if (leader.needsFollower && availableAnts.Count > 0)
-                {
-                    GameObject ant = availableAnts[availableAnts.Count - 1];
-                    leader.AddFollower(ant);
-                    followerAnts.Add(ant);
-                    availableAnts.RemoveAt(availableAnts.Count - 1);
-                    onPopulationChange?.Invoke();
-                }
-
+                oneSecondCounter = 0;
             }
         }
-
-        void RespawnPlayer()
-        {
-            if (currentPopulation > 1)  //there is at least 1 ant apart from the player
-            {
-                MessageManager.Message("Oops", "You Died but you can now control another ant of the colony", null, null);
-                GameObject substitute = allAnts[allAnts.Count - 1];
-
-                playerAnt.GetComponent<PlayerController>().Respawn(substitute);
-
-                substitute.GetComponent<Health>().OnDeath();
-                Destroy(substitute);
-
-
-                return;
-            }
-
-            MessageManager.Message("Game Over", " You died", null, null);
-
-        }
+        #endregion
 
         void FeedAnts()
         {
-            float foodConsumed = allAnts.Count * workerStats.foodConsumption;
+            float foodConsumed = foodRequirement;
+            storage.Consume(foodConsumed);
 
-            if(foodConsumed> storage.StoredAmount)
+            if (storage.StoredAmount == 0)
             {
-                if(timeWithoutFood == 0)
+                if (timeWithoutFood == 0)
                 {
                     MessageManager.Message("Carefull", "Some ants are starving and may die. Gather some food Quick!!", null, null);
                 }
@@ -130,88 +101,138 @@ namespace RPG.Colony
                 timeWithoutFood = 0;
             }
 
-            if(timeWithoutFood> workerStats.Health)
+            if (timeWithoutFood > workerStats.Health)
             {
-                int lastAntIndex = allAnts.Count-1;
-                Health lastAntHealth = allAnts[lastAntIndex].GetComponent<Health>();
-                if(lastAntIndex != 0)
+                if (restingAnts != 0)
                 {
-                    lastAntHealth.TakeDamage(lastAntHealth.currentHealth);
+                    restingAnts--;
+                }
+                else if (buildingAntsCollected != 0)
+                {
+                    buildingAntsCollected--;
                 }
                 else
                 {
-                    lastAntHealth.TakeDamage(1);
+                    int lastAntIndex = allAnts.Count - 1;
+                    Health lastAntHealth = allAnts[lastAntIndex].GetComponent<Health>();
+                    if (lastAntIndex != 0)
+                    {
+                        lastAntHealth.TakeDamage(lastAntHealth.currentHealth);
+                    }
+                    else
+                    {
+                        lastAntHealth.TakeDamage(1);
+                    }
                 }
 
             }
 
-            storage.Consume(foodConsumed);
         }
 
-        void StartBuildingProcess(int workersNeeded, float releaseTime)   //@todo make this start only when enought ants are waiting on the nest;
+        void StartBuildingProcess(int workersNeeded, float releaseTime)
         {
-            int foundWorkers = 0, i = 0;
+            if (workersNeeded > AvailableWorkers) return;
 
-            while (foundWorkers < workersNeeded && i < availableAnts.Count)
+            int newWorkersNeeded;
+
+            if (restingAnts > workersNeeded)
+            {
+                newWorkersNeeded = 0;
+
+                buildingAntsCollected += workersNeeded;
+                restingAnts -= workersNeeded;
+            }
+            else
+            {
+                newWorkersNeeded = workersNeeded - restingAnts;
+
+                buildingAntsCollected += restingAnts;
+                restingAnts = 0;
+            }
+
+            buildingAntsRequired += newWorkersNeeded;
+            Tools.SortByDistance(gameObject, ref availableAnts);
+
+            for (int i = 0; i < newWorkersNeeded; i++)
             {
                 GameObject ant = availableAnts[i];
-                if (ant.activeSelf == true)
-                {
-                    DeactivateAntForSeconds(ant, releaseTime);
-                    availableAnts.RemoveAt(i);
-                    foundWorkers++;
-                }
-                else
-                {
-                    i++;
-                }
+                WorkerController workerMind = ant.GetComponent<WorkerController>();
+                workerMind.ReturnToBuild();
             }
 
-            if (foundWorkers == workersNeeded) return;
-
-            i = 0;
-            while (foundWorkers < workersNeeded && i < followerAnts.Count) // if available ants where not enought use also Follower ants
-            {
-                GameObject ant = followerAnts[i];
-                if (ant.activeSelf == true)
-                {
-                    foundWorkers++;
-                    leader.RemoveFollower(ant);
-                    DeactivateAntForSeconds(ant, releaseTime);
-                    followerAnts.RemoveAt(i);
-                }
-                else
-                {
-                    i++;
-                }
-            }
-        }
-
-        void DeactivateAntForSeconds(GameObject ant, float reactivateTime)
-        {
-            ant.SetActive(false);
-            buildingAnts.Add(ant);
+            StartCoroutine(ReactivateBuilders(releaseTime, workersNeeded));
             onPopulationChange?.Invoke();
 
-            Invoke("ReactivateWorker", reactivateTime);
         }
 
-        void ReactivateWorker()
+        void OnEnterAnthill(bool isBuilder, GameObject antObject)
         {
-            if (buildingAnts.Count != 0)
+            if (isBuilder)
             {
-                GameObject reactivatedAnt = buildingAnts[buildingAnts.Count - 1];
-                reactivatedAnt.SetActive(true);
-                buildingAnts.RemoveAt(buildingAnts.Count - 1);
-                availableAnts.Add(reactivatedAnt);
-                onPopulationChange?.Invoke();
+                buildingAntsCollected++;
+                buildingAntsRequired--;
+            }
+            else
+            {
+                restingAnts++;
+                StartCoroutine(reactivateRestingAnt(restTime));
+            }
+            RemoveAnt(antObject);
+        }
+
+        IEnumerator ReactivateBuilders(float releaseTime, int totalWorkers)
+        {
+            yield return new WaitForSeconds(releaseTime);
+
+            int workersReactivated = Mathf.Min(totalWorkers, buildingAntsCollected);
+            int remainingOrLost = totalWorkers - workersReactivated;
+
+            for (int i = 0; i < workersReactivated; i++)
+            {
+                CreateWorker();
+            }
+
+            buildingAntsRequired -= remainingOrLost;
+            buildingAntsCollected -= workersReactivated;
+            onPopulationChange?.Invoke();
+        }
+
+        IEnumerator reactivateRestingAnt(float restTime)
+        {
+            yield return new WaitForSeconds(restTime);
+
+            if (restingAnts > 0)
+            {
+                restingAnts--;
+                CreateWorker();
             }
         }
 
-        private void CreateWorker()
+        void RespawnPlayer()
+        {
+            if (currentPopulation > 1)  //there is at least 1 ant apart from the player
+            {
+                MessageManager.Message("Oops", "You Died but you can now control another ant of the colony", null, null);
+                GameObject substitute = allAnts[allAnts.Count - 1];
+
+                playerAnt.GetComponent<PlayerController>().Respawn(substitute.transform.position);
+
+                RemoveAnt(substitute);
+
+
+                return;
+            }
+
+            MessageManager.Message("Game Over", " You died", null, null);
+
+        }
+
+        void CreateWorker()
         {
             GameObject newAnt = WorkerPool.GetWorker();
             newAnt.transform.SetParent(transform, true);
+
+            newAnt.GetComponent<WorkerController>().EnterAnthill += OnEnterAnthill;
 
             Vector3 spawnPos = transform.position;
             spawnPos.y = MapTools.getTerrainHeight(spawnPos);
@@ -232,15 +253,16 @@ namespace RPG.Colony
         {
             if (allAnts.Contains(ant)) allAnts.Remove(ant);
             if (availableAnts.Contains(ant)) availableAnts.Remove(ant);
-            if (buildingAnts.Contains(ant)) buildingAnts.Remove(ant);
             if (followerAnts.Contains(ant)) followerAnts.Remove(ant);
+            ant.GetComponent<WorkerController>().EnterAnthill -= OnEnterAnthill;
+            WorkerPool.ReturnWorker(ant);
             onPopulationChange?.Invoke();
         }
 
         public static void ApplyCost(int foodCost, int workerCost, float upgradeTime)
         {
             instance.storage.Consume(foodCost);
-            instance.StartBuildingProcess(workerCost, upgradeTime);
+            if (upgradeTime != 0) instance.StartBuildingProcess(workerCost, upgradeTime);
         }
 
         public static void IncreaseMaxStorage(float bonus)
@@ -261,7 +283,7 @@ namespace RPG.Colony
 
         public static void AddWorker()
         {
-            if (instance.allAnts.Count >= instance.maxPopulation)
+            if (instance.currentPopulation >= instance.maxPopulation)
             {
                 MessageManager.Message("Ooops", "Reached Max population. Upgrade population limit to keep growing", null, null);
                 return;
@@ -270,13 +292,7 @@ namespace RPG.Colony
             instance.CreateWorker();
         }
 
-        public static void AddPrincess()
-        {
-            instance.princesses.Add(instance.princesStats.Health);
-            instance.onPopulationChange?.Invoke();
-        }
-
-        internal static void IncreaseMaxHealth(float bonus)
+        public static void IncreaseMaxHealth(float bonus)
         {
             instance.workerStats.healthBonus += bonus;
             AntStats playerStats = (AntStats)instance.playerAnt.GetComponent<StatsManager>().values;
@@ -288,27 +304,26 @@ namespace RPG.Colony
             }
         }
 
-        internal static void IncreaseMaxDamage(float bonus)
+        public static void IncreaseMaxDamage(float bonus)
         {
             instance.workerStats.damageBonus += bonus;
             AntStats stats = (AntStats)instance.playerAnt.GetComponent<StatsManager>().values;
             stats.damageBonus += bonus;
         }
 
-        internal static void IncreaseMaxSpeed(float bonus)
+        public static void IncreaseMaxSpeed(float bonus)
         {
             instance.workerStats.speedBonus += bonus;
             AntStats stats = (AntStats)instance.playerAnt.GetComponent<StatsManager>().values;
             stats.speedBonus += bonus;
         }
 
-        internal static void IncreaseCarryCapacity(float bonus)
+        public static void IncreaseCarryCapacity(float bonus)
         {
             instance.workerStats.carryCapacityBonus += bonus;
             AntStats stats = (AntStats)instance.playerAnt.GetComponent<StatsManager>().values;
             stats.carryCapacityBonus += bonus;
         }
-
 
         public static float GetStoredFood()
         {
@@ -317,12 +332,17 @@ namespace RPG.Colony
 
         public static int GetAvailableWorkersCount()
         {
-            return instance.availableAnts.Count;
+            return instance.AvailableWorkers;
         }
 
         public static int GetFollowerCount()
         {
             return instance.followerAnts.Count;
+        }
+
+        public void IncreaseMaxStorage(int storageBonus)
+        {
+            storage.IncreaseMaxCapacity(storageBonus);
         }
 
     }

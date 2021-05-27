@@ -39,7 +39,6 @@ namespace RPG.UI
                 if (colony != null)
                 {
                     colony.onPopulationChange += UpdatePopulationText;
-                    colony.onPopulationChange += UpdatePrincessCountText;
                     colony.onPopulationChange += UpdateFoodConsumptionText;
                     colony.storage.onStoreChange += UpdateStorageText;
                 }
@@ -52,7 +51,6 @@ namespace RPG.UI
             UpdateStorageText();
             UpdateFoodConsumptionText();
             UpdatePopulationText();
-            UpdatePrincessCountText();
         }
         void UpdateHealthBar()
         {
@@ -78,15 +76,17 @@ namespace RPG.UI
         void UpdatePopulationText()
         {
             if (colony == null) return;
-            string availableAnts = colony.AvailableAntsCount.ToString();
-            string currentPopulation = colony.currentPopulation.ToString();
+            string availableAnts = colony.AvailableWorkers.ToString();
+
+            int builders = colony.buildingAntsCount;
+            string buildingAnts = "";
+            if (builders != 0)
+            {
+                buildingAnts = $"({builders})";
+            }
+            string currentPopulation = colony.AvailableAnts.ToString();
             string maxPopulation = colony.MaxPopulation.ToString();
-            workerPopulation.text = $"{currentPopulation}/{maxPopulation}";
-        }
-        void UpdatePrincessCountText()
-        {
-            if (colony == null) return;
-            princessPopulation.text = colony.princessPopulation.ToString();
+            workerPopulation.text = $"{currentPopulation}{buildingAnts}/{maxPopulation}";
         }
         private void OnDisable()
         {
@@ -94,7 +94,6 @@ namespace RPG.UI
             if (colony != null)
             {
                 colony.onPopulationChange -= UpdatePopulationText;
-                colony.onPopulationChange -= UpdatePrincessCountText;
                 colony.onPopulationChange -= UpdateFoodConsumptionText;
                 colony.storage.onStoreChange -= UpdateStorageText;
             }
@@ -112,7 +111,7 @@ namespace RPG.UI
 
         public void ExitToMenu()
         {
-            MessageManager.Message("Exit to Menu", "Are you sure you want to exit and lose all progress?",_loadMenuScene, MessageManager.CloseMessage );
+            MessageManager.Message("Exit to Menu", "Are you sure you want to exit and lose all progress?", _loadMenuScene, MessageManager.CloseMessage);
         }
         void _loadMenuScene()
         {
