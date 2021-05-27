@@ -121,16 +121,12 @@ namespace RPG.Control
             return false;
         }
 
-        internal void Respawn(GameObject substitute)
-        {
-            transform.position = substitute.transform.position;
-            transform.rotation = substitute.transform.rotation;
+        internal void Respawn(Vector3 position)
+        {   
+            mover.Warp(position);
 
             health.Revive();
         }
-
-        public void DeathAnimationEnd()
-        { }
 
         private bool EvaluateMovement()
         {

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using MyTools;
 
 namespace RPG.Core
 {
@@ -102,7 +103,7 @@ namespace RPG.Core
         {
             List<GameObject> list = new List<GameObject>(GetEntitiesInLayer(layer));
 
-            list.Sort((a, b) => GetSquareDistance(a).CompareTo(GetSquareDistance(b)));  //sort by distance
+            Tools.SortByDistance(gameObject, ref list);
 
             if (list == null || list.Count == 0) return null;
 

@@ -28,11 +28,11 @@ namespace RPG.Resources
         Vector3 nestPosition;
 
         [SerializeField] float baseTierDistance = 75;
-        [SerializeField] float maxDistance = 450;
+        [SerializeField] float maxAbsoluteDistance = 450;
         [SerializeField] float startAngle, maxAngle;
         List<GameObject> activeResources;
 
-        [SerializeField]int dificultyValue; //increases on enemy kills and princess population
+        [SerializeField] int dificultyValue; //increases on enemy kills and princess population
         private bool spawnerActive = true;
 
         struct PatrolData
@@ -49,7 +49,7 @@ namespace RPG.Resources
 
         private void Start()
         {
-            if(instance != null) Debug.LogWarning("multiple instance of enemy generator actives");
+            if (instance != null) Debug.LogWarning("multiple instance of enemy generator actives");
             instance = this;
             activeResources = new List<GameObject>();
             GameObject nest = GameObject.FindGameObjectWithTag("Nest");
@@ -84,7 +84,7 @@ namespace RPG.Resources
 
         private void Update()
         {
-            if(!spawnerActive) return;
+            if (!spawnerActive) return;
             eventTimer -= Time.deltaTime;
             patrolTimer -= Time.deltaTime;
             if (patrolTimer < 0)
@@ -101,7 +101,7 @@ namespace RPG.Resources
             {
                 eventTimer = timeBetweenEvents;
                 RandomEvent();
-                IncreaseDifficulty((int)(timeBetweenEvents)/30); //increase dificulty 2 times per minute passed
+                IncreaseDifficulty((int)(timeBetweenEvents) / 30); //increase dificulty 2 times per minute passed
             }
         }
 
@@ -116,7 +116,7 @@ namespace RPG.Resources
 
             if (randomValue > 200)
             {
-                CreateAttackWave(2, (randomValue-100) / 100);
+                CreateAttackWave(2, (randomValue - 100) / 100);
             }
             else if (randomValue > 140)
             {
@@ -148,7 +148,7 @@ namespace RPG.Resources
             }
             else if (randomValue > 16)
             {
-                createGuardian(2,RandomPosition(2));
+                createGuardian(2, RandomPosition(2));
             }
             else if (randomValue > 15)
             {
@@ -178,9 +178,9 @@ namespace RPG.Resources
         {
             GameObject newEnemy = CreateMindlessEnemy(tier);
 
-            if(tier == QueenTier)
+            if (tier == QueenTier)
             {
-                newEnemy.GetComponent<Health>().OnDeath+= OnQueenDeath;
+                newEnemy.GetComponent<Health>().OnDeath += OnQueenDeath;
             }
 
             newEnemy.GetComponent<AIController>().SetGuardPosition(position);
@@ -220,7 +220,7 @@ namespace RPG.Resources
             GameObject newEnemy = GameObject.Instantiate(enemyPrefab, spawnPosition, Quaternion.identity);
 
             BoxCollider collider = newEnemy.GetComponent<BoxCollider>();
-            collider.size *= stats.scale; 
+            collider.size *= stats.scale;
 
             newEnemy.transform.SetParent(transform);
 
@@ -233,7 +233,7 @@ namespace RPG.Resources
             newEnemy.GetComponent<StatsManager>().values = stats;
             newEnemy.GetComponent<HarvestTarget>().SetFoodAmount(stats.FoodAmount);
 
-            newEnemy.GetComponent<Health>().OnDeath += ()=>{IncreaseDifficulty(tier+1);};   //each enemy killed increases dificulty value
+            newEnemy.GetComponent<Health>().OnDeath += () => { IncreaseDifficulty(tier + 1); };   //each enemy killed increases dificulty value
 
             return newEnemy;
         }
@@ -242,6 +242,8 @@ namespace RPG.Resources
         {
             float minDistance = baseTierDistance * tier;
             float maxDistance = baseTierDistance * (tier + 1);
+
+            maxDistance = Mathf.Min(maxDistance, maxAbsoluteDistance);
 
             float randomDistance = UnityEngine.Random.Range(minDistance, maxDistance);
 
@@ -261,7 +263,7 @@ namespace RPG.Resources
         {
             spawnerActive = false;
             MessageManager.Message("Congratulations",
-                                    "You have finally defeated the queen, now the colony will be ok. Do you want to exit now?", 
+                                    "You have finally defeated the queen, now the colony will be ok. Do you want to exit now?",
                                     UIManager.LoadMenuScene,
                                     MessageManager.CloseMessage);
         }

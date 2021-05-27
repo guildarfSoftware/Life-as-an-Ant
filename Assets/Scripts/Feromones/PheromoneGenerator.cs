@@ -135,9 +135,12 @@ namespace RPG.Pheromones
             trailGenerator.AddComponent<OnDestroyListener>().AddListener(
             () =>
                 {
-                    GameObject trailRoute = routes[routeIndex];
-                    routes.Remove(routeIndex);
-                    Destroy(trailRoute);
+                    if (routes.ContainsKey(routeIndex))
+                    {
+                        GameObject trailRoute = routes[routeIndex];
+                        routes.Remove(routeIndex);
+                        Destroy(trailRoute);
+                    }
                 }
             );
 

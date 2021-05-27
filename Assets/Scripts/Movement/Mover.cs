@@ -82,5 +82,10 @@ namespace RPG.Movement
         {
             return true;
         }
+
+        internal void Warp(Vector3 position)
+        {
+            navMeshAgent.Warp(position);
+        }
     }
 }

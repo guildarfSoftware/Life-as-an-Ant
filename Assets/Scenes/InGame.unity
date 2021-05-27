@@ -1046,10 +1046,15 @@ PrefabInstance:
       propertyPath: m_Name
       value: Food
       objectReference: {fileID: 0}
+    - target: {fileID: 5573305667584511062, guid: fb55319821aef7c428fbf3268df5a93a,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 5573305667584511068, guid: fb55319821aef7c428fbf3268df5a93a,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0.97850037
+      value: 0.911
       objectReference: {fileID: 0}
     - target: {fileID: 5573305667584511068, guid: fb55319821aef7c428fbf3268df5a93a,
         type: 3}
@@ -1059,7 +1064,7 @@ PrefabInstance:
     - target: {fileID: 5573305667584511068, guid: fb55319821aef7c428fbf3268df5a93a,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: -0.60299987
+      value: -0.767
       objectReference: {fileID: 0}
     - target: {fileID: 5573305667584511068, guid: fb55319821aef7c428fbf3268df5a93a,
         type: 3}
@@ -4223,7 +4228,7 @@ PrefabInstance:
     - target: {fileID: 1835238099602584729, guid: b012878546bf536429b675de2574165c,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: -148.85
+      value: -160
       objectReference: {fileID: 0}
     - target: {fileID: 1835238099602584729, guid: b012878546bf536429b675de2574165c,
         type: 3}
@@ -4233,7 +4238,7 @@ PrefabInstance:
     - target: {fileID: 1835238099602584729, guid: b012878546bf536429b675de2574165c,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: -159.23
+      value: -160
       objectReference: {fileID: 0}
     - target: {fileID: 1835238099602584729, guid: b012878546bf536429b675de2574165c,
         type: 3}
@@ -5300,7 +5305,7 @@ MonoBehaviour:
   - {fileID: 2096682446}
   startingEnemies: 060000000600000006000000
   baseTierDistance: 75
-  maxDistance: 450
+  maxAbsoluteDistance: 450
   startAngle: 0
   maxAngle: 90
   dificultyValue: 0
@@ -7812,7 +7817,7 @@ PrefabInstance:
     - target: {fileID: 5902296734095268347, guid: c8eb919871dc4304bba5ef2116a33803,
         type: 3}
       propertyPath: storedAmount
-      value: 0
+      value: 40
       objectReference: {fileID: 0}
     - target: {fileID: 5902296734095268347, guid: c8eb919871dc4304bba5ef2116a33803,
         type: 3}
@@ -7857,7 +7862,7 @@ PrefabInstance:
     - target: {fileID: 7659749828079536000, guid: c8eb919871dc4304bba5ef2116a33803,
         type: 3}
       propertyPath: startingAnts
-      value: 1
+      value: 2
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: c8eb919871dc4304bba5ef2116a33803, type: 3}
