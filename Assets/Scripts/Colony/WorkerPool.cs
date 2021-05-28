@@ -3,95 +3,36 @@ using System.Collections;
 using System.Collections.Generic;
 using RPG.Control;
 using UnityEngine;
+using RPG.MyTools;
 
 namespace RPG.Colony
 {
-    public class WorkerPool
+    public static class WorkerPool
     {
-        static GameObject prefabWorker;
-        static int created;
-
-        static List<GameObject> pool;
-
-        const int initialCapacity = 6;
-
-
-        public static void Initialize(GameObject parent)
+        static Pool workerPool;
+        public static void Initialize()
         {
-            prefabWorker = UnityEngine.Resources.Load<GameObject>("WorkerAnt");
-
-            pool = new List<GameObject>(initialCapacity);
-
-            for (int i = 0; i < pool.Capacity; i++)
-            {
-                GameObject newWorker = GetNewWorker();
-                pool.Add(newWorker);
-
-                if (parent != null)
-                {
-                    newWorker.transform.SetParent(parent.transform);
-                }
-            }
-
-
+            GameObject prefabWorker = UnityEngine.Resources.Load<GameObject>("WorkerAnt");
+            Transform parent = ColonyManager.instance.transform;
+            workerPool = new Pool(prefabWorker, parent, "Worker");
         }
-
-        static GameObject GetNewWorker()
-        {
-            GameObject obj;
-
-            obj = GameObject.Instantiate(prefabWorker);
-            obj.SetActive(false);
-
-            obj.name = "Worker " + created;
-            created++;
-            return obj;
-        }
-
         public static GameObject GetWorker()
         {
-            if (pool.Count > 0)
-            {
-                GameObject returned = pool[pool.Count - 1];
-                pool.RemoveAt(pool.Count - 1);
-
-                returned.GetComponent<WorkerController>().Initialize();
-                return returned;
-            }
-            else
-            {
-                GameObject returned = GetNewWorker();
-                pool.Capacity++;
-                return returned;
-            }
+            GameObject worker = workerPool.GetPooledObject();
+            worker.GetComponent<WorkerController>().Initialize();
+            return worker;
         }
 
         public static void ReturnWorker(GameObject worker)
         {
-            Follower follower = worker.GetComponent<Follower>();
-            if (follower != null)
-            {
-                GameObject.Destroy(follower);
-            }
-
-            WorkerController controller = worker.GetComponent<WorkerController>();
-            if (controller == null)
-            {
-                controller = worker.AddComponent<WorkerController>();
-            }
-
-            worker.SetActive(false);
-            pool.Add(worker);
+            workerPool.ReturnObject(worker);
         }
 
 
 
         public static void EmptyPool()
         {
-            for (int i = pool.Count - 1; i >= 0; i--)
-            {
-                pool.RemoveAt(i);
-            }
+            workerPool.EmptyPool();
         }
     }
 }
