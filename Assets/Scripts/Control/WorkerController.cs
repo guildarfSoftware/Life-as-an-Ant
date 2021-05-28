@@ -113,7 +113,7 @@ namespace RPG.Control
             return true;
         }
 
-        private void CreateCorpse()
+        private void CreateCorpse(GameObject gObject)
         {
             Transform bodyTransform = transform.GetChild(0);
             GameObject corpse = Instantiate(bodyTransform.gameObject, bodyTransform.position, bodyTransform.rotation);

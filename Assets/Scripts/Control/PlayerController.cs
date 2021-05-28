@@ -37,7 +37,7 @@ namespace RPG.Control
             harvester.fooodGrabbed += StartFoodPheromones;
             harvester.foodDeposit += StopPheromones;
             fighter.EnterCombat += StartCombatPheromones;
-            health.OnDeath += OnPLayerDeath;
+            health.OnDeath += OnPlayerDeath;
         }
         void Update()
         {
@@ -198,7 +198,7 @@ namespace RPG.Control
             generatingPheromones = false;
         }
 
-        void OnPLayerDeath()
+        void OnPlayerDeath(GameObject gObject)
         {
             StopPheromones();
             transform.GetChild(0).localRotation = Quaternion.Euler(0, -90, 0);
@@ -210,7 +210,7 @@ namespace RPG.Control
             harvester.fooodGrabbed -= StartFoodPheromones;
             harvester.foodDeposit -= StopPheromones;
             fighter.EnterCombat -= StartCombatPheromones;
-            health.OnDeath -= OnPLayerDeath;
+            health.OnDeath -= OnPlayerDeath;
         }
 
         private static Ray GetMouseRay()

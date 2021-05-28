@@ -233,7 +233,7 @@ namespace RPG.Resources
             newEnemy.GetComponent<StatsManager>().values = stats;
             newEnemy.GetComponent<HarvestTarget>().SetFoodAmount(stats.FoodAmount);
 
-            newEnemy.GetComponent<Health>().OnDeath += () => { IncreaseDifficulty(tier + 1); };   //each enemy killed increases dificulty value
+            newEnemy.GetComponent<Health>().OnDeath += (gObject) => { IncreaseDifficulty(tier + 1); };   //each enemy killed increases dificulty value
 
             return newEnemy;
         }
@@ -259,7 +259,7 @@ namespace RPG.Resources
 
         }
 
-        private void OnQueenDeath()
+        private void OnQueenDeath(GameObject gObject)
         {
             spawnerActive = false;
             MessageManager.Message("Congratulations",

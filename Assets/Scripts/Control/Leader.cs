@@ -54,7 +54,7 @@ namespace RPG.Control
 
             followers.Add(follower);
 
-            follower.GetComponent<Health>().OnDeath += ()=>{RemoveFollower(followerObject);};
+            follower.GetComponent<Health>().OnDeath += RemoveFollower;
         }
 
         public void RemoveFollower(GameObject followerObject)

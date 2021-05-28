@@ -9,7 +9,7 @@ namespace RPG.Core
     {
         [SerializeField] bool isDead;
 
-        public Action OnDeath;
+        public Action<GameObject> OnDeath;
         public Action OnHealthChange;
         public bool IsDead
         {
@@ -73,7 +73,7 @@ namespace RPG.Core
 
         public void DeathAnimationEnd() //called on antDeath Animation
         {
-            OnDeath?.Invoke();   
+            OnDeath?.Invoke(gameObject);   
         }
 
 

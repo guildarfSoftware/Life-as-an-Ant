@@ -59,7 +59,7 @@ namespace RPG.Colony
             playerAnt = GameObject.FindGameObjectWithTag("Player");
             if (playerAnt != null)
             {
-                playerAnt.GetComponent<Health>().OnDeath += () => { Invoke("RespawnPlayer", 1f); };
+                playerAnt.GetComponent<Health>().OnDeath += OnPlayerDeath;
                 leader = playerAnt.GetComponent<Leader>();
                 allAntsList.Add(playerAnt);
             }
@@ -253,7 +253,7 @@ namespace RPG.Colony
 
             newAnt.GetComponent<StatsManager>().values = workerStats;
 
-            newAnt.GetComponent<Health>().OnDeath += () => { RemoveAnt(newAnt); };
+            newAnt.GetComponent<Health>().OnDeath += OnWorkerDeath;
 
             newAnt.SetActive(true);
 
@@ -270,6 +270,7 @@ namespace RPG.Colony
             if (workersList.Contains(ant))
             {
                 ant.GetComponent<WorkerController>().EnterAnthill -= OnEnterAnthill;
+                ant.GetComponent<Health>().OnDeath -= OnWorkerDeath;
                 workersList.Remove(ant);
             }
 
