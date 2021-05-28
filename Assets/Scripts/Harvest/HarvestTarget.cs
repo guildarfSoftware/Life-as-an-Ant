@@ -3,16 +3,21 @@ using RPG.Core;
 using UnityEngine;
 
 namespace RPG.Harvest
-{    
+{
     public class HarvestTarget : MonoBehaviour
     {
-        [SerializeField] float remainingResource = 100;
+        float remainingResource = 100;
+        [SerializeField] float maxResource = 100;
         public bool IsEmpty { get => remainingResource == 0; }
+        public float RemainingFood { get => remainingResource; }
+        public float MaxFood { get => maxResource; }
+
 
         private void Start()
         {
-            Health health =GetComponent<Health>();
-            if(health!=null) health.OnDeath += (gObject)=>gObject.layer = LayerManager.foodLayer; //if it was alive, on death change tag to food 
+            remainingResource = maxResource;
+            Health health = GetComponent<Health>();
+            if (health != null) health.OnDeath += (gObject) => gObject.layer = LayerManager.foodLayer; //if it was alive, on death change tag to food 
         }
 
 
@@ -29,7 +34,7 @@ namespace RPG.Harvest
             }
             remainingResource -= grabedAmount;
 
-            if(IsEmpty)
+            if (IsEmpty)
             {
                 Destroy(gameObject);
             }
@@ -39,7 +44,8 @@ namespace RPG.Harvest
 
         internal void SetFoodAmount(float foodAmount)
         {
-            remainingResource = foodAmount;
+            maxResource = foodAmount;
+            remainingResource = maxResource;
         }
     }
 }

@@ -459,7 +459,7 @@ PrefabInstance:
     - target: {fileID: 2431895297453630521, guid: 7e5f101997d551a4a85fd8490ca885cb,
         type: 3}
       propertyPath: m_Name
-      value: Button
+      value: ExitGame
       objectReference: {fileID: 0}
     - target: {fileID: 2496161237594412683, guid: 7e5f101997d551a4a85fd8490ca885cb,
         type: 3}
