@@ -32,17 +32,15 @@ namespace RPG.UI
                 if (playerHealth != null) playerHealth.OnHealthChange += UpdateHealthBar;
             }
 
-            GameObject nest = GameObject.FindWithTag("Nest");
-            if (nest != null)
+
+            colony = ColonyManager.instance;
+            if (colony != null)
             {
-                colony = nest.GetComponent<ColonyManager>();
-                if (colony != null)
-                {
-                    colony.onPopulationChange += UpdatePopulationText;
-                    colony.onPopulationChange += UpdateFoodConsumptionText;
-                    colony.storage.onStoreChange += UpdateStorageText;
-                }
+                colony.onPopulationChange += UpdatePopulationText;
+                colony.onPopulationChange += UpdateFoodConsumptionText;
+                colony.storage.onStoreChange += UpdateStorageText;
             }
+
             UpdateAll();
         }
         void UpdateAll()
@@ -69,7 +67,7 @@ namespace RPG.UI
         void UpdateFoodConsumptionText()
         {
             if (colony == null) return;
-            string oneDecimalsText = colony.foodRequirement.ToString("0.0");
+            string oneDecimalsText = colony.FoodRequirement.ToString("0.0");
             foodConsumption.text = $"-{oneDecimalsText}/s";
         }
 
@@ -78,7 +76,7 @@ namespace RPG.UI
             if (colony == null) return;
             string availableAnts = colony.AvailableWorkers.ToString();
 
-            int builders = colony.buildingAntsCount;
+            int builders = colony.BuildingAnts;
             string buildingAnts = "";
             if (builders != 0)
             {

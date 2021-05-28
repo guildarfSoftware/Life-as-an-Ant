@@ -28,6 +28,8 @@ namespace RPG.UI
         int upgradesDone = 0;
         Upgrade currentUpgrade { get { return upgrades[upgradesDone]; } }
 
+        ColonyManager colony;
+
         float checkCostCounter = 0;
         const float checkCostTime = 0.25f;
 
@@ -35,6 +37,7 @@ namespace RPG.UI
         // Start is called before the first frame update
         void Start()
         {
+            colony = ColonyManager.instance;
             if (upgrades == null) return;
             if (titleText != null) titleText.text = titleString;
             button.onClick.AddListener(OnClick);
@@ -59,15 +62,15 @@ namespace RPG.UI
         {
             StringBuilder sb = new StringBuilder();
 
-            sb.Append($"Food Cost:  {ColonyManager.GetStoredFood().ToString("0.0")} / {currentUpgrade.foodCost}");
+            sb.Append($"Food Cost:  {colony.FoodAvailable.ToString("0.0")} / {currentUpgrade.foodCost}");
             if (currentUpgrade.workerCost > 0)
             {
                 sb.AppendLine();
-                sb.Append($"Workers needed: {ColonyManager.GetAvailableWorkersCount()}");
+                sb.Append($"Workers needed: {colony.AvailableWorkers}");
 
-                if (ColonyManager.GetFollowerCount() != 0)
+                if (colony.FollowerAnts != 0)
                 {
-                    sb.Append($" + {ColonyManager.GetFollowerCount()} ");
+                    sb.Append($" + {colony.FollowerAnts} ");
                 }
                 sb.Append($"/ {currentUpgrade.workerCost}");
 
@@ -80,7 +83,7 @@ namespace RPG.UI
 
         public void OnClick()
         {
-            if(isMaxLevel||isBuilding) return;
+            if (isMaxLevel || isBuilding) return;
             if (!CheckCost()) return;
 
             PayCost();
@@ -90,11 +93,11 @@ namespace RPG.UI
                 isBuilding = true;
                 buttonText.text = "Building";
                 button.interactable = false;
-                if(currentUpgrade.bonusElement == BonusElement.Population)
+                if (currentUpgrade.bonusElement == BonusElement.Population)
                 {
                     BuildingIconManager.StartPopulationTimer(currentUpgrade.upgradeTime);
                 }
-                else if(currentUpgrade.bonusElement == BonusElement.Storage)
+                else if (currentUpgrade.bonusElement == BonusElement.Storage)
                 {
                     BuildingIconManager.StartStorageTimer(currentUpgrade.upgradeTime);
                 }
@@ -108,30 +111,15 @@ namespace RPG.UI
 
         bool CheckCost()
         {
-            bool includeFollowers = true;
-            return CheckFoodCost() && CheckAvailableAnts(includeFollowers);
-        }
+            bool enoughtFood = colony.FoodAvailable >= currentUpgrade.foodCost;
+            bool enoughtWorkers = colony.AvailableWorkers >= currentUpgrade.workerCost;
 
-        bool CheckFoodCost()
-        {
-            return ColonyManager.GetStoredFood() >= currentUpgrade.foodCost;
-        }
-
-        bool CheckAvailableAnts(bool includeFollowers)
-        {
-            int availableAnts = ColonyManager.GetAvailableWorkersCount();
-
-            if (includeFollowers)
-            {
-                availableAnts += ColonyManager.GetFollowerCount();
-            }
-
-            return availableAnts >= currentUpgrade.workerCost;
+            return enoughtFood && enoughtWorkers;
         }
 
         void PayCost()
         {
-            ColonyManager.ApplyCost(currentUpgrade.foodCost, currentUpgrade.workerCost, currentUpgrade.upgradeTime);
+            colony.ApplyCost(currentUpgrade.foodCost, currentUpgrade.workerCost, currentUpgrade.upgradeTime);
         }
 
         void UpdateTier()
@@ -162,45 +150,45 @@ namespace RPG.UI
             {
                 case BonusElement.Storage:
                     {
-                        ColonyManager.IncreaseMaxStorage(currentUpgrade.bonus);
+                        colony.storage.IncreaseMaxCapacity(currentUpgrade.bonus);
                         break;
                     }
                 case BonusElement.Population:
                     {
-                        ColonyManager.IncreaseMaxPopulation((int)currentUpgrade.bonus);
+                        colony.IncreaseMaxPopulation((int)currentUpgrade.bonus);
                         break;
                     }
                 case BonusElement.Followers:
                     {
-                        ColonyManager.IncreaseMaxFollowers((int)currentUpgrade.bonus);
+                        colony.IncreaseMaxFollowers((int)currentUpgrade.bonus);
                         break;
                     }
                 case BonusElement.Health:
                     {
-                        ColonyManager.IncreaseMaxHealth(currentUpgrade.bonus);
+                        colony.IncreaseMaxHealth(currentUpgrade.bonus);
                         EnemyGenerator.IncreaseDifficulty((int)currentUpgrade.bonus / 5);
                         break;
                     }
                 case BonusElement.Damage:
                     {
-                        ColonyManager.IncreaseMaxDamage(currentUpgrade.bonus);
+                        colony.IncreaseMaxDamage(currentUpgrade.bonus);
                         EnemyGenerator.IncreaseDifficulty((int)currentUpgrade.bonus * 2);
                         break;
                     }
                 case BonusElement.Speed:
                     {
-                        ColonyManager.IncreaseMaxSpeed(currentUpgrade.bonus);
+                        colony.IncreaseMaxSpeed(currentUpgrade.bonus);
                         EnemyGenerator.IncreaseDifficulty((int)currentUpgrade.bonus);
                         break;
                     }
                 case BonusElement.CarryCapacity:
                     {
-                        ColonyManager.IncreaseCarryCapacity(currentUpgrade.bonus);
+                        colony.IncreaseCarryCapacity(currentUpgrade.bonus);
                         break;
                     }
                 case BonusElement.Worker:
                     {
-                        ColonyManager.AddWorker();
+                        colony.AddWorker();
                         EnemyGenerator.IncreaseDifficulty(1);
                         break;
                     }
@@ -218,11 +206,11 @@ namespace RPG.UI
             remainingBuildTime = delayedTime;
             costText.text = $"Remaining time: {remainingBuildTime}s";
 
-            while( remainingBuildTime > 0)
-            {  
+            while (remainingBuildTime > 0)
+            {
                 yield return new WaitForSeconds(1);
                 remainingBuildTime -= 1;
-                if(costText.isActiveAndEnabled) costText.text = $"Remaining time: {remainingBuildTime}s";
+                if (costText.isActiveAndEnabled) costText.text = $"Remaining time: {remainingBuildTime}s";
             }
 
             isBuilding = false;
