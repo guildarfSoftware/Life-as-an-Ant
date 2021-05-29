@@ -30,6 +30,14 @@ namespace RPG.Control
             target = GetValidTarget();
             health = GetComponent<Health>();
             mover = GetComponent<Mover>();
+
+            health.OnDeath += onEnemyDeath;
+            
+        }
+
+        private void OnDisable()
+        {
+            health.OnDeath -= onEnemyDeath;            
         }
         private void Update()
         {
@@ -61,6 +69,11 @@ namespace RPG.Control
             {
                 EvaluatePatrol();
             }
+        }
+
+        void onEnemyDeath(GameObject gObject)
+        {
+            gameObject.layer = LayerManager.foodLayer;
         }
 
         public void SetPatrolPath(PatrolPath patrolPath)

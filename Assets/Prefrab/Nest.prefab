@@ -107,8 +107,8 @@ BoxCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 8, y: 1, z: 7}
-  m_Center: {x: -0.5, y: 0.5, z: -1}
+  m_Size: {x: 8, y: 0.5, z: 7}
+  m_Center: {x: -0.5, y: 0.25, z: -1}
 --- !u!114 &5902296734095268347
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -136,7 +136,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   workerStats: {fileID: 11400000, guid: 0fc20157e50914e48a77febbde289b15, type: 2}
-  princesStats: {fileID: 11400000, guid: 38a879e1537108448bd2d222533dd986, type: 2}
   workerPrefab: {fileID: 2968504244971946530, guid: 8f273831d711bb04a97f54777b569626,
     type: 3}
   startingAnts: 2

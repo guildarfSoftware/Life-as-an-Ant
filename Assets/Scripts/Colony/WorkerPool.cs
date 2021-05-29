@@ -19,7 +19,6 @@ namespace RPG.Colony
         public static GameObject GetWorker()
         {
             GameObject worker = workerPool.GetPooledObject();
-            worker.GetComponent<WorkerController>().Initialize();
             return worker;
         }
 

@@ -71,7 +71,7 @@ namespace RPG.Core
         }
 
 
-        public void DeathAnimationEnd() //called on antDeath Animation
+        public void DeathAnimationEnd() //called on death Animation
         {
             OnDeath?.Invoke(gameObject);   
         }

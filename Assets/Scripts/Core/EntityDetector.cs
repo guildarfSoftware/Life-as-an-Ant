@@ -70,12 +70,7 @@ namespace RPG.Core
 
             if (!inLayerMask(layer)) return;
 
-            // if (closeEntities.Contains(other.gameObject))
-            // {
-            //     closeEntities.Remove(other.gameObject);
-            // }
-
-            //if (layeredEntities.ContainsKey(layer) && layeredEntities[layer].Contains(gObject))
+            if (layeredEntities.ContainsKey(layer) && layeredEntities[layer].Contains(gObject))
             {
                 layeredEntities[layer].Remove(gObject);
             }

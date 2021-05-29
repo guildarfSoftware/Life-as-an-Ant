@@ -74,8 +74,8 @@ public class cursor : MonoBehaviour
 
         if (EventSystem.current.IsPointerOverGameObject()) image.sprite = normalSp;
         else if (attack) image.sprite = attackSp;
-        else if (store) image.sprite = storeSp;
         else if (harvest) image.sprite = gatherSp;
+        else if (store) image.sprite = storeSp;
         else if (move) image.sprite = moveSp;
         else image.sprite = normalSp;
 

@@ -16,8 +16,6 @@ namespace RPG.Harvest
         private void Start()
         {
             remainingResource = maxResource;
-            Health health = GetComponent<Health>();
-            if (health != null) health.OnDeath += (gObject) => gObject.layer = LayerManager.foodLayer; //if it was alive, on death change tag to food 
         }
 
 

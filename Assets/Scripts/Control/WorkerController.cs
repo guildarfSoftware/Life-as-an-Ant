@@ -121,10 +121,6 @@ namespace RPG.Control
             transform.GetChild(0).localRotation = Quaternion.Euler(0, -90, 0);
         }
 
-        public void Initialize()
-        {
-        }
-
 
         private void DisableCurrentRoute()
         {
