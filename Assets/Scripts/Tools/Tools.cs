@@ -12,9 +12,31 @@ namespace MyTools
             return result.sqrMagnitude;
         }
 
+        public static float GetDistance(GameObject from, GameObject to)
+        {
+            return Vector3.Distance(from.transform.position, to.transform.position);
+        }
+
         public static void SortByDistance(GameObject from, ref List<GameObject> list)
         {
-            list.Sort((a, b) => GetSquareDistance(from,a).CompareTo(GetSquareDistance(from,b)));
+            list.Sort((a, b) => GetSquareDistance(from, a).CompareTo(GetSquareDistance(from, b)));
+        }
+
+        public static GameObject GetClosestGameObject(GameObject from, ICollection<GameObject> colection)
+        {
+            GameObject closest = null;
+            float closestDistance = float.MaxValue;
+            foreach (var obj in colection)
+            {
+                float sqrDistance = GetSquareDistance(from, obj);
+
+                if (sqrDistance < closestDistance)
+                {
+                    closest = obj;
+                    closestDistance = sqrDistance;
+                }
+            }
+            return closest;
         }
     }
 }

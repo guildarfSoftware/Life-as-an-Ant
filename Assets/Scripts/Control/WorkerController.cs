@@ -24,7 +24,7 @@ namespace RPG.Control
         float stopPheromoneDistance = 3f;
         bool generatingPheromones;
         bool orderToReturn;
-        public Action<bool,GameObject> EnterAnthill;
+        public event Action<bool, GameObject> EnterAnthill;
 
         AnthillMission mission;
         bool needsRest;
@@ -52,8 +52,8 @@ namespace RPG.Control
         {
             health.OnDeath += CreateCorpse;
             harvester.fooodGrabbed += StartFoodPheromones;
-            fighter.EnterCombat += StartCombatPheromones;
-            
+            fighter.InCombat += CheckCombatStatus;
+
             orderToReturn = false;
             mission = AnthillMission.None;
             if (health.IsDead)
@@ -68,7 +68,7 @@ namespace RPG.Control
             health.OnDeath -= CreateCorpse;
             GetComponent<PheromoneGenerator>().StopGeneration();
             if (harvester != null) harvester.fooodGrabbed -= StartFoodPheromones;
-            if (fighter != null) fighter.EnterCombat -= StartCombatPheromones;
+            if (fighter != null) fighter.InCombat -= CheckCombatStatus;
             detector.Reset();
             GetComponent<ActionScheduler>().CancelCurrentAction();
         }
@@ -80,7 +80,7 @@ namespace RPG.Control
                 return;
             }
 
-            if (EvaluateNotifyNest()) return;   //if generating pheromones return to nest to notify
+            if (EvaluateMakePheromonePath()) return;   //if generating pheromones return to nest to notify
 
             if (EvaluateStore()) return;
 
@@ -93,12 +93,13 @@ namespace RPG.Control
         }
 
 
+
         private bool EvaluateReturnToNest()
         {
-            if (!orderToReturn||mission == AnthillMission.None) return false;
+            if (!orderToReturn || mission == AnthillMission.None) return false;
 
             mover.MoveTo(nest.transform.position);
-            
+
             float distanceToNest = Vector3.Distance(nest.transform.position, transform.position);
 
             if (distanceToNest < nestEntranceRange)
@@ -107,8 +108,8 @@ namespace RPG.Control
                 bool isBuilder = mission == AnthillMission.Build;
                 orderToReturn = false;
                 mission = AnthillMission.None;
-                EnterAnthill?.Invoke(isBuilder,gameObject);
-            } 
+                EnterAnthill?.Invoke(isBuilder, gameObject);
+            }
 
             return true;
         }
@@ -131,7 +132,7 @@ namespace RPG.Control
             }
         }
 
-        bool EvaluateNotifyNest()
+        bool EvaluateMakePheromonePath()
         {
             if (!generatingPheromones) return false;
             GetComponent<Mover>().StartMovement(nest.transform.position);
@@ -182,10 +183,18 @@ namespace RPG.Control
             return FollowCloseTrail(PheromoneType.Combat);
         }
 
+        void CheckCombatStatus()
+        {
+            if (health.currentHealth < 6)
+            {
+                StartCombatPheromones();
+            }
+        }
+
         public void ReturnToBuild()
         {
-           orderToReturn = true;
-           mission = AnthillMission.Build;
+            orderToReturn = true;
+            mission = AnthillMission.Build;
         }
         public void ReturnToRest()
         {
@@ -221,15 +230,17 @@ namespace RPG.Control
 
         bool FollowCloseTrail(PheromoneType type)   // follows a trail of the type if exist return true
         {
-            IList<GameObject> waypoints;
+            int layer;
             if (type == PheromoneType.Combat)
             {
-                waypoints = detector.GetEntitiesInLayer(LayerManager.pheromoneCombatLayer);
+                layer = LayerManager.pheromoneCombatLayer;
             }
             else
             {
-                waypoints = detector.GetEntitiesInLayer(LayerManager.pheromoneHarvestLayer);
+                layer = LayerManager.pheromoneHarvestLayer;
             }
+
+            var waypoints = detector.GetEntitiesInLayer(layer);
 
             PheromoneWaypoint target = GetWaypointClosestToSource(waypoints);
 
@@ -244,11 +255,11 @@ namespace RPG.Control
 
         bool EvaluateExplore()
         {
-            if (!explorer.wandering && ! needsRest)
+            if (!explorer.wandering && !needsRest)
             {
                 needsRest = true;
                 explorer.Wander(); //start exploration behaviour
-            } 
+            }
 
             if (!explorer.TimeOut)  //is exploring
             {
@@ -260,17 +271,17 @@ namespace RPG.Control
             return false;
         }
 
-        PheromoneWaypoint GetWaypointClosestToSource(IList<GameObject> waypoints)
+        PheromoneWaypoint GetWaypointClosestToSource(ICollection<GameObject> waypoints)
         {
             PheromoneWaypoint returnedWaypoint = null;
             if (waypoints != null && waypoints.Count != 0)
             {
-                returnedWaypoint = waypoints[0].GetComponent<PheromoneWaypoint>();
-
                 foreach (GameObject waypointObject in waypoints)
                 {
                     PheromoneWaypoint waypoint = waypointObject.GetComponent<PheromoneWaypoint>();
-                    if (waypoint != null && waypoint.distanceFromSource < returnedWaypoint.distanceFromSource)
+                    if (waypoint == null) continue;
+
+                    if (returnedWaypoint == null || waypoint.distanceFromSource < returnedWaypoint.distanceFromSource)
                     {
                         returnedWaypoint = waypoint;
                     }
@@ -309,7 +320,7 @@ namespace RPG.Control
                 pheromoneLayer = LayerManager.pheromoneHarvestLayer;
             }
 
-            IList<GameObject> waypoints = detector.GetEntitiesInLayer(pheromoneLayer);
+            var waypoints = detector.GetEntitiesInLayer(pheromoneLayer);
             foreach (GameObject waypointObject in waypoints)
             {
                 PheromoneWaypoint waypoint = waypointObject.GetComponent<PheromoneWaypoint>();

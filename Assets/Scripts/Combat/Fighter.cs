@@ -15,7 +15,7 @@ namespace RPG.Combat
         Health health;
         [SerializeField] float damage { get => stats.values.Damage; }
         Health target;
-        public Action EnterCombat;
+        public event Action InCombat;
 
         float healingSpeed = 0.5f;
 
@@ -29,18 +29,18 @@ namespace RPG.Combat
         }
         void OnEnable()
         {
-            EnterCombat+= ()=>{inCombatCounter = inCombatTime;};
             health.onDamaged += EnterCombat;
+            stats = GetComponent<StatsManager>();
         }
 
         void OnDisable()
         {
-            health.onDamaged -= EnterCombat;    
+            health.onDamaged -= EnterCombat;
         }
 
         private void Update()
         {
-            stats = GetComponent<StatsManager>();
+            if(health.IsDead) return;
             timeSinceLastAttack += Time.deltaTime;
             inCombatCounter -= Time.deltaTime;
 
@@ -48,10 +48,9 @@ namespace RPG.Combat
             {
                 health.Heal(healingSpeed * Time.deltaTime);
             }
-            
+
             if (target == null)
             {
-                inCombatCounter = 0;
                 return;
             }
 
@@ -129,14 +128,20 @@ namespace RPG.Combat
         {
             if (target == null) return;
             target.TakeDamage(damage);
-            EnterCombat?.Invoke();
+            EnterCombat();
             onAnimation = false;
-            
+
         }
 
         public bool isCancelable()
         {
             return !onAnimation;
+        }
+    
+        void EnterCombat()
+        {
+            inCombatCounter = inCombatTime;
+            InCombat?.Invoke();
         }
     }
 

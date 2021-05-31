@@ -89,7 +89,7 @@ namespace RPG.Control
         {
             if (detector == null) return null;
 
-            IList<GameObject> workerAnts = detector.GetEntitiesInLayer(LayerManager.workerLayer);
+            var workerAnts = detector.GetEntitiesInLayer(LayerManager.workerLayer);
             foreach (GameObject target in workerAnts)
             {
                 if (target != null && fighter.CanAttack(target)) return target;

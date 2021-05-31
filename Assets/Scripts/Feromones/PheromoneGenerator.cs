@@ -35,10 +35,15 @@ namespace RPG.Pheromones
         [SerializeField] Gradient gradientHarvest, gradientCombat;
         [SerializeField] Material trailMaterial;
 
+
+        private void OnEnable()
+        {
+            StartCoroutine(GenerationProcess());
+        }
+
         private void Start()
         {
             if (routesContainer == null) routesContainer = new GameObject("Routes");
-            StartCoroutine(GenerationProcess());
         }
 
         private void Update()

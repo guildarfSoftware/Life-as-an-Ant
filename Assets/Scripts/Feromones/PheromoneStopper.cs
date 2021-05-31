@@ -29,13 +29,17 @@ namespace RPG.Pheromones
 
         void StopPheromoneGenerator()
         {
-            List<GameObject> CloseAnts = new List<GameObject>(detector.GetEntitiesInLayer(LayerManager.workerLayer));
             GameObject player = detector.GetEntityInLayer(LayerManager.playerLayer);
             if (player != null)
             {
-                CloseAnts.Add(player);
+                PheromoneGenerator generator = player.GetComponent<PheromoneGenerator>();
+                if (generator != null)
+                {
+                    generator.StopGeneration(transform);
+                }
             }
 
+            var CloseAnts = detector.GetEntitiesInLayer(LayerManager.workerLayer);
             foreach (GameObject ant in CloseAnts)
             {
                 PheromoneGenerator generator = ant.GetComponent<PheromoneGenerator>();

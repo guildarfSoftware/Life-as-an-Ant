@@ -47,7 +47,7 @@ namespace RPG.Colony
 
         float oneSecondCounter;
         int timeWithoutFood;
-        float antRestTime = 5f;
+        [SerializeField] float antRestTime = 5f;
         #endregion
 
         #region UnityMethods

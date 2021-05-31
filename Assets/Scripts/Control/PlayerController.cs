@@ -36,7 +36,6 @@ namespace RPG.Control
 
             harvester.fooodGrabbed += StartFoodPheromones;
             harvester.foodDeposit += StopPheromones;
-            fighter.EnterCombat += StartCombatPheromones;
             health.OnDeath += OnPlayerDeath;
         }
         void Update()
@@ -179,7 +178,7 @@ namespace RPG.Control
                 pheromoneLayer = LayerManager.pheromoneHarvestLayer;
             }
 
-            IList<GameObject> waypoints = detector.GetEntitiesInLayer(pheromoneLayer);
+            var waypoints = detector.GetEntitiesInLayer(pheromoneLayer);
             foreach (GameObject waypointObject in waypoints)
             {
                 PheromoneWaypoint waypoint = waypointObject.GetComponent<PheromoneWaypoint>();
@@ -209,7 +208,6 @@ namespace RPG.Control
         {
             harvester.fooodGrabbed -= StartFoodPheromones;
             harvester.foodDeposit -= StopPheromones;
-            fighter.EnterCombat -= StartCombatPheromones;
             health.OnDeath -= OnPlayerDeath;
         }
 
