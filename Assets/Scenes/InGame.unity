@@ -6892,7 +6892,7 @@ PrefabInstance:
     - target: {fileID: 5309605142742060860, guid: 001d528a3ec71ab4382cf0ada15c8cdc,
         type: 3}
       propertyPath: upgrades.Array.size
-      value: 3
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 5309605142742060860, guid: 001d528a3ec71ab4382cf0ada15c8cdc,
         type: 3}
@@ -6917,6 +6917,18 @@ PrefabInstance:
       propertyPath: titleString
       value: Add follower
       objectReference: {fileID: 0}
+    - target: {fileID: 5309605142742060860, guid: 001d528a3ec71ab4382cf0ada15c8cdc,
+        type: 3}
+      propertyPath: upgrades.Array.data[3]
+      value: 
+      objectReference: {fileID: 11400000, guid: 178560f9d106bed498f600014b9f630c,
+        type: 2}
+    - target: {fileID: 5309605142742060860, guid: 001d528a3ec71ab4382cf0ada15c8cdc,
+        type: 3}
+      propertyPath: upgrades.Array.data[4]
+      value: 
+      objectReference: {fileID: 11400000, guid: c4a1e25022c53fd41b3babceb04d9417,
+        type: 2}
     - target: {fileID: 7800711066203809144, guid: 001d528a3ec71ab4382cf0ada15c8cdc,
         type: 3}
       propertyPath: m_LocalPosition.x

@@ -53,10 +53,19 @@ namespace RPG.UI
             {
                 checkCostCounter = checkCostTime;
 
+                if(currentUpgrade.bonusElement == BonusElement.Followers)
+                {
+                    upgradesDone = colony.FollowerAnts;
+                    buttonText.text = currentUpgrade.upgradetext;
+                }
+
                 button.interactable = CheckCost();
                 costText.text = GetCostText();
             }
         }
+
+
+
 
         private string GetCostText()
         {
@@ -160,7 +169,7 @@ namespace RPG.UI
                     }
                 case BonusElement.Followers:
                     {
-                        colony.IncreaseMaxFollowers((int)currentUpgrade.bonus);
+                        colony.AddFollowers((int)currentUpgrade.bonus);
                         break;
                     }
                 case BonusElement.Health:

@@ -10,12 +10,12 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 7668b13cd738e7e468d207fc82f4d425, type: 3}
-  m_Name: Followers II
+  m_Name: Followers V
   m_EditorClassIdentifier: 
-  upgradetext: Add Follower II
+  upgradetext: Add Follower III
   bonus: 2
   bonusElement: 3
   upgradeTime: 0
-  foodCost: 100
+  foodCost: 250
   workerCost: 0
   repeteable: 0
