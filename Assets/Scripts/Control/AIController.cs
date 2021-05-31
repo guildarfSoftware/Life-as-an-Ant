@@ -32,12 +32,12 @@ namespace RPG.Control
             mover = GetComponent<Mover>();
 
             health.OnDeath += onEnemyDeath;
-            
+
         }
 
         private void OnDisable()
         {
-            health.OnDeath -= onEnemyDeath;            
+            health.OnDeath -= onEnemyDeath;
         }
         private void Update()
         {
@@ -45,7 +45,7 @@ namespace RPG.Control
             if (health.IsDead) return;
 
             target = GetValidTarget();
-            
+
             if (target == null || !fighter.CanAttack(target))
             {
                 EvaluatePatrol();
@@ -74,6 +74,12 @@ namespace RPG.Control
         void onEnemyDeath(GameObject gObject)
         {
             gameObject.layer = LayerManager.foodLayer;
+            Collider col = gameObject.GetComponent<Collider>();
+            if (col != null)
+            {
+                col.enabled = false;
+                col.enabled = true;
+            }
         }
 
         public void SetPatrolPath(PatrolPath patrolPath)

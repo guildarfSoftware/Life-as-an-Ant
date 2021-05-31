@@ -11,6 +11,7 @@ namespace RPG.Control
     {
         public int maxFollowers = 5;
         List<Follower> followers;
+        public int followerCount {get=>followers.Count;}
         internal bool needsFollower{get => maxFollowers - followers.Count > 0;}
 
         private void Start()
@@ -47,6 +48,22 @@ namespace RPG.Control
                 followers.Remove(follower);
             }
         }
+
+        public bool StartPheromoneTrail(int index, PheromoneType type)
+        {
+            if(index >= followers.Count || index<0) return false;
+
+            followers[index].NotifyNest(type);
+            return true;
+        }
+
+        public bool CanNotify(int index)
+        {
+            if (index >= followers.Count || index < 0) return false;
+
+            return followers[index].CanNotify;
+        }
+
     }
 
 }

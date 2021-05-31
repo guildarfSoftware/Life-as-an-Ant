@@ -14,9 +14,12 @@ namespace MyTools
 
         public static float GetDistance(GameObject from, GameObject to)
         {
-            return Vector3.Distance(from.transform.position, to.transform.position);
+            return GetDistance(from.transform.position, to.transform.position);
         }
-
+        public static float GetDistance(Vector3 from, Vector3 to)
+        {
+            return Vector3.Distance(from, to);
+        }
         public static void SortByDistance(GameObject from, ref List<GameObject> list)
         {
             list.Sort((a, b) => GetSquareDistance(from, a).CompareTo(GetSquareDistance(from, b)));

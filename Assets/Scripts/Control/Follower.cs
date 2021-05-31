@@ -45,9 +45,10 @@ namespace RPG.Control
         GameObject harvestTarget;
         GameObject attackTarget;
 
+        float nestRange = 3f;
+        PheromoneType pheromoneType = PheromoneType.None;
         bool isNotifying;
-        bool isFollowing;
-        private float nestRange = 3f;
+        public bool CanNotify { get => !isNotifying; }
 
         private void Start()
         {
@@ -81,7 +82,10 @@ namespace RPG.Control
         #region StateMAchineMethods
         int FollowingUpdate()
         {
-
+            if (pheromoneType != PheromoneType.None)
+            {
+                return Notifying;
+            }
             if (attackTarget != null)
             {
                 return Attacking;
@@ -98,12 +102,24 @@ namespace RPG.Control
             }
 
             Vector3 followPosition = GetFollowPosition(leader);
-            mover.MoveTo(followPosition);
+
+            if (Tools.GetDistance(followPosition, transform.position) > 0.5f)
+            {
+                mover.MoveTo(followPosition);
+            }
+            else
+            {
+                isNotifying = false;
+            }
             return Following;
         }
 
         int HarvestingUpdate()
         {
+            if (pheromoneType != PheromoneType.None)
+            {
+                return Notifying;
+            }
             if (Tools.GetDistance(leader, gameObject) > maxPlayerDistance)
             {
                 harvester.Cancel();
@@ -124,6 +140,10 @@ namespace RPG.Control
 
         int AttackingUpdate()
         {
+            if (pheromoneType != PheromoneType.None)
+            {
+                return Notifying;
+            }
             if (Tools.GetDistance(leader, gameObject) > maxPlayerDistance)
             {
                 fighter.Cancel();
@@ -135,13 +155,7 @@ namespace RPG.Control
                 fighter.Attack(attackTarget);
                 return Attacking;
             }
-
-            if (detector.GetEntitiesInLayer(LayerManager.enemyLayer).Count != 0)
-            {
-                AttackCloseEnemy();
-                return Attacking;
-            }
-
+            attackTarget = null;
             return Following;
         }
 
@@ -159,7 +173,8 @@ namespace RPG.Control
 
         void NotifyingStart()
         {
-            pheromoneGenerator.StartGeneration(PheromoneType.Combat);
+            isNotifying = true;
+            pheromoneGenerator.StartGeneration(pheromoneType);
             mover.MoveTo(nest.transform.position);
         }
 
@@ -170,6 +185,7 @@ namespace RPG.Control
             if (Tools.GetDistance(nest, gameObject) < nestRange)
             {
                 pheromoneGenerator.StopGeneration(nest.transform);
+                pheromoneType = PheromoneType.None;
                 return Following;
             }
             return Notifying;
@@ -195,20 +211,18 @@ namespace RPG.Control
         private void AttackCloseEnemy()
         {
             attackTarget = detector.GetClosestEntityInLayer(LayerManager.enemyLayer);
-            if(attackTarget!= null)
-            {
-                fighter.Attack(attackTarget);
-            }
-            isFollowing = false;
+
         }
 
         private void HarvestCloseFood()
         {
             harvestTarget = detector.GetClosestEntityInLayer(LayerManager.foodLayer);
-            harvester.Harvest(harvestTarget);
-            isFollowing = false;
         }
 
+        public void NotifyNest(PheromoneType type)
+        {
+            pheromoneType = type;
+        }
 
     }
 
