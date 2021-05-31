@@ -62,11 +62,6 @@ namespace RPG.Control
                 if (Input.GetMouseButtonDown(0))
                 {
                     fighter.Attack(target.gameObject);
-                    // }
-                    // else if (Input.GetMouseButtonDown(1))
-                    // {
-                    leader.CommandNotify(PheromoneType.Combat, target.gameObject);
-                    leader.CommandAttack(target.gameObject);
                 }
                 return true;    //outside the click check to allow hover detection;
             }
@@ -89,7 +84,6 @@ namespace RPG.Control
                 if (Input.GetMouseButtonDown(0))
                 {
                     harvester.Store(target.gameObject);
-                    leader.CommandStore(target.gameObject);
                 }
                 return true;    //outside the click check to allow hover detection;
             }
@@ -110,11 +104,6 @@ namespace RPG.Control
                 if (Input.GetMouseButtonDown(0))
                 {
                     harvester.Harvest(target.gameObject);
-                    // }
-                    // else if (Input.GetMouseButtonDown(1))
-                    // {
-                    leader.CommandNotify(PheromoneType.Harvest, target.gameObject);
-                    leader.CommandHarvest(target.gameObject);
                 }
                 return true;    //outside the click check to allow hover detection;
             }

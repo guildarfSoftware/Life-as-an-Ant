@@ -26,7 +26,9 @@ namespace RPG.Pheromones
         }
         bool safeExit;
         float timeBetweenWaypoints = 0.5f;
-        [SerializeField] bool generating;
+        bool generating;
+
+        public bool Generating{get=> generating;}
         PheromoneType generatingType;
         PheromoneWaypoint lastGenerated = null;
         float pheromoneDuration;

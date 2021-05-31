@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using MyTools;
 using RPG.Combat;
 using RPG.Core;
 using RPG.Harvest;
@@ -12,257 +13,202 @@ namespace RPG.Control
 {
     public class Follower : MonoBehaviour
     {
+
+        StateMachine stateMachine;
+
+        enum followerStates
+        {
+            following = 0,
+            attacking,
+            harvesting,
+            storing,
+            notifying,
+            Count,
+        }
+        int Following { get => (int)followerStates.following; }
+        int Attacking { get => (int)followerStates.attacking; }
+        int Harvesting { get => (int)followerStates.harvesting; }
+        int Storing { get => (int)followerStates.storing; }
+        int Notifying { get => (int)followerStates.notifying; }
+        int StateCount { get => (int)followerStates.Count; }
+
         Health health;
         EntityDetector detector;
-        PheromoneFollower pheromoneFollower;
         Harvester harvester;
         Fighter fighter;
-        Explorer explorer;
         PheromoneGenerator pheromoneGenerator;
         Mover mover;
-        private PheromoneType pheromoneType;
-        GameObject target;
-
         GameObject nest, leader;
-        AntState currentState;
-        float targetRange = 2f;
         float followRange = 5f;
-        private float maxPlayerDistance = 6f;
+        private float maxPlayerDistance = 8f;
 
-        enum AntState   //ordere by priority
-        {
-            notifyingNest,
-            moveToSource,
-            attacking,
-            storing,
-            harvesting,
-            followingLeader,
-            iddle,
-        }
+        GameObject harvestTarget;
+        GameObject attackTarget;
+
+        bool isNotifying;
+        bool isFollowing;
+        private float nestRange = 3f;
 
         private void Start()
         {
-            health = GetComponent<Health>(); 
+            health = GetComponent<Health>();
             pheromoneGenerator = GetComponent<PheromoneGenerator>();
-            detector = GetComponentInChildren<EntityDetector>();
-            pheromoneFollower = GetComponent<PheromoneFollower>();
             harvester = GetComponent<Harvester>();
             fighter = GetComponent<Fighter>();
-            explorer = GetComponent<Explorer>();
             mover = GetComponent<Mover>();
 
             nest = GameObject.FindGameObjectWithTag("Nest");
-            leader = GameObject.FindGameObjectWithTag("Player");
 
-            FollowTheLeader();
+            leader = GameObject.FindGameObjectWithTag("Player");
+            detector = leader.GetComponentInChildren<EntityDetector>();
+            leader.GetComponent<Harvester>().fooodGrabbed += HarvestCloseFood;
+            leader.GetComponent<Fighter>().InCombat += AttackCloseEnemy;
+
+            StatsManager followerStats = GetComponent<StatsManager>();
+            StatsManager leaderStats = leader.GetComponent<StatsManager>();
+            followerStats.values = leaderStats.values;
+
+            stateMachine = new StateMachine(StateCount);
+            stateMachine.SetCallbacks(Following, FollowingUpdate, null, null, null);
+            stateMachine.SetCallbacks(Harvesting, HarvestingUpdate, null, null, null);
+            stateMachine.SetCallbacks(Attacking, AttackingUpdate, null, null, null);
+            stateMachine.SetCallbacks(Storing, StoringUpdate, null, null, null);
+            stateMachine.SetCallbacks(Notifying, NotifyingUpdate, null, NotifyingStart, null);
+
+            stateMachine.State = Following;
         }
+
+        #region StateMAchineMethods
+        int FollowingUpdate()
+        {
+
+            if (attackTarget != null)
+            {
+                return Attacking;
+            }
+            if (harvestTarget != null)
+            {
+                return Harvesting;
+            }
+
+            if (harvester.CanStore(nest) && detector.GetEntityInLayer(LayerManager.anthillLayer) != null)
+            {
+                harvester.Store(nest);
+                return Storing;
+            }
+
+            Vector3 followPosition = GetFollowPosition(leader);
+            mover.MoveTo(followPosition);
+            return Following;
+        }
+
+        int HarvestingUpdate()
+        {
+            if (Tools.GetDistance(leader, gameObject) > maxPlayerDistance)
+            {
+                harvester.Cancel();
+                return Following;
+            }
+            if (attackTarget != null)
+            {
+                return Attacking;
+            }
+            if (harvestTarget != null && harvester.CanHarvest(harvestTarget))
+            {
+                harvester.Harvest(harvestTarget);
+                return Harvesting;
+            }
+            harvestTarget = null;
+            return Following;
+        }
+
+        int AttackingUpdate()
+        {
+            if (Tools.GetDistance(leader, gameObject) > maxPlayerDistance)
+            {
+                fighter.Cancel();
+                attackTarget = null;
+                return Following;
+            }
+            if (attackTarget != null && fighter.CanAttack(attackTarget))
+            {
+                fighter.Attack(attackTarget);
+                return Attacking;
+            }
+
+            if (detector.GetEntitiesInLayer(LayerManager.enemyLayer).Count != 0)
+            {
+                AttackCloseEnemy();
+                return Attacking;
+            }
+
+            return Following;
+        }
+
+        int StoringUpdate()
+        {
+            if (harvester.CanHarvest(nest))
+            {
+                harvester.Store(nest);
+                return Storing;
+            }
+
+            return Following;
+
+        }
+
+        void NotifyingStart()
+        {
+            pheromoneGenerator.StartGeneration(PheromoneType.Combat);
+            mover.MoveTo(nest.transform.position);
+        }
+
+
+        int NotifyingUpdate()
+        {
+            mover.MoveTo(nest.transform.position);
+            if (Tools.GetDistance(nest, gameObject) < nestRange)
+            {
+                pheromoneGenerator.StopGeneration(nest.transform);
+                return Following;
+            }
+            return Notifying;
+        }
+        #endregion
+
+
         private void Update()
         {
-            if(health.IsDead) 
-            {
-                Destroy(gameObject, 30);
-                return;
-            }
-            if (target == null) currentState = AntState.iddle;
-
-            if (!isNotifying() && LeaderIsTooFar()) FollowTheLeader();
-
-            switch (currentState)
-            {
-                case AntState.moveToSource:
-                    {
-                        mover.MoveTo(target.transform.position);
-                        if (GetDistance(target) < targetRange)
-                        {
-                            if (StartPheromones()) MoveToNest();
-                            else
-                            {
-                                currentState = AntState.iddle;
-                            }
-
-                        }
-                        break;
-                    }
-                case AntState.notifyingNest:
-                    {
-                        mover.MoveTo(nest.transform.position);
-                        if (GetDistance(nest) < targetRange)
-                        {
-                            pheromoneGenerator.StopGeneration();
-                            pheromoneType = PheromoneType.None;
-                            currentState = AntState.iddle;
-                        }
-                        break;
-                    }
-                case AntState.attacking:
-                    {
-                        fighter.Attack(target);
-                        if (target.transform.GetComponent<Health>().IsDead)
-                        {
-                            currentState = AntState.iddle;
-                        }
-                        break;
-                    }
-                case AntState.storing:
-                    {
-                        harvester.Store(target);
-                        if (harvester.IsEmpty)
-                        {
-                            currentState = AntState.iddle;
-                        }
-
-                        break;
-                    }
-                case AntState.harvesting:
-                    {
-                        harvester.Harvest(target);
-                        if (harvester.IsFull || target.GetComponent<HarvestTarget>().IsEmpty)
-                        {
-                            currentState = AntState.iddle;
-                        }
-                        break;
-                    }
-                case AntState.followingLeader:
-                    {
-                        target = leader;
-                        if (target == null) currentState = AntState.iddle;
-
-                        Vector3 followPosition = GetFollowPosition(target);
-                        mover.MoveTo(followPosition);
-                        break;
-                    }
-                case AntState.iddle:
-                {
-                    if(target== null) FollowTheLeader();
-                    else if (harvester.CanHarvest(target)) ChangeState(AntState.harvesting);
-                    else if (fighter.CanAttack(target)) ChangeState(AntState.attacking);
-                    else FollowTheLeader();
-                    break;
-                }
-                default:
-                    {
-                        FollowTheLeader();
-                        break;
-                    }
-            }
+            stateMachine.Update();
         }
 
-        private bool StartPheromones()
-        {
-            if (detector != null)
-            {
-                IList<GameObject> waypoints = detector.GetEntitiesInLayer(LayerManager.pheromoneCombatLayer);
-                foreach (GameObject waypoint in waypoints)
-                {
-                    if (waypoint.GetComponent<PheromoneWaypoint>().distanceFromSource == 0)
-                    {
-                        return false;
-                    }
-                }    
-            }
-            pheromoneGenerator.StartGeneration(pheromoneType);
-            return true;
-        }
 
-        private bool LeaderIsTooFar()
-        {
-            float distanceToPlayer = GetDistance(leader);
-
-            return distanceToPlayer > maxPlayerDistance;
-
-        }
-
-        private Vector3 GetFollowPosition(GameObject target)    // follows at exactly follow rango to avoid followers making barrier
+        private Vector3 GetFollowPosition(GameObject target)    // follows at exactly follow rang to avoid followers making barrier
         {
             Vector3 followDirection = target.transform.position - transform.position;
             followDirection.Normalize();
             return target.transform.position - followDirection * followRange;
         }
 
-        private float GetDistance(GameObject target)
+
+
+        private void AttackCloseEnemy()
         {
-            return Vector3.Distance(target.transform.position, transform.position);
+            attackTarget = detector.GetClosestEntityInLayer(LayerManager.enemyLayer);
+            if(attackTarget!= null)
+            {
+                fighter.Attack(attackTarget);
+            }
+            isFollowing = false;
         }
 
-        public bool Harvest(GameObject target)
+        private void HarvestCloseFood()
         {
-            if (ChangeState(AntState.harvesting))
-            {
-                this.target = target;
-                harvester.Harvest(target);
-                return true;
-            }
-            return false;
-
-        }
-        public bool Attack(GameObject target)
-        {
-            if (ChangeState(AntState.moveToSource))
-            {
-                this.target = target;
-                fighter.Attack(target);
-                return true;
-            }
-            return false;
-        }
-        public bool Notify(PheromoneType pheromoneType, GameObject source)
-        {
-            if (ChangeState(AntState.moveToSource))
-            {
-                this.pheromoneType = pheromoneType;
-                target = source;
-                return true;
-            }
-            return false;
+            harvestTarget = detector.GetClosestEntityInLayer(LayerManager.foodLayer);
+            harvester.Harvest(harvestTarget);
+            isFollowing = false;
         }
 
-        public bool MoveToNest()
-        {
-            if (ChangeState(AntState.notifyingNest))
-            {
-                target = nest;
-                GetComponent<Mover>().MoveTo(target.transform.position);
-                return true;
-            }
-            return false;
-        }
-
-        public bool Store(GameObject target)
-        {
-            if (ChangeState(AntState.storing))
-            {
-                this.target = target;
-                harvester.Store(target);
-                return true;
-            }
-            return false;
-        }
-
-        public bool FollowTheLeader()
-        {
-            if (ChangeState(AntState.followingLeader))
-            {
-                target = leader;
-                return true;
-            }
-            return false;
-        }
-
-        private bool ChangeState(AntState newState)
-        {
-            if (newState < currentState)    // can only change to a more prioritary state
-            {
-                GetComponent<ActionScheduler>().CancelCurrentAction();
-                currentState = newState;
-                return true;
-            }
-            return false;
-        }
-
-        bool isNotifying()
-        {
-            return currentState == AntState.notifyingNest || currentState == AntState.moveToSource;
-        }
 
     }
 

@@ -19,8 +19,8 @@ namespace RPG.Harvest
         bool onAnimation;
         [SerializeField] GameObject food;
 
-        public Action fooodGrabbed;
-        public Action foodDeposit;
+        public event Action fooodGrabbed;
+        public event Action foodDeposit;
 
         private void Start()
         {
@@ -129,7 +129,7 @@ namespace RPG.Harvest
 
             Storage storage = target.GetComponent<Storage>();
             if (storage == null) return false;
-           // if(carryAmount == 0) return false;
+            if(carryAmount == 0) return false;
             return true;
         }
 
