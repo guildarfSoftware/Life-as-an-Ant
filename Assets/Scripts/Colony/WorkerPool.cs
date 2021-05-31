@@ -34,4 +34,30 @@ namespace RPG.Colony
             workerPool.EmptyPool();
         }
     }
+
+    public static class FollowerPool
+    {
+        static Pool followerPool;
+        public static void Initialize()
+        {
+            GameObject prefabFollower = UnityEngine.Resources.Load<GameObject>("FollowerAnt");
+            Transform parent = ColonyManager.instance.transform;
+            followerPool = new Pool(prefabFollower, parent, "Follower");
+        }
+        public static GameObject GetFollower()
+        {
+            GameObject follower = followerPool.GetPooledObject();
+            return follower;
+        }
+
+        public static void ReturnFollower(GameObject follower)
+        {
+            followerPool.ReturnObject(follower);
+        }
+
+        public static void EmptyPool()
+        {
+            followerPool.EmptyPool();
+        }
+    }
 }

@@ -40,7 +40,6 @@ namespace RPG.Colony
         int buildingAntsRemaining;
         int buildingAntsCollected;
         int restingAnts;
-        Pool workerPool;
 
         GameObject playerAnt;
         Leader leader;
@@ -66,6 +65,7 @@ namespace RPG.Colony
             storage = GetComponent<Storage>();
 
             WorkerPool.Initialize();
+            FollowerPool.Initialize();
 
             for (int i = 0; i < startingAnts; i++)
             {
@@ -125,6 +125,12 @@ namespace RPG.Colony
         void OnWorkerDeath(GameObject worker)
         {
             RemoveAnt(worker);
+        }
+
+        void OnFollowerDeath(GameObject follower)
+        {
+            RemoveAnt(follower);
+            leader.RemoveFollower(follower);
         }
         #endregion
 
@@ -261,6 +267,24 @@ namespace RPG.Colony
             workersList.Add(newAnt);
             onPopulationChange?.Invoke();
         }
+        GameObject CreateFollower()
+        {
+            GameObject newAnt = FollowerPool.GetFollower();
+
+            Vector3 spawnPos = playerAnt.transform.position;
+            spawnPos.y = MapTools.getTerrainHeight(spawnPos);
+            newAnt.transform.position = spawnPos;
+
+            newAnt.GetComponent<Health>().OnDeath += OnFollowerDeath;
+
+            newAnt.SetActive(true);
+
+            allAntsList.Add(newAnt);
+            followersList.Add(newAnt);
+            onPopulationChange?.Invoke();
+
+            return newAnt;
+        }
 
         void RemoveAnt(GameObject ant)
         {
@@ -293,9 +317,15 @@ namespace RPG.Colony
             onPopulationChange?.Invoke();
         }
 
-        public void IncreaseMaxFollowers(int bonus)
+        public void AddFollowers(int bonus)
         {
-            leader.maxFollowers += bonus;
+            if(FollowerAnts>=leader.maxFollowers)
+            {
+                MessageManager.Message("Ooops", "Reached Max followers.", null, null);
+                return;
+            }
+            GameObject follower = CreateFollower();
+            leader.AddFollower(follower);
         }
 
         public void AddWorker()
