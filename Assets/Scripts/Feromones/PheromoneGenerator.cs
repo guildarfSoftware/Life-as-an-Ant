@@ -28,8 +28,8 @@ namespace RPG.Pheromones
         float timeBetweenWaypoints = 0.5f;
         bool generating;
 
-        public bool Generating{get=> generating;}
-        public PheromoneType PheromoneType { get=> generating? generatingType: PheromoneType.None; }
+        public bool Generating { get => generating; }
+        public PheromoneType PheromoneType { get => generating ? generatingType : PheromoneType.None; }
 
         PheromoneType generatingType;
         PheromoneWaypoint lastGenerated = null;
@@ -169,7 +169,7 @@ namespace RPG.Pheromones
             if (trailGenerator != null)
             {
                 trailGenerator.emitting = false;
-                if (lastGenerated != null)
+                if (lastGenerated != null && gameObject.activeSelf)
                 {
                     trailGenerator.transform.parent = lastGenerated.transform;
                 }

@@ -32,7 +32,7 @@ namespace RPG.Movement
         void Update()
         {
             navMeshAgent.speed = speed;
-            if (IsDead()|| destination == null || ArrivedAtDestination())
+            if (IsDead() || destination == null || ArrivedAtDestination())
             {
                 Cancel();
             }
@@ -74,7 +74,7 @@ namespace RPG.Movement
         public void Cancel()
         {
             destination = null;
-            navMeshAgent.isStopped = true;
+            if (navMeshAgent.isActiveAndEnabled) navMeshAgent.isStopped = true;
             //navMeshAgent.velocity = Vector3.zero;
         }
 
