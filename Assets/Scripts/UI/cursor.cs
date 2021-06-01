@@ -80,4 +80,9 @@ public class cursor : MonoBehaviour
         else image.sprite = normalSp;
 
     }
+
+    private void OnDisable()
+    {
+        Cursor.visible = true;        
+    }
 }
