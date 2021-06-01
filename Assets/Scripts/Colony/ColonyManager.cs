@@ -289,16 +289,20 @@ namespace RPG.Colony
         void RemoveAnt(GameObject ant)
         {
             if (allAntsList.Contains(ant)) allAntsList.Remove(ant);
-            if (followersList.Contains(ant)) followersList.Remove(ant);
+            if (followersList.Contains(ant))
+            {
+                followersList.Remove(ant);
+                FollowerPool.ReturnFollower(ant);
+            } 
 
             if (workersList.Contains(ant))
             {
                 ant.GetComponent<WorkerController>().EnterAnthill -= OnEnterAnthill;
                 ant.GetComponent<Health>().OnDeath -= OnWorkerDeath;
                 workersList.Remove(ant);
+                WorkerPool.ReturnWorker(ant);
             }
 
-            WorkerPool.ReturnWorker(ant);
             onPopulationChange?.Invoke();
         }
         #endregion

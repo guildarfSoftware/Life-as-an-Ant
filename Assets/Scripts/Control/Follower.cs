@@ -45,14 +45,17 @@ namespace RPG.Control
         GameObject harvestTarget;
         GameObject attackTarget;
 
-        float nestRange = 3f;
+        float nestRange = 6f;
         PheromoneType pheromoneType = PheromoneType.None;
         bool isNotifying;
         public bool CanNotify { get => !isNotifying; }
 
-        private void Start()
+
+
+        private void Awake()
         {
             health = GetComponent<Health>();
+            health.OnDeath += CreateCorpse;
             pheromoneGenerator = GetComponent<PheromoneGenerator>();
             harvester = GetComponent<Harvester>();
             fighter = GetComponent<Fighter>();
@@ -69,22 +72,54 @@ namespace RPG.Control
             StatsManager leaderStats = leader.GetComponent<StatsManager>();
             followerStats.values = leaderStats.values;
 
-            stateMachine = new StateMachine(StateCount);
-            stateMachine.SetCallbacks(Following, FollowingUpdate, null, null, null);
-            stateMachine.SetCallbacks(Harvesting, HarvestingUpdate, null, null, null);
-            stateMachine.SetCallbacks(Attacking, AttackingUpdate, null, null, null);
-            stateMachine.SetCallbacks(Storing, StoringUpdate, null, null, null);
-            stateMachine.SetCallbacks(Notifying, NotifyingUpdate, null, NotifyingStart, null);
+            SetStateMachineCallbacks();
+
 
             stateMachine.State = Following;
         }
 
+
+        private void Update()
+        {
+            stateMachine.Update();
+        }
+
+        private void OnEnable()
+        {
+            if (health.IsDead) health.Revive();
+            stateMachine.State = Following;
+        }
+
         #region StateMAchineMethods
+
+        void SetStateMachineCallbacks()
+        {
+            stateMachine = new StateMachine(StateCount);
+            stateMachine.SetCallbacks(Following, FollowingUpdate, null, FollowingStart, null);
+            stateMachine.SetCallbacks(Harvesting, HarvestingUpdate, null, null, HarvestingExit);
+            stateMachine.SetCallbacks(Attacking, AttackingUpdate, null, null, AttackingExit);
+            stateMachine.SetCallbacks(Storing, StoringUpdate, null, null, null);
+            stateMachine.SetCallbacks(Notifying, NotifyingUpdate, null, NotifyingStart, null);
+        }
+
+        void FollowingStart()
+        {
+            pheromoneType = PheromoneType.None;
+            harvestTarget = null;
+            attackTarget = null;
+            GetComponent<ActionScheduler>().CancelCurrentAction();
+        }
+
         int FollowingUpdate()
         {
             if (pheromoneType != PheromoneType.None)
             {
                 return Notifying;
+            }
+            if (harvester.CanStore(nest) && Tools.GetDistance(nest, gameObject) < nestRange)
+            {
+                harvester.Store(nest);
+                return Storing;
             }
             if (attackTarget != null)
             {
@@ -95,11 +130,6 @@ namespace RPG.Control
                 return Harvesting;
             }
 
-            if (harvester.CanStore(nest) && detector.GetEntityInLayer(LayerManager.anthillLayer) != null)
-            {
-                harvester.Store(nest);
-                return Storing;
-            }
 
             Vector3 followPosition = GetFollowPosition(leader);
 
@@ -109,6 +139,7 @@ namespace RPG.Control
             }
             else
             {
+                mover.Cancel();
                 isNotifying = false;
             }
             return Following;
@@ -120,11 +151,6 @@ namespace RPG.Control
             {
                 return Notifying;
             }
-            if (Tools.GetDistance(leader, gameObject) > maxPlayerDistance)
-            {
-                harvester.Cancel();
-                return Following;
-            }
             if (attackTarget != null)
             {
                 return Attacking;
@@ -134,8 +160,13 @@ namespace RPG.Control
                 harvester.Harvest(harvestTarget);
                 return Harvesting;
             }
-            harvestTarget = null;
             return Following;
+        }
+
+        void HarvestingExit()
+        {
+            harvestTarget = null;
+            harvester.Cancel();
         }
 
         int AttackingUpdate()
@@ -155,8 +186,12 @@ namespace RPG.Control
                 fighter.Attack(attackTarget);
                 return Attacking;
             }
-            attackTarget = null;
             return Following;
+        }
+        void AttackingExit()
+        {
+            attackTarget = null;
+            fighter.Cancel();
         }
 
         int StoringUpdate()
@@ -188,16 +223,20 @@ namespace RPG.Control
                 pheromoneType = PheromoneType.None;
                 return Following;
             }
+
             return Notifying;
         }
         #endregion
 
 
-        private void Update()
-        {
-            stateMachine.Update();
-        }
 
+        private void CreateCorpse(GameObject gObject)
+        {
+            Transform bodyTransform = transform.GetChild(0);
+            GameObject corpse = Instantiate(bodyTransform.gameObject, bodyTransform.position, bodyTransform.rotation);
+            GameObject.Destroy(corpse, 30);
+            transform.GetChild(0).localRotation = Quaternion.Euler(0, -90, 0);
+        }
 
         private Vector3 GetFollowPosition(GameObject target)    // follows at exactly follow rang to avoid followers making barrier
         {
