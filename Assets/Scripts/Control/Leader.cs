@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using RPG.Pheromones;
 using RPG.Core;
+using RPG.Harvest;
 
 namespace RPG.Control
 {
@@ -33,6 +34,27 @@ namespace RPG.Control
             followers.Add(follower);
 
             follower.GetComponent<Health>().OnDeath += RemoveFollower;
+        }
+
+        internal bool FollowesCarryFood()
+        {
+            foreach(Follower f in followers)
+            {
+                if(!f.GetComponent<Harvester>().IsEmpty)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        internal void DropFood()
+        {
+            foreach(Follower f in followers)
+            {
+                Harvester harvester = f.gameObject.GetComponent<Harvester>();
+                harvester.DropFood();
+            }
         }
 
         public void RemoveFollower(GameObject followerObject)

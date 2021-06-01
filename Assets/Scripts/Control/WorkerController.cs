@@ -53,6 +53,7 @@ namespace RPG.Control
             health.OnDeath += CreateCorpse;
             harvester.fooodGrabbed += StartFoodPheromones;
             fighter.InCombat += CheckCombatStatus;
+            fighter.InCombat += harvester.DropFood;
 
             orderToReturn = false;
             mission = AnthillMission.None;
@@ -68,7 +69,11 @@ namespace RPG.Control
             health.OnDeath -= CreateCorpse;
             GetComponent<PheromoneGenerator>().StopGeneration();
             if (harvester != null) harvester.fooodGrabbed -= StartFoodPheromones;
-            if (fighter != null) fighter.InCombat -= CheckCombatStatus;
+            if (fighter != null)
+            {
+                fighter.InCombat -= CheckCombatStatus;
+                fighter.InCombat -= harvester.DropFood;
+            }
             detector.Reset();
             GetComponent<ActionScheduler>().CancelCurrentAction();
         }

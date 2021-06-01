@@ -59,6 +59,7 @@ namespace RPG.Control
             pheromoneGenerator = GetComponent<PheromoneGenerator>();
             harvester = GetComponent<Harvester>();
             fighter = GetComponent<Fighter>();
+            fighter.InCombat += harvester.DropFood;
             mover = GetComponent<Mover>();
 
             nest = GameObject.FindGameObjectWithTag("Nest");

@@ -37,6 +37,7 @@ namespace RPG.Control
             harvester.fooodGrabbed += StartFoodPheromones;
             harvester.foodDeposit += StopPheromones;
             health.OnDeath += OnPlayerDeath;
+            fighter.InCombat += harvester.DropFood;
         }
         void Update()
         {

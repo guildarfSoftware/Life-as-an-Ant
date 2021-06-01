@@ -438,7 +438,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f6c372a1cd4ff0343bb117f4b01ea87a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  generating: 0
   gradientHarvest:
     serializedVersion: 2
     key0: {r: 0.9339623, g: 0.84469473, b: 0.110137045, a: 1}
@@ -1418,6 +1417,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   scanRange: 10
+  layerMask:
+    serializedVersion: 2
+    m_Bits: 0
 --- !u!1 &4509780185859432768
 GameObject:
   m_ObjectHideFlags: 0
