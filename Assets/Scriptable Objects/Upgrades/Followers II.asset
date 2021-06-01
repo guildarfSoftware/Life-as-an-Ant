@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Followers II
   m_EditorClassIdentifier: 
   upgradetext: Add Follower II
-  bonus: 2
+  bonus: 1
   bonusElement: 3
   upgradeTime: 0
   foodCost: 100

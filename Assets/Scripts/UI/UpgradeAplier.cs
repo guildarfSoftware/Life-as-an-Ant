@@ -20,7 +20,7 @@ namespace RPG.UI
         [SerializeField] Button button;
         [SerializeField] Text buttonText;
 
-        bool isMaxLevel;
+        bool IsMaxLevel { get => upgradesDone >= upgrades.Length; }
         bool isBuilding;
 
         float remainingBuildTime;
@@ -47,17 +47,19 @@ namespace RPG.UI
 
         private void Update()
         {
-            if (isMaxLevel || isBuilding) return;
+            if (upgrades[0].bonusElement == BonusElement.Followers)
+            {
+                upgradesDone = colony.FollowerAnts;
+            }
+
+            if (IsMaxLevel || isBuilding) return;
+
             checkCostCounter -= Time.deltaTime;
             if (checkCostCounter < 0)
             {
                 checkCostCounter = checkCostTime;
+                buttonText.text = currentUpgrade.upgradetext;
 
-                if(currentUpgrade.bonusElement == BonusElement.Followers)
-                {
-                    upgradesDone = colony.FollowerAnts;
-                    buttonText.text = currentUpgrade.upgradetext;
-                }
 
                 button.interactable = CheckCost();
                 costText.text = GetCostText();
@@ -92,7 +94,7 @@ namespace RPG.UI
 
         public void OnClick()
         {
-            if (isMaxLevel || isBuilding) return;
+            if (IsMaxLevel || isBuilding) return;
             if (!CheckCost()) return;
 
             PayCost();
@@ -140,16 +142,16 @@ namespace RPG.UI
             {
                 if ((upgradesDone + 1) < upgrades.Length)
                 {
-                    upgradesDone++;
                     buttonText.text = currentUpgrade.upgradetext;
                 }
                 else
                 {
-                    isMaxLevel = true;
                     button.interactable = false;
                     buttonText.text = "MAX";
                     costText.text = "Max level reached";
                 }
+                
+                if (!IsMaxLevel) upgradesDone++;
             }
         }
 

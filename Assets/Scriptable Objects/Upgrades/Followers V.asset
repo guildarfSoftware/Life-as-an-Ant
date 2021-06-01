@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7668b13cd738e7e468d207fc82f4d425, type: 3}
   m_Name: Followers V
   m_EditorClassIdentifier: 
-  upgradetext: Add Follower III
-  bonus: 2
+  upgradetext: Add Follower V
+  bonus: 1
   bonusElement: 3
   upgradeTime: 0
   foodCost: 250

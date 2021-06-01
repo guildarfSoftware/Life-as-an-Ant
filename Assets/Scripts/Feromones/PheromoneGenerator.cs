@@ -29,6 +29,8 @@ namespace RPG.Pheromones
         bool generating;
 
         public bool Generating{get=> generating;}
+        public PheromoneType PheromoneType { get=> generating? generatingType: PheromoneType.None; }
+
         PheromoneType generatingType;
         PheromoneWaypoint lastGenerated = null;
         float pheromoneDuration;
