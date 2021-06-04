@@ -79,10 +79,6 @@ namespace RPG.UI
                 sb.AppendLine();
                 sb.Append($"Workers needed: {colony.AvailableWorkers}");
 
-                if (colony.FollowerAnts != 0)
-                {
-                    sb.Append($" + {colony.FollowerAnts} ");
-                }
                 sb.Append($"/ {currentUpgrade.workerCost}");
 
                 sb.AppendLine();

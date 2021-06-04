@@ -88,14 +88,15 @@ namespace RPG.Pheromones
             {
                 StopGeneration(); //Resets trail
                 generatingType = type;
+                currentRoute = NewRoute();
             }
 
-            currentRoute = NewRoute();
             generating = true;
         }
 
         public void StopGeneration(Transform endPosition = null)
         {
+
             if (!generating) return;
             if (endPosition != null)
             {
@@ -126,12 +127,14 @@ namespace RPG.Pheromones
 
             lastGenerated = newWaypoint;
 
+            newWaypoint.transform.SetParent(CurrentRoute.transform);
+
             if (!newWaypoint.LeadsSomewhere())
             {
                 StopGeneration();   //stop generating for a broken route
+                newWaypoint.MarkAsInvalid();
             }
 
-            newWaypoint.transform.SetParent(CurrentRoute.transform);
 
         }
 
@@ -169,14 +172,15 @@ namespace RPG.Pheromones
             if (trailGenerator != null)
             {
                 trailGenerator.emitting = false;
-                if (lastGenerated != null && gameObject.activeSelf)
-                {
-                    trailGenerator.transform.parent = lastGenerated.transform;
-                }
-                else
+
+                if (lastGenerated == null || gameObject.activeSelf == false)
                 {
                     trailGenerator.time = 5;
                     Destroy(trailGenerator.gameObject, 5);
+                }
+                else
+                {
+                    trailGenerator.transform.parent = lastGenerated.transform;
                 }
             }
         }

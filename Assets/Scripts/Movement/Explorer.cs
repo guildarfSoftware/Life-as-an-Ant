@@ -9,8 +9,8 @@ namespace RPG.Movement
     public class Explorer : MonoBehaviour, IAction
     {
 
-        float range = 1f;
-        public bool TimeOut { get => wanderTimer <= 0; }
+        float range = 2f;
+        public bool ExplorationDone { get => wanderTimer <= 0; }
         float wanderTimer = 0;
         [SerializeField] const float ExploreTime = 10;
 
@@ -23,7 +23,7 @@ namespace RPG.Movement
         private void Update()
         {
             wanderTimer -= Time.deltaTime;
-            if (TimeOut)
+            if (ExplorationDone)
             {
                 wandering = false;
                 Cancel();
@@ -67,7 +67,7 @@ namespace RPG.Movement
             if (!GetComponent<ActionScheduler>().StartAction(this)) return;
             targetPosition = GetRandomPosition(transform.position);
             wandering = true;
-            this.wanderTimer = wanderTime == -1 ? ExploreTime : wanderTime;
+            this.wanderTimer = wanderTime == -1 ? float.MaxValue : wanderTime;
         }
 
         private Vector3 GetRandomPosition(Vector3 position)
@@ -86,12 +86,13 @@ namespace RPG.Movement
         {
             targetPosition = default(Vector3);
             wandering = false;
+            wanderTimer = 0;
         }
 
         private void OnDrawGizmos()
         {
             Gizmos.color = Color.white;
-            Gizmos.DrawSphere(targetPosition,1f);
+            Gizmos.DrawSphere(targetPosition, 1f);
         }
 
         public bool isCancelable()

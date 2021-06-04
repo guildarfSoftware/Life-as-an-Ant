@@ -9,7 +9,7 @@ namespace RPG.Harvest
     public class Harvester : MonoBehaviour, IAction//@TODO: separate Harvester into 3 clases harvest, storage and transport(internal capacity)
     {
         static GameObject droppedFoodPrefab;
-        [SerializeField] float harvestRange = 1.0f;
+        [SerializeField] float harvestRange = 1.5f;
         StatsManager stats;
         [SerializeField] float maxCapacity { get => ((AntStats)stats.values).CarryCapacity; }
         float carryAmount;
@@ -78,7 +78,6 @@ namespace RPG.Harvest
                 Cancel();
                 return;
             }
-
             GetComponent<Animator>().ResetTrigger("stopAttack");
             GetComponent<Animator>().SetTrigger("attack");
             onAnimation = true;
@@ -94,7 +93,6 @@ namespace RPG.Harvest
                 Cancel();
                 return;
             }
-
             GetComponent<Animator>().ResetTrigger("stopAttack");
             GetComponent<Animator>().SetTrigger("attack");
             onAnimation = true;
@@ -192,8 +190,11 @@ namespace RPG.Harvest
             HarvestTarget harvestTarget = target.GetComponent<HarvestTarget>();
             if (harvestTarget == null) return false;
             carryAmount = harvestTarget.GrabResource(maxCapacity);
-            food.SetActive(true);
-            fooodGrabbed?.Invoke();
+            if(carryAmount!=0)
+            {
+                food.SetActive(true);
+                fooodGrabbed?.Invoke();
+            }
             return true;
         }
 

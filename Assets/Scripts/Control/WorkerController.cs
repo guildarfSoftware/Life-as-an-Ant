@@ -6,6 +6,7 @@ using RPG.Combat;
 using System;
 using System.Collections.Generic;
 using RPG.Movement;
+using MyTools;
 
 namespace RPG.Control
 {
@@ -19,7 +20,8 @@ namespace RPG.Control
         Health health;
         Mover mover;
         GameObject nest;
-
+        float exploreCounter;
+        float exploreTime = 10;
         float nestEntranceRange = 1f;
         float stopPheromoneDistance = 3f;
         bool generatingPheromones;
@@ -80,6 +82,8 @@ namespace RPG.Control
 
         private void Update()
         {
+            exploreCounter -= Time.deltaTime;
+
             if (health.IsDead)
             {
                 return;
@@ -89,10 +93,12 @@ namespace RPG.Control
 
             if (EvaluateStore()) return;
 
-            if (EvaluateReturnToNest()) return;
+            if (mission == AnthillMission.Build && EvaluateReturnToNest()) return;
 
             if (EvaluateCombat()) return;
             if (EvaluateHarvest()) return;
+
+            if (EvaluateReturnToNest()) return;
 
             if (EvaluateExplore()) return;
         }
@@ -103,8 +109,7 @@ namespace RPG.Control
         {
             if (!orderToReturn || mission == AnthillMission.None) return false;
 
-            mover.MoveTo(nest.transform.position);
-
+            mover.StartMovement(nest.transform.position);
             float distanceToNest = Vector3.Distance(nest.transform.position, transform.position);
 
             if (distanceToNest < nestEntranceRange)
@@ -130,9 +135,9 @@ namespace RPG.Control
 
         private void DisableCurrentRoute()
         {
-            if (pheromoneFollower.lastWaypoint != null)
+            if (pheromoneFollower.LastWaypoint != null)
             {
-                pheromoneFollower.lastWaypoint.DisableRoute();  //route has ended and cannot find food or enemy
+                pheromoneFollower.LastWaypoint.DisableRoute();  //route has ended and cannot find food or enemy
                 pheromoneFollower.Cancel();
             }
         }
@@ -165,15 +170,15 @@ namespace RPG.Control
 
         bool EvaluateCombat()
         {
-            GameObject target = detector.GetClosestEntityInLayer(LayerManager.enemyLayer);
+            GameObject target = GetClosestEnemy();
             if (target != null && fighter.CanAttack(target))    //an enemy is close enought to attack
             {
-                GetComponent<Fighter>().Attack(target);
+                fighter.Attack(target);
                 return true;
             }
 
-            if (pheromoneFollower.lastWaypoint != null &&
-                pheromoneFollower.lastWaypoint.pheromoneType == PheromoneType.Combat)
+            if (pheromoneFollower.LastWaypoint != null &&
+                pheromoneFollower.PheromoneType == PheromoneType.Combat)
             {
                 if (!pheromoneFollower.routeEnded)   //following a combat pheromone trail
                 {
@@ -186,6 +191,29 @@ namespace RPG.Control
             }
 
             return FollowCloseTrail(PheromoneType.Combat);
+        }
+
+        private GameObject GetClosestEnemy()
+        {
+            var enemies = detector.GetEntitiesInLayer(LayerManager.enemyLayer);
+
+            GameObject closestEnemy = null;
+            float closestDistance = 0;
+            if (enemies != null && enemies.Count != 0)
+            {
+                foreach (GameObject enemy in enemies)
+                {
+                    if (enemy == null || !fighter.CanAttack(enemy)) continue;
+
+                    float distance = Tools.GetSquareDistance(gameObject, enemy);
+                    if (closestEnemy == null || distance < closestDistance)
+                    {
+                        closestEnemy = enemy;
+                        closestDistance = distance;
+                    }
+                }
+            }
+            return closestEnemy;
         }
 
         void CheckCombatStatus()
@@ -216,8 +244,8 @@ namespace RPG.Control
                 return true;
             }
 
-            if (pheromoneFollower.lastWaypoint != null &&
-                pheromoneFollower.lastWaypoint.pheromoneType == PheromoneType.Harvest)
+            if (pheromoneFollower.LastWaypoint != null &&
+                pheromoneFollower.PheromoneType == PheromoneType.Harvest)
             {
                 if (!pheromoneFollower.routeEnded)   //following a harvest pheromone trail
                 {
@@ -260,20 +288,21 @@ namespace RPG.Control
 
         bool EvaluateExplore()
         {
-            if (!explorer.wandering && !needsRest)
+            if (!explorer.wandering)
             {
-                needsRest = true;
                 explorer.Wander(); //start exploration behaviour
+                exploreCounter = exploreTime;
             }
 
-            if (!explorer.TimeOut)  //is exploring
+            if (exploreCounter < 0)
             {
-                return true;
+                explorer.Cancel();
+                ReturnToRest();
+                return false;
             }
 
-            ReturnToRest();
 
-            return false;
+            return true;
         }
 
         PheromoneWaypoint GetWaypointClosestToSource(ICollection<GameObject> waypoints)
@@ -284,7 +313,7 @@ namespace RPG.Control
                 foreach (GameObject waypointObject in waypoints)
                 {
                     PheromoneWaypoint waypoint = waypointObject.GetComponent<PheromoneWaypoint>();
-                    if (waypoint == null) continue;
+                    if (waypoint == null || !waypoint.LeadsSomewhere()) continue;
 
                     if (returnedWaypoint == null || waypoint.distanceFromSource < returnedWaypoint.distanceFromSource)
                     {
@@ -297,7 +326,7 @@ namespace RPG.Control
 
         void StartFoodPheromones()
         {
-            if (PheromonesInRange(PheromoneType.Harvest)) return;
+            if (generatingPheromones || PheromonesInRange(PheromoneType.Harvest)) return;
 
             GetComponent<PheromoneGenerator>().StartGeneration(PheromoneType.Harvest);
             generatingPheromones = true;
@@ -305,7 +334,7 @@ namespace RPG.Control
 
         void StartCombatPheromones()
         {
-            if (PheromonesInRange(PheromoneType.Combat)) return;
+            if (generatingPheromones || PheromonesInRange(PheromoneType.Combat)) return;
 
             GetComponent<PheromoneGenerator>().StartGeneration(PheromoneType.Combat);
             generatingPheromones = true;

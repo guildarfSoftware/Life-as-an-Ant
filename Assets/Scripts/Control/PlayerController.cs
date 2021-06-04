@@ -142,7 +142,7 @@ namespace RPG.Control
         {
             if (PheromonesInRange(PheromoneType.Harvest)) return;
 
-            GetComponent<PheromoneGenerator>().StartGeneration(PheromoneType.Harvest, pheromoneTrailDuration);
+            GetComponent<PheromoneGenerator>().StartGeneration(PheromoneType.Harvest);
             generatingPheromones = true;
         }
 
@@ -150,7 +150,7 @@ namespace RPG.Control
         {
             if (PheromonesInRange(PheromoneType.Combat)) return;
 
-            GetComponent<PheromoneGenerator>().StartGeneration(PheromoneType.Combat, pheromoneTrailDuration);
+            GetComponent<PheromoneGenerator>().StartGeneration(PheromoneType.Combat);
             generatingPheromones = true;
         }
 

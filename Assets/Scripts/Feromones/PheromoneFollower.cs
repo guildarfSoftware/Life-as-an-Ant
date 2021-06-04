@@ -17,9 +17,14 @@ namespace RPG.Pheromones
             }
         }
 
+        public PheromoneWaypoint TargetWaypoint{get=> targetWaypoint;}
+        public PheromoneWaypoint LastWaypoint { get => lastWaypoint; }
         PheromoneWaypoint targetWaypoint;
-        public PheromoneWaypoint lastWaypoint;
-        float precision = 0.5f;
+        PheromoneWaypoint lastWaypoint;
+        float precision = 1.5f;
+        public PheromoneType PheromoneType{get=>pheromoneType;}
+        PheromoneType pheromoneType;
+
         private void Update()
         {
             if (targetWaypoint != null)
@@ -46,9 +51,11 @@ namespace RPG.Pheromones
 
         public void StartRoute(PheromoneWaypoint start)
         {
-            GetComponent<ActionScheduler>().StartAction(this);
+            if (!GetComponent<ActionScheduler>().StartAction(this)) return;
             routeEnded = false;
+            lastWaypoint = start;
             targetWaypoint = start;
+            pheromoneType = start.pheromoneType;
         }
 
         public void StopRoute()
@@ -71,6 +78,7 @@ namespace RPG.Pheromones
             routeEnded = true;
             lastWaypoint = null;
             targetWaypoint = null;
+            pheromoneType = PheromoneType.None;
         }
 
         public bool isCancelable()

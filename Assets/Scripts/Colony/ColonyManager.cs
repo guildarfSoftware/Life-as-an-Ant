@@ -46,7 +46,7 @@ namespace RPG.Colony
 
         float oneSecondCounter;
         int timeWithoutFood;
-        [SerializeField] float antRestTime = 5f;
+        [SerializeField] float antRestTime = 15f;
         #endregion
 
         #region UnityMethods
@@ -59,12 +59,14 @@ namespace RPG.Colony
             if (playerAnt != null)
             {
                 playerAnt.GetComponent<Health>().OnDeath += OnPlayerDeath;
+                playerAnt.GetComponent<StatsManager>().Initialize();
                 leader = playerAnt.GetComponent<Leader>();
                 allAntsList.Add(playerAnt);
             }
             storage = GetComponent<Storage>();
 
             WorkerPool.Initialize();
+            workerStats.ResetBonus();
             FollowerPool.Initialize();
 
             for (int i = 0; i < startingAnts; i++)
@@ -162,6 +164,7 @@ namespace RPG.Colony
                 else if (buildingAntsCollected != 0)
                 {
                     buildingAntsCollected--;
+                    buildingAntsRemaining++;
                 }
                 else
                 {
@@ -293,7 +296,7 @@ namespace RPG.Colony
             {
                 followersList.Remove(ant);
                 FollowerPool.ReturnFollower(ant);
-            } 
+            }
 
             if (workersList.Contains(ant))
             {
@@ -323,7 +326,7 @@ namespace RPG.Colony
 
         public void AddFollowers(int bonus)
         {
-            if(FollowerAnts>=leader.maxFollowers)
+            if (FollowerAnts >= leader.maxFollowers)
             {
                 MessageManager.Message("Ooops", "Reached Max followers.", null, null);
                 return;

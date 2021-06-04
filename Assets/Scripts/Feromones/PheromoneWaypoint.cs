@@ -82,7 +82,7 @@ namespace RPG.Pheromones
         /*
         makes false leadSomewhere this node and all the following
         */
-        private void MarkAsInvalid()
+        public void MarkAsInvalid()
         {
             leadsSomewhere = false;
             killTime = distanceFromSource;
@@ -116,6 +116,9 @@ namespace RPG.Pheromones
 
                 waypointScript.distanceFromSource = previous.distanceFromSource + 1;
                 waypointScript.sourceWaypoint = previous.sourceWaypoint;
+
+                waypointScript.killTime = previous.killTime + 1;
+                waypointScript.leadsSomewhere = previous.leadsSomewhere;
             }
             else
             {
