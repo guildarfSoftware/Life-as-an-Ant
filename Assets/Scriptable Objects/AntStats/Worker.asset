@@ -20,4 +20,4 @@ MonoBehaviour:
   speedBonus: 0
   baseCarryCapacity: 5
   carryCapacityBonus: 0
-  foodConsumption: 0.05
+  foodConsumption: 0.025

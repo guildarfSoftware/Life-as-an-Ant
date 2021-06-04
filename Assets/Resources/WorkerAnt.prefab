@@ -13,7 +13,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   routeEnded: 0
-  lastWaypoint: {fileID: 0}
 --- !u!114 &1221222979
 MonoBehaviour:
   m_ObjectHideFlags: 0

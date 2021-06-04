@@ -16,5 +16,6 @@ MonoBehaviour:
   bonus: 2
   bonusElement: 6
   upgradeTime: 0
-  foodCost: 1000
+  foodCost: 600
   workerCost: 0
+  repeteable: 0
