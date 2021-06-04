@@ -111,7 +111,7 @@ namespace RPG.Combat
 
         public void Attack(GameObject target)
         {
-            GetComponent<ActionScheduler>().StartAction(this);
+            if (!GetComponent<ActionScheduler>().StartAction(this)) return;
             this.target = target.GetComponent<Health>();
         }
 

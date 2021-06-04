@@ -64,7 +64,7 @@ namespace RPG.Movement
 
         public void Wander(float wanderTime = -1)
         {
-            GetComponent<ActionScheduler>().StartAction(this);
+            if (!GetComponent<ActionScheduler>().StartAction(this)) return;
             targetPosition = GetRandomPosition(transform.position);
             wandering = true;
             this.wanderTimer = wanderTime == -1 ? ExploreTime : wanderTime;

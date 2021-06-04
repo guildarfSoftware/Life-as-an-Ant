@@ -6,15 +6,19 @@ namespace RPG.Core
     {
         IAction currentAction;
 
-        public void StartAction(IAction action)
+        public bool StartAction(IAction action)
         {
             if (currentAction != null && currentAction != action)
             {
-                if(!currentAction.isCancelable()) return;
+                if(!currentAction.isCancelable())
+                {
+                    return false;
+                } 
                 currentAction.Cancel();
             }
 
             currentAction = action;
+            return true;
         }
 
         public void CancelCurrentAction()

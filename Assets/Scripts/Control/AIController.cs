@@ -4,6 +4,7 @@ using RPG.Combat;
 using RPG.Core;
 using RPG.Movement;
 using UnityEngine;
+using UnityEngine.AI;
 
 namespace RPG.Control
 {
@@ -80,6 +81,7 @@ namespace RPG.Control
                 col.enabled = false;
                 col.enabled = true;
             }
+           GetComponent<NavMeshAgent>().enabled=false;
         }
 
         public void SetPatrolPath(PatrolPath patrolPath)

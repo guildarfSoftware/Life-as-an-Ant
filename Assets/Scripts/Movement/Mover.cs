@@ -60,7 +60,7 @@ namespace RPG.Movement
 
         public void StartMovement(Vector3 destination)
         {
-            GetComponent<ActionScheduler>().StartAction(this);
+            if (!GetComponent<ActionScheduler>().StartAction(this)) return;
             MoveTo(destination);
         }
 

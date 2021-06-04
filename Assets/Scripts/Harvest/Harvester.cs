@@ -130,7 +130,7 @@ namespace RPG.Harvest
 
         internal void Store(GameObject target)
         {
-            GetComponent<ActionScheduler>().StartAction(this);
+            if (!GetComponent<ActionScheduler>().StartAction(this)) return;
             this.target = target;
         }
 
@@ -146,7 +146,7 @@ namespace RPG.Harvest
 
         public void Harvest(GameObject target)
         {
-            GetComponent<ActionScheduler>().StartAction(this);
+            if (!GetComponent<ActionScheduler>().StartAction(this)) return;
             this.target = target;
         }
 
