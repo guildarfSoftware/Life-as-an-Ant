@@ -5237,12 +5237,12 @@ PrefabInstance:
     - target: {fileID: 1835238099602584729, guid: b012878546bf536429b675de2574165c,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: -135.99
+      value: -135
       objectReference: {fileID: 0}
     - target: {fileID: 1835238099602584729, guid: b012878546bf536429b675de2574165c,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 1835238099602584729, guid: b012878546bf536429b675de2574165c,
         type: 3}
@@ -9358,12 +9358,7 @@ PrefabInstance:
     - target: {fileID: 5902296734095268347, guid: c8eb919871dc4304bba5ef2116a33803,
         type: 3}
       propertyPath: storedAmount
-      value: 20000
-      objectReference: {fileID: 0}
-    - target: {fileID: 5902296734095268347, guid: c8eb919871dc4304bba5ef2116a33803,
-        type: 3}
-      propertyPath: maxCapacity
-      value: 20000
+      value: 40
       objectReference: {fileID: 0}
     - target: {fileID: 5902296734095268351, guid: c8eb919871dc4304bba5ef2116a33803,
         type: 3}
@@ -9402,8 +9397,8 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7659749828079536000, guid: c8eb919871dc4304bba5ef2116a33803,
         type: 3}
-      propertyPath: startingAnts
-      value: 200
+      propertyPath: antRestTime
+      value: 15
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: c8eb919871dc4304bba5ef2116a33803, type: 3}
