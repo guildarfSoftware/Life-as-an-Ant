@@ -15,6 +15,7 @@ MonoBehaviour:
   upgradetext: Population III
   bonus: 100
   bonusElement: 2
-  upgradeTime: 360
-  foodCost: 500
+  upgradeTime: 240
+  foodCost: 650
   workerCost: 50
+  repeteable: 0

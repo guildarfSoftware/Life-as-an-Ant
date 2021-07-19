@@ -172,11 +172,11 @@ namespace RPG.Colony
                     Health lastAntHealth = allAntsList[lastAntIndex].GetComponent<Health>();
                     if (lastAntIndex != 0)
                     {
-                        lastAntHealth.TakeDamage(lastAntHealth.currentHealth);
+                        lastAntHealth.TakeDamage(lastAntHealth.currentHealth, false);
                     }
                     else
                     {
-                        lastAntHealth.TakeDamage(1);
+                        lastAntHealth.TakeDamage(1,false);
                     }
                 }
                 onPopulationChange?.Invoke();
@@ -339,7 +339,6 @@ namespace RPG.Colony
         {
             if (currentPopulation >= maxPopulation)
             {
-                MessageManager.Message("Ooops", "Reached Max population. Upgrade population limit to keep growing", null, null);
                 return;
             }
 

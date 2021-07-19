@@ -1,4 +1,5 @@
 using System;
+using RPG.Sounds;
 using UnityEngine;
 
 namespace RPG.Core
@@ -31,11 +32,11 @@ namespace RPG.Core
             OnHealthChange?.Invoke();
         }
 
-        public void TakeDamage(float amount)
+        public void TakeDamage(float amount, bool triggersOnDamaged=true)
         {
             currentHealth = Mathf.Clamp(currentHealth - amount, 0, maxHealth);
             OnHealthChange?.Invoke();
-            onDamaged?.Invoke();
+            if(triggersOnDamaged) onDamaged?.Invoke();
             if (currentHealth == 0)
             {
                 Die();

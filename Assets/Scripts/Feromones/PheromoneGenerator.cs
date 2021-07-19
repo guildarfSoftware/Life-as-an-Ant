@@ -59,6 +59,11 @@ namespace RPG.Pheromones
             }
         }
 
+        private void OnDisable()
+        {
+            StopTrailGenerator();
+        }
+
         IEnumerator GenerationProcess()
         {
             while (!safeExit)

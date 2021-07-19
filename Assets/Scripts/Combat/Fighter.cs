@@ -14,6 +14,8 @@ namespace RPG.Combat
         StatsManager stats;
         Health health;
         [SerializeField] float damage { get => stats.values.Damage; }
+        public event Action CombatHit;
+
         Health target;
         public event Action InCombat;
 
@@ -31,16 +33,18 @@ namespace RPG.Combat
         {
             health.onDamaged += EnterCombat;
             stats = GetComponent<StatsManager>();
+            CombatHit += EnterCombat;
         }
 
         void OnDisable()
         {
             health.onDamaged -= EnterCombat;
+            CombatHit -= EnterCombat;
         }
 
         private void Update()
         {
-            if(health.IsDead) return;
+            if (health.IsDead) return;
             timeSinceLastAttack += Time.deltaTime;
             inCombatCounter -= Time.deltaTime;
 
@@ -128,7 +132,7 @@ namespace RPG.Combat
         {
             if (target == null) return;
             target.TakeDamage(damage);
-            EnterCombat();
+            CombatHit?.Invoke();
             onAnimation = false;
 
         }
@@ -137,7 +141,7 @@ namespace RPG.Combat
         {
             return !onAnimation;
         }
-    
+
         void EnterCombat()
         {
             inCombatCounter = inCombatTime;
