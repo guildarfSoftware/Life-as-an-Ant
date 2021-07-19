@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using RPG.Colony;
 using RPG.Control;
 using RPG.Pheromones;
+using RPG.Sounds;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -111,10 +112,12 @@ namespace RPG.UI
             if (playerGenerator.Generating)
             {
                 playerGenerator.StopGeneration();
+                SoundEffects.PlaySound(ClipId.PheromonesOff);
             }
             else
             {
                 playerGenerator.StartGeneration(pheromoneType);
+                SoundEffects.PlaySound(ClipId.PheromonesOn);
             }
             UpdateColors();
         }
@@ -130,7 +133,7 @@ namespace RPG.UI
             {
                 pheromoneType = PheromoneType.Combat;
             }
-
+            SoundEffects.PlaySound(ClipId.ButtonClick);
             playerGenerator.StopGeneration();
 
             UpdateColors();
@@ -184,6 +187,7 @@ namespace RPG.UI
         void FollowerButtonClick(int index)
         {
             leader.StartPheromoneTrail(index, pheromoneType);
+            SoundEffects.PlaySound(ClipId.FollowerSend);
         }
     }
 }

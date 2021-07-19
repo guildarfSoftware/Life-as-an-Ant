@@ -16,7 +16,10 @@ namespace RPG.Movement
         Animator animator;
         StatsManager stats;
         Vector3? destination;
+        public Action startMovement;
+        public Action endMovement;
         float precision = 0.2f;
+        bool isMoving;
         float speed { get => stats.values.Speed; }
 
         // Start is called before the first frame update
@@ -56,6 +59,17 @@ namespace RPG.Movement
             Vector3 localVelocity = transform.InverseTransformDirection(velocity);
             float speed = localVelocity.z;
             animator.SetFloat("forwardSpeed", speed);
+
+            if (speed > precision && !isMoving)
+            {
+                isMoving = true;
+                startMovement?.Invoke();
+            }
+            if (speed <= precision && isMoving)
+            {
+                isMoving = false;
+                endMovement?.Invoke();
+            }
         }
 
         public void StartMovement(Vector3 destination)

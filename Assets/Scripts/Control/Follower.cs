@@ -7,6 +7,7 @@ using RPG.Core;
 using RPG.Harvest;
 using RPG.Movement;
 using RPG.Pheromones;
+using RPG.Sounds;
 using UnityEngine;
 
 namespace RPG.Control
@@ -141,6 +142,10 @@ namespace RPG.Control
             else
             {
                 mover.Cancel();
+                if(isNotifying)
+                {
+                    SoundEffects.PlaySound(ClipId.FollowerReturned);
+                }
                 isNotifying = false;
             }
             return Following;

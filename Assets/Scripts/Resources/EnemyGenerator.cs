@@ -6,6 +6,7 @@ using RPG.Core;
 using RPG.Harvest;
 using RPG.Control;
 using RPG.UI;
+using RPG.Sounds;
 
 namespace RPG.Resources
 {
@@ -266,6 +267,8 @@ namespace RPG.Resources
                                     "You have finally defeated the queen, now the colony will be ok. Do you want to exit now?",
                                     UIManager.LoadMenuScene,
                                     MessageManager.CloseMessage);
+
+            SoundEffects.PlaySound(ClipId.foodSpawn);
         }
 
 

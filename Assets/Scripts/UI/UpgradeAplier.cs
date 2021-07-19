@@ -6,6 +6,7 @@ using RPG.Colony;
 using RPG.Resources;
 using System;
 using System.Text;
+using RPG.Sounds;
 
 namespace RPG.UI
 {
@@ -93,6 +94,33 @@ namespace RPG.UI
             if (IsMaxLevel || isBuilding) return;
             if (!CheckCost()) return;
 
+
+
+            if (currentUpgrade.bonusElement == BonusElement.Worker)
+            {
+                if(colony.currentPopulation >= colony.MaxPopulation)
+                {
+                    MessageManager.Message("Ooops", "Reached Max population. Upgrade population limit to keep growing", null, null);
+                    return;
+                }
+                SoundEffects.PlaySound(ClipId.SpawnWorker);
+            }
+            else if (currentUpgrade.bonusElement == BonusElement.Followers)
+            {
+                if (colony.currentPopulation >= colony.MaxPopulation)
+                {
+                    MessageManager.Message("Ooops", "Reached Max population. Upgrade population limit to keep growing", null, null);
+                    return;
+                }
+
+                SoundEffects.PlaySound(ClipId.SpawnFollower);
+
+            }
+            else
+            {
+                SoundEffects.PlaySound(ClipId.BuyUpgrade);
+            }
+            
             PayCost();
 
             if (currentUpgrade.upgradeTime > 0)
@@ -222,6 +250,7 @@ namespace RPG.UI
 
             isBuilding = false;
             ApplyBonus();
+            SoundEffects.PlaySound(ClipId.BuildUpgrade);
 
         }
 

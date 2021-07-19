@@ -1,0 +1,39 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 29d8529e95e90d842a792d129fa9688d, type: 3}
+  m_Name: SoundClips
+  m_EditorClassIdentifier: 
+  audioClips:
+  - {fileID: 8300000, guid: 0aa85eabc0869e54e9c0577fa1c1810b, type: 3}
+  - {fileID: 8300000, guid: 6a17dcc9674db844dad6eb087da995f6, type: 3}
+  - {fileID: 8300000, guid: 899443a70854bc149a71e3c57b450c1a, type: 3}
+  - {fileID: 8300000, guid: 1606cfaca82fa1f4f81395cbfb884da0, type: 3}
+  - {fileID: 8300000, guid: 937d3b0fdac93ad44bb22333cc64150f, type: 3}
+  - {fileID: 8300000, guid: 6cf339ff20b43ed47aaa003b9be78712, type: 3}
+  - {fileID: 8300000, guid: bc5facd53718c9d429e321dc88d3ede2, type: 3}
+  - {fileID: 8300000, guid: 806c06c8e437597419f34260596620ae, type: 3}
+  - {fileID: 8300000, guid: 4df28b8dde54e704fb1f61e5112d1534, type: 3}
+  - {fileID: 8300000, guid: fe23dc1bc4af6ea49ac0a325c4282501, type: 3}
+  - {fileID: 8300000, guid: bb5fec396d33c3044b44db11f4d86da1, type: 3}
+  - {fileID: 8300000, guid: dc9b122bebf8e2d4aafca09072a69e50, type: 3}
+  - {fileID: 8300000, guid: 5056c8ab13f2575489fab62c46fd6579, type: 3}
+  - {fileID: 8300000, guid: 4cc6c08ef60a1fe4c91a2a4f05896d0f, type: 3}
+  - {fileID: 8300000, guid: 3a4e5d355b19dde4487f90ee7e46fdf1, type: 3}
+  - {fileID: 8300000, guid: 9370b1510d7744343b31b6a88de908b6, type: 3}
+  - {fileID: 8300000, guid: 71782172a46a0e745abca1dbb2a5daf2, type: 3}
+  - {fileID: 8300000, guid: 56c1c06fa55a6414a90b4d224d85f11d, type: 3}
+  - {fileID: 8300000, guid: bd1c6a65c1f3fe34580789c46a0141d7, type: 3}
+  - {fileID: 8300000, guid: b362f23a233e25440bf6cbebfbec794e, type: 3}
+  - {fileID: 8300000, guid: ff25e1c50be15bd49b23e9dcebf58bf2, type: 3}
+  - {fileID: 8300000, guid: 4d499667d83b6324cb8f98a7e7f8b098, type: 3}
+  - {fileID: 0}
+  - {fileID: 0}

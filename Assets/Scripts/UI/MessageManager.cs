@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using RPG.Sounds;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
@@ -50,6 +51,8 @@ public class MessageManager : MonoBehaviour
 
         buttonAccept.onClick.RemoveAllListeners();
         buttonCancel.onClick.RemoveAllListeners();
+        
+        SoundEffects.PlaySound(ClipId.Message);
 
         tittleText.text = message.title;
         messageText.text = message.body;

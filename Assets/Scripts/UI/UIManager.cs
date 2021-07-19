@@ -6,6 +6,7 @@ using RPG.Colony;
 using System;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using RPG.Sounds;
 
 namespace RPG.UI
 {
@@ -99,6 +100,7 @@ namespace RPG.UI
 
         public void EnableUpgradesMenu()
         {
+            SoundEffects.PlaySound(ClipId.OpenUpgrades);
             upgradesMenu.SetActive(true);
         }
 

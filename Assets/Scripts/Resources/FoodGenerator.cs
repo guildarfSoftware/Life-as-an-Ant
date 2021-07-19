@@ -4,6 +4,7 @@ using UnityEngine;
 using RPG.Map;
 using RPG.Core;
 using RPG.Harvest;
+using RPG.Sounds;
 
 namespace RPG.Resources
 {
@@ -41,6 +42,7 @@ namespace RPG.Resources
             GameObject food = GameObject.Instantiate(foodPrefab);
             food.transform.localPosition = spawnPosition;
             food.transform.SetParent(transform);
+            SoundEffects.PlaySound(ClipId.foodSpawn);
         }
 
         private Vector3 RandomPosition()
