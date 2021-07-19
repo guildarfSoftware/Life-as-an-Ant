@@ -1,8 +1,10 @@
 using UnityEngine;
 using RPG.Core;
 using System.Collections.Generic;
+using RPG.Pheromones;
+using RPG.Sounds;
 
-namespace RPG.Pheromones
+namespace RPG.Colony
 {
     public class PheromoneStopper : MonoBehaviour
     {
@@ -15,6 +17,7 @@ namespace RPG.Pheromones
         {
             detector = GetComponentInChildren<EntityDetector>();
             if (detector == null) detector = EntityDetector.CreateDetector(gameObject);
+            detector.newEntity+= OnCloseEntity;
         }
 
         private void Update()
@@ -24,6 +27,14 @@ namespace RPG.Pheromones
             {
                 stopPheromoneCounter = 0;
                 StopPheromoneGenerator();
+            }
+        }
+
+        void OnCloseEntity(GameObject gObject)
+        {
+            if(gObject.layer == LayerManager.enemyLayer)
+            {
+                SoundEffects.PlaySound(ClipId.WaveAlert);
             }
         }
 

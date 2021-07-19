@@ -60,7 +60,7 @@ MonoBehaviour:
   scanRange: 5
   layerMask:
     serializedVersion: 2
-    m_Bits: 768
+    m_Bits: 1792
 --- !u!1 &5902296734095268340
 GameObject:
   m_ObjectHideFlags: 0
@@ -139,6 +139,7 @@ MonoBehaviour:
   workerPrefab: {fileID: 2968504244971946530, guid: 8f273831d711bb04a97f54777b569626,
     type: 3}
   startingAnts: 2
+  antRestTime: 15
 --- !u!114 &1914393414356034193
 MonoBehaviour:
   m_ObjectHideFlags: 0

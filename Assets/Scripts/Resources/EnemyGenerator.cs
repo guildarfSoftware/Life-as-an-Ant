@@ -7,6 +7,7 @@ using RPG.Harvest;
 using RPG.Control;
 using RPG.UI;
 using RPG.Sounds;
+using RPG.Combat;
 
 namespace RPG.Resources
 {
@@ -182,6 +183,8 @@ namespace RPG.Resources
             if (tier == QueenTier)
             {
                 newEnemy.GetComponent<Health>().OnDeath += OnQueenDeath;
+                newEnemy.GetComponent<Fighter>().EnterCombat += ()=>{ BackgroundMusic.PlayFinalBattleMusic();};
+                newEnemy.GetComponent<Fighter>().ExitCombat += () => { BackgroundMusic.PlayNormalMusic(); };
             }
 
             newEnemy.GetComponent<AIController>().SetGuardPosition(position);
@@ -263,12 +266,13 @@ namespace RPG.Resources
         private void OnQueenDeath(GameObject gObject)
         {
             spawnerActive = false;
+            BackgroundMusic.PlayNormalMusic();
+            SoundEffects.PlaySound(ClipId.Victory);
             MessageManager.Message("Congratulations",
                                     "You have finally defeated the queen, now the colony will be ok. Do you want to exit now?",
                                     UIManager.LoadMenuScene,
                                     MessageManager.CloseMessage);
 
-            SoundEffects.PlaySound(ClipId.foodSpawn);
         }
 
 

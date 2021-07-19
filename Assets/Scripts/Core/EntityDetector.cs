@@ -11,6 +11,7 @@ namespace RPG.Core
         [SerializeField] float scanRange = 10f;
         Dictionary<int, List<GameObject>> layeredEntities = new Dictionary<int, List<GameObject>>();
         SphereCollider spCollider;
+        public event Action<GameObject> newEntity;
 
         [SerializeField] LayerMask layerMask;
 
@@ -36,6 +37,8 @@ namespace RPG.Core
             int layer = gObject.layer;
 
             if (!isValidLayer(layer)) return;
+
+            newEntity?.Invoke(gObject);
 
             if (!layeredEntities.ContainsKey(layer))
             {

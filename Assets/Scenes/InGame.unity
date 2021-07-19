@@ -9560,6 +9560,11 @@ PrefabInstance:
       propertyPath: antRestTime
       value: 15
       objectReference: {fileID: 0}
+    - target: {fileID: 7659749828079536000, guid: c8eb919871dc4304bba5ef2116a33803,
+        type: 3}
+      propertyPath: startingAnts
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: c8eb919871dc4304bba5ef2116a33803, type: 3}
 --- !u!1001 &6103699758226751903

@@ -137,6 +137,7 @@ namespace RPG.Sounds
             if (audioClip == null) return;
             audioSource.clip = audioClip;
             audioSource.Play();
+            audioSource.loop=false;
         }
 
         public static AudioClip GetClip(ClipId soundId)

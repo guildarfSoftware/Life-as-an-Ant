@@ -17,7 +17,9 @@ namespace RPG.Combat
         public event Action CombatHit;
 
         Health target;
-        public event Action InCombat;
+        public event Action EnterCombat;
+        public event Action ExitCombat;
+        bool inCombat;
 
         float healingSpeed = 0.5f;
 
@@ -31,15 +33,15 @@ namespace RPG.Combat
         }
         void OnEnable()
         {
-            health.onDamaged += EnterCombat;
+            health.onDamaged += EnteringCombat;
             stats = GetComponent<StatsManager>();
-            CombatHit += EnterCombat;
+            CombatHit += EnteringCombat;
         }
 
         void OnDisable()
         {
-            health.onDamaged -= EnterCombat;
-            CombatHit -= EnterCombat;
+            health.onDamaged -= EnteringCombat;
+            CombatHit -= EnteringCombat;
         }
 
         private void Update()
@@ -50,7 +52,9 @@ namespace RPG.Combat
 
             if (inCombatCounter < 0)
             {
+                if(inCombat) ExitCombat?.Invoke();
                 health.Heal(healingSpeed * Time.deltaTime);
+                inCombat=false;
             }
 
             if (target == null)
@@ -67,8 +71,6 @@ namespace RPG.Combat
             {
                 GetComponent<Mover>().MoveTo(target.transform.position);
             }
-
-
         }
 
         private void AttackBehaviour()
@@ -142,10 +144,14 @@ namespace RPG.Combat
             return !onAnimation;
         }
 
-        void EnterCombat()
+        void EnteringCombat()
         {
             inCombatCounter = inCombatTime;
-            InCombat?.Invoke();
+            if(!inCombat)
+            {
+                inCombat=true;
+                EnterCombat?.Invoke();
+            }
         }
     }
 

@@ -60,7 +60,7 @@ namespace RPG.Control
             pheromoneGenerator = GetComponent<PheromoneGenerator>();
             harvester = GetComponent<Harvester>();
             fighter = GetComponent<Fighter>();
-            fighter.InCombat += harvester.DropFood;
+            fighter.EnterCombat += harvester.DropFood;
             mover = GetComponent<Mover>();
 
             nest = GameObject.FindGameObjectWithTag("Nest");
@@ -68,7 +68,7 @@ namespace RPG.Control
             leader = GameObject.FindGameObjectWithTag("Player");
             detector = leader.GetComponentInChildren<EntityDetector>();
             leader.GetComponent<Harvester>().fooodGrabbed += HarvestCloseFood;
-            leader.GetComponent<Fighter>().InCombat += AttackCloseEnemy;
+            leader.GetComponent<Fighter>().EnterCombat += AttackCloseEnemy;
 
             StatsManager followerStats = GetComponent<StatsManager>();
             StatsManager leaderStats = leader.GetComponent<StatsManager>();
