@@ -68,7 +68,7 @@ namespace RPG.Control
             leader = GameObject.FindGameObjectWithTag("Player");
             detector = leader.GetComponentInChildren<EntityDetector>();
 
-            fighter.EnterCombat +=  AttackCloseEnemy;
+            fighter.EnterCombat += AttackCloseEnemy;
 
             StatsManager followerStats = GetComponent<StatsManager>();
             StatsManager leaderStats = leader.GetComponent<StatsManager>();
@@ -99,6 +99,7 @@ namespace RPG.Control
 
         private void OnDisable()
         {
+            if (leader == null) return;
             leader.GetComponent<Harvester>().fooodGrabbed -= HarvestCloseFood;
             leader.GetComponent<Fighter>().EnterCombat -= AttackCloseEnemy;
         }
@@ -153,7 +154,7 @@ namespace RPG.Control
             else
             {
                 mover.Cancel();
-                if(isNotifying)
+                if (isNotifying)
                 {
                     SoundEffects.PlaySound(ClipId.FollowerReturned);
                 }
@@ -203,9 +204,9 @@ namespace RPG.Control
                 fighter.Attack(attackTarget);
                 return Attacking;
             }
-            
+
             AttackCloseEnemy();
-            if(attackTarget != null)
+            if (attackTarget != null)
             {
                 return Attacking;
             }
