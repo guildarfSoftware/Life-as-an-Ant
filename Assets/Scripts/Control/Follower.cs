@@ -67,14 +67,15 @@ namespace RPG.Control
 
             leader = GameObject.FindGameObjectWithTag("Player");
             detector = leader.GetComponentInChildren<EntityDetector>();
-            leader.GetComponent<Harvester>().fooodGrabbed += HarvestCloseFood;
-            leader.GetComponent<Fighter>().EnterCombat += AttackCloseEnemy;
+
+            fighter.EnterCombat +=  AttackCloseEnemy;
 
             StatsManager followerStats = GetComponent<StatsManager>();
             StatsManager leaderStats = leader.GetComponent<StatsManager>();
             followerStats.values = leaderStats.values;
 
             SetStateMachineCallbacks();
+
 
 
             stateMachine.State = Following;
@@ -89,7 +90,17 @@ namespace RPG.Control
         private void OnEnable()
         {
             if (health.IsDead) health.Revive();
+
+            leader.GetComponent<Harvester>().fooodGrabbed += HarvestCloseFood;
+            leader.GetComponent<Fighter>().EnterCombat += AttackCloseEnemy;
+
             stateMachine.State = Following;
+        }
+
+        private void OnDisable()
+        {
+            leader.GetComponent<Harvester>().fooodGrabbed -= HarvestCloseFood;
+            leader.GetComponent<Fighter>().EnterCombat -= AttackCloseEnemy;
         }
 
         #region StateMAchineMethods
@@ -190,6 +201,12 @@ namespace RPG.Control
             if (attackTarget != null && fighter.CanAttack(attackTarget))
             {
                 fighter.Attack(attackTarget);
+                return Attacking;
+            }
+            
+            AttackCloseEnemy();
+            if(attackTarget != null)
+            {
                 return Attacking;
             }
             return Following;
