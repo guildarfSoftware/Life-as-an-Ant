@@ -40,7 +40,7 @@ namespace RPG.Harvest
         private void Update()
         {
             if (target == null) return;
-            if (GetIsInRange())
+            if (GetIsInRange()&&!onAnimation)
             {
                 GetComponent<Mover>().Cancel();
                 Behaviour();

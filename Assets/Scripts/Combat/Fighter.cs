@@ -62,7 +62,7 @@ namespace RPG.Combat
                 return;
             }
 
-            if (GetIsInRange())
+            if (GetIsInRange()&& ! onAnimation)
             {
                 GetComponent<Mover>().Cancel();
                 AttackBehaviour();
